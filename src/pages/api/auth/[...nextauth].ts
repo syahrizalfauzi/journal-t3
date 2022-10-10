@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       //Set token's user to the returned user on authorize
       if (user) {
-        token.user = user;
+        token.user = user as User;
       }
       return token;
     },
@@ -22,14 +22,7 @@ export const authOptions: NextAuthOptions = {
         ...token.user,
       };
       return session;
-
-      //   return params.session;
     },
-    // session: async (params) => {
-    //   console.log("session", params);
-
-    //   return params;
-    // },
   },
   providers: [
     Credentials({

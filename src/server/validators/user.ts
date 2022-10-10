@@ -9,9 +9,7 @@ export const userValidators = z.object({
     address: z.string(),
     country: z.string(),
     phone: z.string(),
-    gender: z.number({
-      invalid_type_error: "The input must be a number",
-    }),
+    gender: z.number(),
     email: z.string().email(),
     degree: z.string().nullish(),
     phoneWork: z.string().nullish(),
@@ -20,23 +18,29 @@ export const userValidators = z.object({
     position: z.string().nullish(),
     department: z.string().nullish(),
     expertise: z.string().refine((expertise) => {
-      const { length } = expertise.replace(/\s/g, "").split(",");
+      const { length } = expertise
+        .replace(/\s/g, "")
+        .split(",")
+        .filter((e) => e.length > 0);
 
       return length > 0;
-    }),
+    }, "must be at least one"),
     keywords: z
       .string()
       .nullish()
       .refine((keywords) => {
         if (!keywords) return true;
 
-        const { length } = keywords.replace(/\s/g, "").split(",");
+        const { length } = keywords
+          .replace(/\s/g, "")
+          .split(",")
+          .filter((e) => e.length > 0);
 
         return length >= 5;
-      }),
+      }, "must be at least five"),
   }),
 });
-export const newUserValidators = z.object({
+export const createUserValidators = z.object({
   password: z.string().min(6),
   username: z.string().refine(async (username) => {
     const userExists =
@@ -47,7 +51,7 @@ export const newUserValidators = z.object({
       })) > 0;
 
     return !userExists;
-  }, "Username is already in use"),
+  }, "is already in use"),
   profile: z.object({
     email: z
       .string()
@@ -61,6 +65,8 @@ export const newUserValidators = z.object({
           })) > 0;
 
         return !profileExists;
-      }),
+      }, "is already in use"),
   }),
 });
+
+export const newUserValidators = createUserValidators.merge(userValidators);

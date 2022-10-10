@@ -24,8 +24,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.37.0",
     "superjson": "1.9.1",
-    "zod": "^3.18.0",
-    "zod-validation-error": "^0.2.1"
+    "zod": "^3.18.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

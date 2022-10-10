@@ -2,44 +2,18 @@ import moment from "moment";
 import type { NextPage } from "next";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { newUserValidators } from "../server/validators/user";
 import { trpc } from "../utils/trpc";
 
-enum Gender {
-  male = 0,
-  female = 1,
-  other = 2,
-}
-
-type RegisterForm = {
-  username: string;
-  password: string;
-  role: number;
-  profile: {
-    name: string;
-    address: string;
-    country: string;
-    phone: string;
-    gender: Gender;
-    email: string;
-    degree: string;
-    phoneWork: string;
-    addressWork: string;
-    birthdate: string;
-    position: string;
-    department: string;
-    expertise: string;
-    keywords: string;
-  };
-};
+type CreateUserForm = z.infer<typeof newUserValidators>;
 
 const Home: NextPage = () => {
   const authRegister = trpc.auth.register.useMutation();
-  const userQuery = trpc.auth.user.useQuery();
   const session = useSession();
 
-  const { register, handleSubmit } = useForm<RegisterForm>({
+  const { register, handleSubmit } = useForm<CreateUserForm>({
     defaultValues: {
       username: "chief",
       password: "password",
@@ -54,7 +28,7 @@ const Home: NextPage = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<RegisterForm> = (data) => {
+  const onSubmit: SubmitHandler<CreateUserForm> = (data) => {
     console.log(data);
 
     authRegister.mutate({
@@ -62,15 +36,11 @@ const Home: NextPage = () => {
       role: Number(data.role),
       profile: {
         ...data.profile,
-        gender: Number(data.profile),
+        gender: Number(data.profile.gender),
         birthdate: moment(data.profile.birthdate).toDate(),
       },
     });
   };
-
-  useEffect(() => {
-    console.log("data in client from userQuery", userQuery.data);
-  }, [userQuery.data]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
@@ -81,9 +51,12 @@ const Home: NextPage = () => {
       <p>{JSON.stringify(session)}</p>
       <p>--------------------------------</p>
       {authRegister.isLoading && <p>Loading</p>}
-      {authRegister.error?.data?.zodError && (
-        <p className="text-red-400">{`${authRegister.error?.data?.zodError}`}</p>
-      )}
+      {authRegister.error?.data?.zodError &&
+        authRegister.error.data.zodError.map((e, i) => (
+          <p key={i} className="text-red-400">
+            {e}
+          </p>
+        ))}
       <p className="text-green-400">{authRegister.data?.message}</p>
       <input
         placeholder="username"
