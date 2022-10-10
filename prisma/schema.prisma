@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  username    String       @unique
+  password    String
+  isActivated Boolean      @default(false)
+  //0 - 15 (decimal) : convert to 4 bit boolean
+  role        Int
+  manuscripts Manuscript[]
+  profile     Profile?
+  teams       Team[]
+  invitations Invitation[]
+  assesments  Assesment[]
+  createdAt   DateTime     @default(now())
+}
+
+model Profile {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String
+  degree      String?
+  country     String
+  phone       String
+  phoneWork   String?
+  //0 = male, 1 = female, 2 = other
+  gender      Int
+  address     String
+  addressWork String?
+  birthdate   DateTime?
+  position    String?
+  institution String?
+  department  String?
+  expertise   String[]
+  keywords    String[]
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String    @unique
+}
+
+model Keyword {
+  id         String       @id @default(uuid())
+  keyword    String       @unique
+  manuscript Manuscript[]
+}
+
+model Manuscript {
+  id              String         @id @default(uuid())
+  title           String
+  abstract        String
+  authors         String
+  coverFileUrl    String
+  optionalFileUrl String?
+  isBlind         Boolean
+  // status    Int       @default(0)
+  keywords        Keyword[]
+  team            Team?
+  history         History[]
+  latestHistory   LatestHistory?
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId        String
+  createdAt       DateTime       @default(now())
+}
+
+model Team {
+  id           String       @id @default(uuid())
+  manuscript   Manuscript   @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  users        User[]
+  manuscriptId String       @unique
+  invitations  Invitation[]
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  //-1 = rejected, 0 = unanswered, 1 = accepted
+  status    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LatestHistory {
+  id           String     @id @default(uuid())
+  manuscript   Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  manuscriptId String     @unique
+  history      History    @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  historyId    String     @unique
+}
+
+model History {
+  id            String         @id @default(uuid())
+  //-1 = rejected, 0 = submitted, 1 = inviting, 2 = reviewing, 3 = reviewed, 4 = revision, 5 = proofread, 6 = finalized, 7 = published 
+  status        Int
+  manuscript    Manuscript     @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  manuscriptId  String
+  review        Review?
+  submission    Submission?    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  submissionId  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  LatestHistory LatestHistory?
+}
+
+model Review {
+  id        String      @id @default(uuid())
+  //-1 = rejected, 0 = unanswered, 1 = revision, 2 = accepted
+  decision  Int
+  dueDate   DateTime?
+  comment   String?     @default("")
+  history   History     @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  historyId String      @unique
+  assesment Assesment[]
+}
+
+model Submission {
+  id      String    @id @default(uuid())
+  fileUrl String
+  message String?
+  history History[]
+}
+
+model Assesment {
+  id            String         @id @default(uuid())
+  isDone        Boolean
+  fileUrl       String?
+  chiefFileUrl  String?
+  editorComment String
+  authorComment String
+  //-1 = rejected, 0 = unanswered, 1 = major_revision, 2 = minor_revision, 3 = accepted
+  decision      Int
+  reviewAnswers ReviewAnswer[]
+  review        Review         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId      String
+  user          User           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId        String
+  createdAt     DateTime       @default(now())
+}
+
+model ReviewQuestion {
+  id            String         @id @default(uuid())
+  question      String
+  maxScale      Int
+  createdAt     DateTime       @default(now())
+  reviewAnswers ReviewAnswer[]
+}
+
+model ReviewAnswer {
+  id               String         @id @default(uuid())
+  answer           Int
+  reviewQuestion   ReviewQuestion @relation(fields: [reviewQuestionId], references: [id], onDelete: Cascade)
+  reviewQuestionId String
+  assesment        Assesment      @relation(fields: [assesmentId], references: [id], onDelete: Cascade)
+  assesmentId      String
+}
