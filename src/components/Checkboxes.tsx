@@ -1,5 +1,5 @@
 import React from "react";
-import LayoutProps from "../types/client/LayoutProps";
+import LayoutProps from "../types/LayoutProps";
 
 type CheckboxesProps = LayoutProps & {
   checkboxData: {

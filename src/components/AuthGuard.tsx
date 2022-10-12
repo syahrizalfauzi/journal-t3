@@ -1,8 +1,8 @@
-import LayoutProps from "../types/client/LayoutProps";
+import LayoutProps from "../types/LayoutProps";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { getHasRole } from "../utils/client/role";
+import { getHasRole } from "../utils/role";
 
 type AuthGuardProps = LayoutProps & {
   allowedRole:

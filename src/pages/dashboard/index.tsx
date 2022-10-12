@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import { useEffect } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { roleMap } from "../../utils/client/role";
+import { roleMap } from "../../utils/role";
 
 const DashboardPage: NextPage = () => {
   const session = useSession();

@@ -3,9 +3,6 @@ import { newUserValidators } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 
 export const authRouter = t.router({
-  user: t.procedure.query(({ ctx }) => {
-    return { message: ctx.session ? "HALLO SIR" : "u r normie" };
-  }),
   register: t.procedure
     .input(newUserValidators)
     .mutation(async ({ input, ctx }) => {

@@ -1,4 +1,4 @@
-import Role from "../../types/Role";
+import Role from "../types/Role";
 
 export const roleMap: Role[] = [
   { admin: false, chief: false, reviewer: false, author: false },

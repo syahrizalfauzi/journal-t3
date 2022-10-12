@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQueryInput } from "querystring";
 import React, { Children } from "react";
-import LayoutProps from "../types/client/LayoutProps";
+import LayoutProps from "../types/LayoutProps";
 
 type ActiveLinkProps = LayoutProps & {
   pathName: string;
@@ -16,7 +16,7 @@ type ActiveLinkProps = LayoutProps & {
 
 const ActiveLink = ({
   children,
-  isSegmented,
+  isSegmented = true,
   pathName: href,
   activeClassName,
   inactiveClassName,

@@ -11,7 +11,7 @@ import AuthLayout from "../../components/layout/AuthLayout";
 import SelectOptions from "../../components/SelectOptions";
 import SuccessTexts from "../../components/SuccessTexts";
 import { newUserValidators } from "../../server/validators/user";
-import { getRoleNumber } from "../../utils/client/role";
+import { getRoleNumber } from "../../utils/role";
 import { trpc } from "../../utils/trpc";
 
 type RegisterForm = Omit<z.infer<typeof newUserValidators>, "role"> & {

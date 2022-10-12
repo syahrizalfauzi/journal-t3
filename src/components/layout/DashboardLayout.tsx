@@ -1,7 +1,7 @@
 import { signOut, useSession } from "next-auth/react";
 import React from "react";
-import LayoutProps from "../../types/client/LayoutProps";
-import { roleMap } from "../../utils/client/role";
+import LayoutProps from "../../types/LayoutProps";
+import { roleMap } from "../../utils/role";
 import ActiveLink from "../ActiveLink";
 import AuthGuard from "../AuthGuard";
 import RootLayout from "./RootLayout";
