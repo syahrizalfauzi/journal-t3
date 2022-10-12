@@ -12,7 +12,7 @@ type AuthGuardProps = LayoutProps & {
     | "admin"
     | "loggedIn"
     | "loggedOut";
-  redirectTo: string;
+  redirectTo?: string;
 };
 
 const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
@@ -26,18 +26,18 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
 
     if (allowedRole === "loggedOut") {
       if (hasUser) {
-        router.push(redirectTo);
+        router.push(redirectTo ?? "/auth/login");
         return;
       }
     } else {
       if (!hasUser) {
-        router.push(redirectTo);
+        router.push(redirectTo ?? "/auth/login");
         return;
       }
       if (allowedRole !== "loggedIn") {
         const canAccess = getHasRole(session.data.user.role, allowedRole);
         if (!canAccess) {
-          router.push(redirectTo);
+          router.push(redirectTo ?? "/auth/login");
           return;
         }
       }
