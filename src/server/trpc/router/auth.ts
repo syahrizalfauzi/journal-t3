@@ -12,33 +12,21 @@ export const authRouter = t.router({
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
 
-      console.log("Got register input", {
-        input,
-        expertise,
-        keywords,
+      const user = await ctx.prisma.user.create({
+        data: {
+          ...input,
+          password: passwordEncryptor(input.password),
+          profile: {
+            create: { ...input.profile, expertise, keywords },
+          },
+        },
+        select: {
+          id: true,
+          username: true,
+          profile: { select: { email: true } },
+        },
       });
 
-      console.log("delaying lol");
-      await new Promise<void>((res) => setTimeout(() => res(), 1000));
-
-      return { message: "yoi" };
-
-      // const user = await ctx.prisma.user.create({
-      //   data: {
-      //     ...input,
-      //     password: passwordEncryptor(input.password),
-      //     profile: {
-      //       create: { ...input.profile, expertise, keywords },
-      //     },
-      //   },
-      //   select: {
-      //     id: true,
-      //     username: true,
-      //     profile: { select: { email: true } },
-      //   },
-      // });
-
-      // //Does not set cookie because account needs to be activated
-      // return { message: `User '${user.username}' succesfully created` };
+      return { message: `User '${user.username}' succesfully created` };
     }),
 });

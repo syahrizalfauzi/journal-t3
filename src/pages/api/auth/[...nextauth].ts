@@ -1,7 +1,9 @@
+import { compareSync } from "bcrypt";
 import { NextAuthOptions, User } from "next-auth";
 import NextAuth from "next-auth/next";
 import Credentials from "next-auth/providers/credentials";
 import { env } from "process";
+import { prisma } from "../../../server/db/client";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -26,21 +28,39 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     Credentials({
+      name: "login",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "Username" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credential) => {
         if (!credential) throw new Error("Invalid log in submission");
+        const user = await prisma.user.findUnique({
+          where: {
+            username: credential.username,
+          },
+          select: {
+            id: true,
+            username: true,
+            password: true,
+            role: true,
+            isActivated: true,
+            profile: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
 
-        if (credential.password.length < 6)
-          throw new Error("Anggap aja password salah");
+        if (!user) throw new Error("User not found");
+        if (!user.isActivated) throw new Error("User is not activated");
+        if (!compareSync(credential.password, user.password))
+          throw new Error("Incorrect password");
 
-        return {
-          id: Date.now().toString(),
-          role: 69,
-          username: credential.username,
-        } as User;
+        const userReturn = { ...user, password: undefined };
+
+        return userReturn as User;
       },
     }),
   ],

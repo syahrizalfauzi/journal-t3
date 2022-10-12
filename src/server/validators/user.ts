@@ -15,6 +15,7 @@ export const userValidators = z.object({
     phoneWork: z.string().nullish(),
     addressWork: z.string().nullish(),
     birthdate: z.date().nullish(),
+    institution: z.string().nullish(),
     position: z.string().nullish(),
     department: z.string().nullish(),
     expertise: z.string().refine((expertise) => {
