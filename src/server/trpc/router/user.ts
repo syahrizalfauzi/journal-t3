@@ -4,11 +4,16 @@ import { paginationQuery, paginationMetadata } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
 import { authGuard } from "../authguard";
+import { TRPCError } from "@trpc/server";
+import mutationError from "../../utils/mutationError";
+import { z } from "zod";
+
+const notFoundMessage = "User not found";
 
 export const userRouter = t.router({
   list: t.procedure
-    .input(userListQuery)
     .use(authGuard(["admin"]))
+    .input(userListQuery)
     .query(async ({ ctx, input }) => {
       const profileOrder = getOrderQuery({ ...input }, [
         "email",
@@ -58,5 +63,70 @@ export const userRouter = t.router({
         ...paginationMetadata(totalCount, input.page),
         users,
       };
+    }),
+  activate: t.procedure
+    .use(authGuard(["admin"]))
+    .input(
+      z.object({
+        id: z.string(),
+        isActivated: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.session?.user.id === input.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Can't modify activation on own account",
+        });
+      }
+
+      try {
+        const user = await ctx.prisma.user.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            isActivated: input.isActivated,
+          },
+          select: {
+            // id: true,
+            username: true,
+            // profile: {
+            //     select: { email: true },
+            // },
+          },
+        });
+
+        return {
+          message: `User '${user.username}' has been ${
+            input.isActivated ? "activated" : "deactivated"
+          }`,
+        };
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
+      }
+    }),
+  delete: t.procedure
+    .use(authGuard(["admin"]))
+    .input(z.string())
+    .mutation(async ({ ctx, input: id }) => {
+      if (ctx.session?.user.id === id)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Can't delete self admin account",
+        });
+
+      try {
+        const user = await ctx.prisma.user.delete({
+          where: { id },
+          select: { username: true },
+        });
+
+        return {
+          message: `User '${user.username}' deleted succesfully`,
+        };
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
+      }
     }),
 });

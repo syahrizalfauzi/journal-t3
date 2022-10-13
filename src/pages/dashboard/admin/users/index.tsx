@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { NextPage } from "next/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import RoleBadges from "../../../../components/RoleBadges";
@@ -14,6 +14,7 @@ import { userListSorts } from "../../../../utils/sorts/user";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { userListQuery } from "../../../../server/queries/user";
+import Toast from "../../../../components/Toast";
 
 const sortOrders = getSortOrder(userListSorts);
 type UserListSorts = typeof userListSorts[number];
@@ -29,13 +30,26 @@ const DashboardAdminUsersPage: NextPage = () => {
     order: sortOrders[0]?.order,
   } as UserListQuery);
   const queryResult = trpc.user.list.useQuery(queryOptions);
+  const {
+    mutate: activationMutate,
+    data: activationData,
+    error: activationError,
+  } = trpc.user.activate.useMutation();
+  const {
+    mutate: deleteMutate,
+    data: deleteData,
+    error: deleteError,
+  } = trpc.user.delete.useMutation();
 
-  const handleActivate = (userId: string) => {
-    alert(`toggle activate user id ${userId}`);
-  };
+  const handleActivate = (id: string, isActivated: boolean) =>
+    activationMutate(
+      { id, isActivated },
+      { onSuccess: () => queryResult.refetch() }
+    );
 
-  const handleDelete = (userId: string) => {
-    alert(`delete user id ${userId}`);
+  const handleDelete = (id: string, username: string) => {
+    if (confirm(`Delete user '${username}'?\n\nID : ${id}`))
+      deleteMutate(id, { onSuccess: () => queryResult.refetch() });
   };
 
   const handleChangeSort = (sort: UserListSorts, order: "asc" | "desc") => {
@@ -49,8 +63,21 @@ const DashboardAdminUsersPage: NextPage = () => {
   const handleChangePage = (page: number) =>
     setQueryOptions((state) => ({ ...state, page }));
 
+  useEffect(
+    () => console.log([activationData?.message, deleteData?.message]),
+    [activationData?.message, deleteData?.message]
+  );
+
   return (
     <DashboardAdminLayout>
+      {deleteData && <Toast variant="success">{deleteData.message}</Toast>}
+      {activationData && (
+        <Toast variant="success">{activationData.message}</Toast>
+      )}
+      {deleteError && <Toast variant="error">{deleteError.message}</Toast>}
+      {activationError && (
+        <Toast variant="error">{activationError.message}</Toast>
+      )}
       <p className="text-xl font-medium">User List</p>
       <ListLayout
         queryResult={queryResult}
@@ -98,7 +125,11 @@ const DashboardAdminUsersPage: NextPage = () => {
                       <RoleBadges role={user.role} />
                     </td>
                     <td>
-                      <div onClick={() => handleActivate(user.id)}>
+                      <div
+                        onClick={() =>
+                          handleActivate(user.id, !user.isActivated)
+                        }
+                      >
                         {user.isActivated ? (
                           <ImCheckboxChecked
                             className="cursor-pointer"
@@ -117,7 +148,7 @@ const DashboardAdminUsersPage: NextPage = () => {
                     <td>{user.profile?.country}</td>
                     <td>{parseDate(user.createdAt.toString())}</td>
                     <td>
-                      <div onClick={() => handleDelete(user.id)}>
+                      <div onClick={() => handleDelete(user.id, user.username)}>
                         <FaTrashAlt
                           className="cursor-pointer"
                           color="red"
