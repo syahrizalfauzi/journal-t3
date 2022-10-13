@@ -14,14 +14,16 @@ const RoleBadges = ({ role }: RoleBadgesProps) => {
         <div className="badge">reader</div>
       ) : (
         <>
-          {parsedRole?.admin && <div className="badge badge-ghost">admin</div>}
-          {parsedRole?.chief && (
+          {parsedRole?.isAdmin && (
+            <div className="badge badge-ghost">admin</div>
+          )}
+          {parsedRole?.isChief && (
             <div className="badge badge-accent">chief editor</div>
           )}
-          {parsedRole?.reviewer && (
+          {parsedRole?.isReviewer && (
             <div className="badge badge-secondary">reviewer</div>
           )}
-          {parsedRole?.author && (
+          {parsedRole?.isAuthor && (
             <div className="badge badge-primary">author</div>
           )}
         </>

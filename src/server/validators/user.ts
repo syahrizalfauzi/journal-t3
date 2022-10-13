@@ -70,4 +70,9 @@ export const createUserValidators = z.object({
   }),
 });
 
+export const updateUserValidators = z
+  .object({
+    id: z.string(),
+  })
+  .merge(userValidators);
 export const newUserValidators = createUserValidators.merge(userValidators);

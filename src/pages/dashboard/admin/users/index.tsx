@@ -29,7 +29,7 @@ const DashboardAdminUsersPage: NextPage = () => {
     sort: sortOrders[0]?.sort,
     order: sortOrders[0]?.order,
   } as UserListQuery);
-  const queryResult = trpc.user.list.useQuery(queryOptions);
+  const userListQuery = trpc.user.list.useQuery(queryOptions);
   const {
     mutate: activationMutate,
     data: activationData,
@@ -44,12 +44,12 @@ const DashboardAdminUsersPage: NextPage = () => {
   const handleActivate = (id: string, isActivated: boolean) =>
     activationMutate(
       { id, isActivated },
-      { onSuccess: () => queryResult.refetch() }
+      { onSuccess: () => userListQuery.refetch() }
     );
 
   const handleDelete = (id: string, username: string) => {
     if (confirm(`Delete user '${username}'?\n\nID : ${id}`))
-      deleteMutate(id, { onSuccess: () => queryResult.refetch() });
+      deleteMutate(id, { onSuccess: () => userListQuery.refetch() });
   };
 
   const handleChangeSort = (sort: UserListSorts, order: "asc" | "desc") => {
@@ -80,7 +80,7 @@ const DashboardAdminUsersPage: NextPage = () => {
       )}
       <p className="text-xl font-medium">User List</p>
       <ListLayout
-        queryResult={queryResult}
+        queryResult={userListQuery}
         sortOrders={sortOrders}
         allowedSorts={userListSorts}
         onChangePage={handleChangePage}
@@ -107,9 +107,9 @@ const DashboardAdminUsersPage: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {queryResult.data?.users.map((user, index) => (
+                {userListQuery.data?.users.map((user, index) => (
                   <tr key={user.id} className="hover">
-                    <th>{getItemIndex(queryResult.data._metadata, index)}</th>
+                    <th>{getItemIndex(userListQuery.data._metadata, index)}</th>
                     <td>
                       <Link
                         href={

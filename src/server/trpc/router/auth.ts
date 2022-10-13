@@ -20,10 +20,10 @@ export const authRouter = t.router({
         select: {
           id: true,
           username: true,
-          profile: { select: { email: true } },
+          // profile: { select: { email: true } },
         },
       });
 
-      return { message: `User '${user.username}' succesfully created` };
+      return { message: `User '${user.username}' successfully created` };
     }),
 });

@@ -1,8 +1,8 @@
 export interface Role extends Record<string, boolean> {
-  admin: boolean;
-  chief: boolean;
-  reviewer: boolean;
-  author: boolean;
+  isAdmin: boolean;
+  isChief: boolean;
+  isReviewer: boolean;
+  isAuthor: boolean;
 }
 
 export type AvailableRoles = "author" | "reviewer" | "chief" | "admin";

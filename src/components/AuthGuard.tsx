@@ -36,7 +36,10 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
           return;
         }
         if (allowedRole !== "loggedIn") {
-          const canAccess = getHasRole(session.data.user.role, allowedRole);
+          const canAccess = getHasRole(
+            session.data.user.role,
+            `is${allowedRole.at(0)?.toUpperCase()}${allowedRole.slice(1)}`
+          );
           if (!canAccess) {
             await router.push(redirectTo ?? "/auth/login");
             return;

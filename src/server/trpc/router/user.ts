@@ -3,14 +3,65 @@ import { userListQuery } from "../../queries/user";
 import { paginationQuery, paginationMetadata } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
-import { authGuard } from "../authguard";
+import { authGuard } from "../authGuard";
 import { TRPCError } from "@trpc/server";
-import mutationError from "../../utils/mutationError";
 import { z } from "zod";
+import { newUserValidators, updateUserValidators } from "../../validators/user";
+import passwordEncryptor from "../../utils/passwordEncryptor";
+import { roleMap } from "../../../utils/role";
+import mutationError from "../../utils/mutationError";
 
 const notFoundMessage = "User not found";
 
 export const userRouter = t.router({
+  create: t.procedure
+    .use(authGuard(["admin"]))
+    .input(newUserValidators)
+    .mutation(async ({ ctx, input }) => {
+      const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
+      const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
+
+      const user = await ctx.prisma.user.create({
+        data: {
+          ...input,
+          password: passwordEncryptor(input.password),
+          profile: {
+            create: { ...input.profile, expertise, keywords },
+          },
+        },
+        select: {
+          id: true,
+          username: true,
+          // profile: { select: { email: true } },
+        },
+      });
+
+      return { message: `User '${user.username}' successfully created` };
+    }),
+  get: t.procedure
+    .use(authGuard(["admin"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: input },
+        select: {
+          id: true,
+          username: true,
+          password: false,
+          role: true,
+          isActivated: true,
+          createdAt: true,
+          profile: true,
+        },
+      });
+
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return {
+        user,
+      };
+    }),
   list: t.procedure
     .use(authGuard(["admin"]))
     .input(userListQuery)
@@ -63,6 +114,56 @@ export const userRouter = t.router({
         ...paginationMetadata(totalCount, input.page),
         users,
       };
+    }),
+  update: t.procedure
+    .use(authGuard())
+    .input(updateUserValidators)
+    .mutation(async ({ ctx, input }) => {
+      const { user } = ctx.session!;
+      const requestRole = roleMap[user.role];
+
+      if (!requestRole || (input.id !== user.id && !requestRole.isAdmin))
+        throw new TRPCError({
+          message: "Unauthenticated, please re-log in",
+          code: "UNAUTHORIZED",
+        });
+
+      try {
+        const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
+        const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
+
+        const user = await ctx.prisma.user.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            username: input.username,
+            role: requestRole.isAdmin ? input.role : undefined,
+            profile: {
+              update: {
+                ...input.profile,
+                expertise,
+                keywords,
+              },
+            },
+          },
+          select: {
+            id: true,
+            username: true,
+            password: false,
+            role: true,
+            isActivated: true,
+            profile: true,
+          },
+        });
+
+        return {
+          user,
+          message: `User '${user.username}' has been updated`,
+        };
+      } catch (e) {
+        return mutationError(e, notFoundMessage);
+      }
     }),
   activate: t.procedure
     .use(authGuard(["admin"]))

@@ -22,7 +22,7 @@ const DashboardLayout = ({ children }: LayoutProps) => {
                 <div className="text-lg font-bold">Role</div>
                 <div className="divider divider-vertical m-0" />
                 <ul className="menu menu-vertical gap-1">
-                  {role?.author && (
+                  {role?.isAuthor && (
                     <li className="pointer-events-auto">
                       <ActiveLink
                         activeClassName="font-bold bg-gray-200"
@@ -33,7 +33,7 @@ const DashboardLayout = ({ children }: LayoutProps) => {
                       </ActiveLink>
                     </li>
                   )}
-                  {role?.reviewer && (
+                  {role?.isReviewer && (
                     <li className="pointer-events-auto">
                       <ActiveLink
                         activeClassName="font-bold bg-gray-200"
@@ -44,7 +44,7 @@ const DashboardLayout = ({ children }: LayoutProps) => {
                       </ActiveLink>
                     </li>
                   )}
-                  {role?.chief && (
+                  {role?.isChief && (
                     <li className="pointer-events-auto">
                       <ActiveLink
                         activeClassName="font-bold bg-gray-200"
@@ -55,7 +55,7 @@ const DashboardLayout = ({ children }: LayoutProps) => {
                       </ActiveLink>
                     </li>
                   )}
-                  {role?.admin && (
+                  {role?.isAdmin && (
                     <li className="pointer-events-auto">
                       <ActiveLink
                         activeClassName="font-bold bg-gray-200"
