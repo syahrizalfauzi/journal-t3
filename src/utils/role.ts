@@ -1,4 +1,4 @@
-import Role from "../types/Role";
+import { AvailableRoles, Role } from "../types/Role";
 
 export const roleMap: Role[] = [
   { admin: false, chief: false, reviewer: false, author: false },
@@ -23,7 +23,5 @@ const roleTexts = roleMap.map((e) => JSON.stringify(e));
 
 export const getRoleNumber = (role: Role) =>
   roleTexts.indexOf(JSON.stringify(role));
-export const getHasRole = (
-  roleNumber: number,
-  role: "author" | "reviewer" | "chief" | "admin"
-) => (roleMap[roleNumber] ?? roleMap[0])?.[role];
+export const getHasRole = (roleNumber: number, role: AvailableRoles) =>
+  (roleMap[roleNumber] ?? roleMap[0])?.[role];

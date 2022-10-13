@@ -1,6 +1,6 @@
 import { PaginationMetadata } from "../../utils/getItemIndex";
 
-const ITEM_COUNT_PER_PAGE = 1;
+const ITEM_COUNT_PER_PAGE = 20;
 
 const getSkipPagination = (pageInput: number) => {
   const page = isNaN(pageInput) ? 1 : Number(pageInput);
