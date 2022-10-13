@@ -20,28 +20,30 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (session.status === "loading") return;
+    (async () => {
+      if (session.status === "loading") return;
 
-    const hasUser = session.status === "authenticated";
+      const hasUser = session.status === "authenticated";
 
-    if (allowedRole === "loggedOut") {
-      if (hasUser) {
-        router.push(redirectTo ?? "/auth/login");
-        return;
-      }
-    } else {
-      if (!hasUser) {
-        router.push(redirectTo ?? "/auth/login");
-        return;
-      }
-      if (allowedRole !== "loggedIn") {
-        const canAccess = getHasRole(session.data.user.role, allowedRole);
-        if (!canAccess) {
-          router.push(redirectTo ?? "/auth/login");
+      if (allowedRole === "loggedOut") {
+        if (hasUser) {
+          await router.push(redirectTo ?? "/auth/login");
           return;
         }
+      } else {
+        if (!hasUser) {
+          await router.push(redirectTo ?? "/auth/login");
+          return;
+        }
+        if (allowedRole !== "loggedIn") {
+          const canAccess = getHasRole(session.data.user.role, allowedRole);
+          if (!canAccess) {
+            await router.push(redirectTo ?? "/auth/login");
+            return;
+          }
+        }
       }
-    }
+    })();
   }, [allowedRole, redirectTo, router, session]);
 
   if (session.status === "loading") return null;

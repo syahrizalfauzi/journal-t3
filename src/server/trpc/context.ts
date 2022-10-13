@@ -1,7 +1,6 @@
 // src/server/router/context.ts
 import * as trpc from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
-import { NextApiRequest, NextApiResponse } from "next";
 import { Session, unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { prisma } from "../db/client";

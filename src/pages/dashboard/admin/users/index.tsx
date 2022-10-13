@@ -13,11 +13,13 @@ import { z } from "zod";
 import { userListSorts } from "../../../../utils/sorts/user";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
-import Paginator from "../../../../components/Paginator";
 import { userListQuery } from "../../../../server/queries/user";
 
 const sortOrders = getSortOrder(userListSorts);
-type UserListQuery = z.infer<typeof userListQuery>;
+type UserListSorts = typeof userListSorts[number];
+type UserListQuery = Omit<z.infer<typeof userListQuery>, "sort"> & {
+  sort: UserListSorts;
+};
 
 const DashboardAdminUsersPage: NextPage = () => {
   const session = useSession();
@@ -26,7 +28,7 @@ const DashboardAdminUsersPage: NextPage = () => {
     sort: sortOrders[0]?.sort,
     order: sortOrders[0]?.order,
   } as UserListQuery);
-  const { data, isLoading, error } = trpc.user.list.useQuery(queryOptions);
+  const queryResult = trpc.user.list.useQuery(queryOptions);
 
   const handleActivate = (userId: string) => {
     alert(`toggle activate user id ${userId}`);
@@ -36,17 +38,12 @@ const DashboardAdminUsersPage: NextPage = () => {
     alert(`delete user id ${userId}`);
   };
 
-  const handleChangeSortOrder = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const [sort, order] = e.target.value.split(",");
-
-    setQueryOptions(
-      (state) =>
-        ({
-          ...state,
-          sort: sort as UserListQuery["sort"],
-          order,
-        } as UserListQuery)
-    );
+  const handleChangeSort = (sort: UserListSorts, order: "asc" | "desc") => {
+    setQueryOptions((state) => ({
+      ...state,
+      sort,
+      order,
+    }));
   };
 
   const handleChangePage = (page: number) =>
@@ -54,26 +51,13 @@ const DashboardAdminUsersPage: NextPage = () => {
 
   return (
     <DashboardAdminLayout>
-      {isLoading && <p className="text-xl font-bold">LOADING</p>}
       <p className="text-xl font-medium">User List</p>
       <ListLayout
-        error={error?.message}
-        isLoading={isLoading}
-        sort={
-          <select
-            className="select select-bordered max-w-xs"
-            onChange={handleChangeSortOrder}
-          >
-            {sortOrders.map((sortOrder) => (
-              <option
-                key={`${sortOrder.sort}${sortOrder.order}`}
-                value={`${sortOrder.sort},${sortOrder.order}`}
-              >
-                {sortOrder.label}
-              </option>
-            ))}
-          </select>
-        }
+        queryResult={queryResult}
+        sortOrders={sortOrders}
+        allowedSorts={userListSorts}
+        onChangePage={handleChangePage}
+        onChangeSort={handleChangeSort}
         create={
           <Link href="/dashboard/admin/users/create">
             <a className="btn btn-info btn-sm text-white">New User</a>
@@ -96,9 +80,9 @@ const DashboardAdminUsersPage: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.users.map((user, index) => (
+                {queryResult.data?.users.map((user, index) => (
                   <tr key={user.id} className="hover">
-                    <th>{getItemIndex(data._metadata, index)}</th>
+                    <th>{getItemIndex(queryResult.data._metadata, index)}</th>
                     <td>
                       <Link
                         href={
@@ -145,12 +129,6 @@ const DashboardAdminUsersPage: NextPage = () => {
                 ))}
               </tbody>
             </table>
-            {data?._metadata && (
-              <Paginator
-                metadata={data._metadata}
-                onChangePage={handleChangePage}
-              />
-            )}
           </>
         }
       />
