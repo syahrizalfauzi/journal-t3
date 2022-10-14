@@ -12,7 +12,7 @@ export const t = initTRPC.context<Context>().create({
       message:
         error.code === "BAD_REQUEST" && error.cause instanceof ZodError
           ? zodErrorParser(error.cause)
-          : null,
+          : shape.message,
       data: {
         ...shape.data,
         // zodError:

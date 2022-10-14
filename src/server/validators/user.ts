@@ -76,3 +76,7 @@ export const updateUserValidators = z
   })
   .merge(userValidators);
 export const newUserValidators = createUserValidators.merge(userValidators);
+export const changePasswordValidators = z.object({
+  oldPassword: z.string(),
+  newPassword: z.string().min(6, "New Password anu"),
+});

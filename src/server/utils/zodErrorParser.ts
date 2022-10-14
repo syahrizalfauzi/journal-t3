@@ -3,7 +3,11 @@ import { ZodError } from "zod";
 const zodErrorParser = (error: ZodError) => {
   return error.issues
     .map((e) => {
-      const path = e.path[e.path.length - 1]?.toString() ?? "";
+      const path = (e.path[e.path.length - 1]?.toString() ?? "")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .split(" ")
+        .map((e) => `${e[0]?.toUpperCase()}${e.slice(1)}`)
+        .join(" ");
       let message = e.message;
 
       if (e.code === "invalid_type") {
@@ -32,7 +36,7 @@ const zodErrorParser = (error: ZodError) => {
         message = `must be at least ${e.minimum} characters`;
       }
 
-      return `${path.charAt(0).toUpperCase()}${path.slice(1)} ${message}`;
+      return `${path} ${message}`;
     })
     .join(",\n ");
 };
