@@ -20,7 +20,7 @@ type CreateUserForm = Omit<z.infer<typeof newUserValidators>, "role"> & {
 };
 
 const DashboardAdminUserCreatePage: NextPage = () => {
-  const { register, handleSubmit } = useForm<CreateUserForm>();
+  const { register, handleSubmit, reset } = useForm<CreateUserForm>();
   const { mutate, isLoading } = trpc.user.create.useMutation({
     onSettled: toastSettleHandler(true),
   });
@@ -33,15 +33,18 @@ const DashboardAdminUserCreatePage: NextPage = () => {
       isAuthor: data.isAuthor,
     });
 
-    mutate({
-      ...data,
-      role,
-      profile: {
-        ...data.profile,
-        gender: Number(data.profile.gender),
-        birthdate: moment(data.profile.birthdate).toDate(),
+    mutate(
+      {
+        ...data,
+        role,
+        profile: {
+          ...data.profile,
+          gender: Number(data.profile.gender),
+          birthdate: moment(data.profile.birthdate).toDate(),
+        },
       },
-    });
+      { onSuccess: () => reset() }
+    );
   };
 
   return (
@@ -250,8 +253,6 @@ const DashboardAdminUserCreatePage: NextPage = () => {
           />
         </InputLabel>
         <p>* Required fields</p>
-        {/*<ErrorTexts message={error?.data?.zodError ?? error?.message} />*/}
-        {/*<SuccessTexts message={data} />*/}
         <input
           disabled={isLoading}
           type="submit"

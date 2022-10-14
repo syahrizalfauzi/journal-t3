@@ -1,5 +1,6 @@
-import moment from 'moment';
+import moment from "moment";
 
-const parseDate = (dateString: string) => moment(dateString).format('ddd, D MMM YYYY, HH:mm');
+const parseDate = (date: string | Date) =>
+  moment(date).format("ddd, D MMM YYYY, HH:mm");
 
 export default parseDate;

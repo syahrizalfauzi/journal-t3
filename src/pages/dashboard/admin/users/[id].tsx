@@ -79,7 +79,7 @@ const DashboardAdminUserEditPage: NextPage = () => {
         hasData={user !== undefined}
         errorMessage={queryError?.message}
       >
-        <p className="text-xl font-medium">Create User</p>
+        <p className="text-xl font-medium">Edit User</p>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <p className="text-lg font-medium">Account</p>
           <InputLabel label="Username *">

@@ -10,10 +10,10 @@ import { FaTrashAlt } from "react-icons/fa";
 import parseDate from "../../../../utils/parseDate";
 import Link from "next/link";
 import { z } from "zod";
-import { userListSorts } from "../../../../utils/sorts/user";
+import { userListSorts } from "../../../../utils/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
-import { userListQuery } from "../../../../server/queries/user";
+import { userListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
 const sortOrders = getSortOrder(userListSorts);
@@ -61,10 +61,6 @@ const DashboardAdminUsersPage: NextPage = () => {
 
   return (
     <DashboardAdminLayout>
-      {/*<Toast variant="success" message={deleteData} />*/}
-      {/*<Toast variant="success" message={activationData} />*/}
-      {/*<Toast variant="error" message={deleteError?.message} />*/}
-      {/*<Toast variant="error" message={activationError?.message} />*/}
       <p className="text-xl font-medium">User List</p>
       <ListLayout
         queryResult={userListQuery}
@@ -133,7 +129,7 @@ const DashboardAdminUsersPage: NextPage = () => {
                     <td>{user.profile?.email}</td>
                     <td>{user.profile?.name}</td>
                     <td>{user.profile?.country}</td>
-                    <td>{parseDate(user.createdAt.toString())}</td>
+                    <td>{parseDate(user.createdAt)}</td>
                     <td>
                       <div onClick={() => handleDelete(user.id, user.username)}>
                         <FaTrashAlt

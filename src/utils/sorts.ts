@@ -1,4 +1,6 @@
-export const userListSorts = [
+import { Sorts } from "../types/SortOrder";
+
+export const userListSorts: readonly Sorts[] = [
   "createdAt",
   "username",
   "role",
@@ -6,6 +8,12 @@ export const userListSorts = [
   "email",
   "name",
   "country",
+] as const;
+
+export const questionListSorts: readonly Sorts[] = [
+  "createdAt",
+  "maxScale",
+  "question",
 ] as const;
 
 // export const userSortOrders: SortOrder[] = getSortOrder([

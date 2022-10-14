@@ -8,7 +8,7 @@ export const toastSettleHandler =
       toast(data, {
         type: "success",
         position: "bottom-right",
-        autoClose: noAutoClose ? false : 3000,
+        autoClose: 3000,
       });
       return;
     }

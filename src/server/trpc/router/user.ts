@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { userListQuery } from "../../queries/user";
+import { userListQuery } from "../../queries";
 import { paginationQuery, paginationMetadata } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
@@ -130,7 +130,7 @@ export const userRouter = t.router({
         const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
         const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
 
-        const user = await ctx.prisma.user.update({
+        const { username } = await ctx.prisma.user.update({
           where: {
             id: input.id,
           },
@@ -146,16 +146,11 @@ export const userRouter = t.router({
             },
           },
           select: {
-            id: true,
             username: true,
-            password: false,
-            role: true,
-            isActivated: true,
-            profile: true,
           },
         });
 
-        return `User '${user.username}' has been updated`;
+        return `User '${username}' has been updated`;
       } catch (e) {
         throw mutationError(e, notFoundMessage);
       }
@@ -177,23 +172,13 @@ export const userRouter = t.router({
       }
 
       try {
-        const user = await ctx.prisma.user.update({
-          where: {
-            id: input.id,
-          },
-          data: {
-            isActivated: input.isActivated,
-          },
-          select: {
-            // id: true,
-            username: true,
-            // profile: {
-            //     select: { email: true },
-            // },
-          },
+        const { username } = await ctx.prisma.user.update({
+          where: { id: input.id },
+          data: { isActivated: input.isActivated },
+          select: { username: true },
         });
 
-        return `User '${user.username}' has been ${
+        return `User '${username}' has been ${
           input.isActivated ? "activated" : "deactivated"
         }`;
       } catch (e) {
