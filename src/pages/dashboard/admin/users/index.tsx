@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { NextPage } from "next/types";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import RoleBadges from "../../../../components/RoleBadges";
@@ -14,7 +14,7 @@ import { userListSorts } from "../../../../utils/sorts/user";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { userListQuery } from "../../../../server/queries/user";
-import Toast from "../../../../components/Toast";
+import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
 const sortOrders = getSortOrder(userListSorts);
 type UserListSorts = typeof userListSorts[number];
@@ -30,16 +30,12 @@ const DashboardAdminUsersPage: NextPage = () => {
     order: sortOrders[0]?.order,
   } as UserListQuery);
   const userListQuery = trpc.user.list.useQuery(queryOptions);
-  const {
-    mutate: activationMutate,
-    data: activationData,
-    error: activationError,
-  } = trpc.user.activate.useMutation();
-  const {
-    mutate: deleteMutate,
-    data: deleteData,
-    error: deleteError,
-  } = trpc.user.delete.useMutation();
+  const { mutate: activationMutate } = trpc.user.activate.useMutation({
+    onSettled: toastSettleHandler(),
+  });
+  const { mutate: deleteMutate } = trpc.user.delete.useMutation({
+    onSettled: toastSettleHandler(),
+  });
 
   const handleActivate = (id: string, isActivated: boolean) =>
     activationMutate(
@@ -63,21 +59,12 @@ const DashboardAdminUsersPage: NextPage = () => {
   const handleChangePage = (page: number) =>
     setQueryOptions((state) => ({ ...state, page }));
 
-  useEffect(
-    () => console.log([activationData?.message, deleteData?.message]),
-    [activationData?.message, deleteData?.message]
-  );
-
   return (
     <DashboardAdminLayout>
-      {deleteData && <Toast variant="success">{deleteData.message}</Toast>}
-      {activationData && (
-        <Toast variant="success">{activationData.message}</Toast>
-      )}
-      {deleteError && <Toast variant="error">{deleteError.message}</Toast>}
-      {activationError && (
-        <Toast variant="error">{activationError.message}</Toast>
-      )}
+      {/*<Toast variant="success" message={deleteData} />*/}
+      {/*<Toast variant="success" message={activationData} />*/}
+      {/*<Toast variant="error" message={deleteError?.message} />*/}
+      {/*<Toast variant="error" message={activationError?.message} />*/}
       <p className="text-xl font-medium">User List</p>
       <ListLayout
         queryResult={userListQuery}

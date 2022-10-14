@@ -24,7 +24,9 @@ export const authGuard = (roleGuard: AvailableRoles[] = defaultGuards) =>
     const isAllowed =
       roleGuard === defaultGuards
         ? true
-        : roleGuard.some((role) => roles[role]);
+        : roleGuard.some(
+            (role) => roles[`is${role[0]?.toUpperCase()}${role.slice(1)}`]
+          );
 
     if (!isAllowed) throw new TRPCError({ code: "UNAUTHORIZED" });
     return await next();

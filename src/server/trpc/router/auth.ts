@@ -24,6 +24,6 @@ export const authRouter = t.router({
         },
       });
 
-      return { message: `User '${user.username}' successfully created` };
+      return `User '${user.username}' successfully created`;
     }),
 });

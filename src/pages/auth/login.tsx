@@ -67,7 +67,7 @@ const LoginPage: NextPage = () => {
             value="Log in"
             className="btn"
           />
-          {error && <ErrorTexts>{error}</ErrorTexts>}
+          <ErrorTexts message={error} />
           {isAvailableSendEmail && (
             <>
               <p>

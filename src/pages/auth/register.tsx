@@ -21,7 +21,7 @@ type RegisterForm = Omit<z.infer<typeof newUserValidators>, "role"> & {
 
 const RegisterPage: NextPage = () => {
   const { register, handleSubmit } = useForm<RegisterForm>();
-  const registerMutation = trpc.auth.register.useMutation();
+  const { mutate, isLoading, data, error } = trpc.auth.register.useMutation();
 
   const onSubmit: SubmitHandler<RegisterForm> = (data) => {
     const role = getRoleNumber({
@@ -31,7 +31,7 @@ const RegisterPage: NextPage = () => {
       isAuthor: data.isAuthor,
     });
 
-    registerMutation.mutate({
+    mutate({
       ...data,
       role,
       profile: {
@@ -56,7 +56,7 @@ const RegisterPage: NextPage = () => {
                 <InputLabel label="Username *">
                   <input
                     {...register("username")}
-                    disabled={registerMutation.isLoading}
+                    disabled={isLoading}
                     required
                     type="text"
                     placeholder="Username"
@@ -66,7 +66,7 @@ const RegisterPage: NextPage = () => {
                 <InputLabel label="Password *">
                   <input
                     {...register("password")}
-                    disabled={registerMutation.isLoading}
+                    disabled={isLoading}
                     required
                     type="password"
                     placeholder="Password"
@@ -101,7 +101,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Name *">
               <input
                 {...register("profile.name")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 required
                 type="text"
                 placeholder="Full Name"
@@ -111,7 +111,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Birthdate">
               <input
                 {...register("profile.birthdate")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="date"
                 placeholder="Birthdate"
                 className="input input-bordered w-full"
@@ -120,7 +120,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Degree">
               <input
                 {...register("profile.degree")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Ph. D., M.D., etc."
                 className="input input-bordered w-full"
@@ -130,7 +130,7 @@ const RegisterPage: NextPage = () => {
               <span className="label-text">Gender</span>
               <select
                 {...register("profile.gender")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 id="gender"
                 className="select select-bordered flex-1"
               >
@@ -146,7 +146,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Address *">
               <textarea
                 {...register("profile.address")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 required
                 placeholder="Address"
                 className="textarea textarea-bordered w-full"
@@ -155,7 +155,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Country *">
               <input
                 {...register("profile.country")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 required
                 type="text"
                 placeholder="Country"
@@ -165,7 +165,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Email *">
               <input
                 {...register("profile.email")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 required
                 type="email"
                 placeholder="Email"
@@ -175,7 +175,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Phone *">
               <input
                 {...register("profile.phone")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 required
                 type="tel"
                 placeholder="Phone Number"
@@ -185,7 +185,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Phone (Secondary)">
               <input
                 {...register("profile.phoneWork")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="tel"
                 placeholder="Secondary Phone Number"
                 className="input input-bordered w-full"
@@ -195,7 +195,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Institution">
               <input
                 {...register("profile.institution")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Institution"
                 className="input input-bordered w-full"
@@ -204,7 +204,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Position">
               <input
                 {...register("profile.position")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Position"
                 className="input input-bordered w-full"
@@ -213,7 +213,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Department">
               <input
                 {...register("profile.department")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Institution"
                 className="input input-bordered w-full"
@@ -222,7 +222,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Institution Address">
               <textarea
                 {...register("profile.addressWork")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 placeholder="Institution Address"
                 className="textarea textarea-bordered w-full"
               />
@@ -230,7 +230,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Expertise * (at least 1)">
               <input
                 {...register("profile.expertise")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Expertise (comma-separated)"
                 className="input input-bordered w-full"
@@ -239,7 +239,7 @@ const RegisterPage: NextPage = () => {
             <InputLabel label="Personal Keywords">
               <input
                 {...register("profile.keywords")}
-                disabled={registerMutation.isLoading}
+                disabled={isLoading}
                 type="text"
                 placeholder="Personal Keywords (comma-separated)"
                 className="input input-bordered w-full"
@@ -247,17 +247,10 @@ const RegisterPage: NextPage = () => {
             </InputLabel>
             <p>* Required fields</p>
           </div>
-          {registerMutation.error && (
-            <ErrorTexts>
-              {registerMutation.error.data?.zodError ??
-                registerMutation.error.message}
-            </ErrorTexts>
-          )}
-          {registerMutation.data && (
-            <SuccessTexts>{registerMutation.data.message}</SuccessTexts>
-          )}
+          <ErrorTexts message={error?.message} />
+          <SuccessTexts message={data} />
           <input
-            disabled={registerMutation.isLoading}
+            disabled={isLoading}
             type="submit"
             value="Register"
             className="btn"

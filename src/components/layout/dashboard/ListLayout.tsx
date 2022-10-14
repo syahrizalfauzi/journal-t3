@@ -66,9 +66,7 @@ const ListLayout = <T extends unknown>({
         {!queryResult.isLoading && !queryResult.error && create}
       </div>
       {queryResult.isLoading && <p>Loading...</p>}
-      {queryResult.error && (
-        <ErrorTexts>{queryResult.error.message}</ErrorTexts>
-      )}
+      {queryResult.error && <ErrorTexts message={queryResult.error.message} />}
       {!queryResult.isLoading && !queryResult.error && main}
       {paginated && queryResult.data?._metadata && (
         <Paginator

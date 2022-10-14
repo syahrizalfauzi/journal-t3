@@ -4,14 +4,13 @@ import DashboardAdminLayout from "../../../../components/layout/dashboard/Dashbo
 import InputLabel from "../../../../components/InputLabel";
 import Checkboxes from "../../../../components/Checkboxes";
 import SelectOptions from "../../../../components/SelectOptions";
-import ErrorTexts from "../../../../components/ErrorTexts";
-import SuccessTexts from "../../../../components/SuccessTexts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { getRoleNumber } from "../../../../utils/role";
 import moment from "moment/moment";
 import { z } from "zod";
 import { newUserValidators } from "../../../../server/validators/user";
+import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
 type CreateUserForm = Omit<z.infer<typeof newUserValidators>, "role"> & {
   isReviewer: boolean;
@@ -22,7 +21,9 @@ type CreateUserForm = Omit<z.infer<typeof newUserValidators>, "role"> & {
 
 const DashboardAdminUserCreatePage: NextPage = () => {
   const { register, handleSubmit } = useForm<CreateUserForm>();
-  const { mutate, isLoading, error, data } = trpc.user.create.useMutation();
+  const { mutate, isLoading } = trpc.user.create.useMutation({
+    onSettled: toastSettleHandler(true),
+  });
 
   const onSubmit: SubmitHandler<CreateUserForm> = (data) => {
     const role = getRoleNumber({
@@ -249,10 +250,8 @@ const DashboardAdminUserCreatePage: NextPage = () => {
           />
         </InputLabel>
         <p>* Required fields</p>
-        {error && (
-          <ErrorTexts>{error.data?.zodError ?? error.message}</ErrorTexts>
-        )}
-        {data && <SuccessTexts>{data.message}</SuccessTexts>}
+        {/*<ErrorTexts message={error?.data?.zodError ?? error?.message} />*/}
+        {/*<SuccessTexts message={data} />*/}
         <input
           disabled={isLoading}
           type="submit"

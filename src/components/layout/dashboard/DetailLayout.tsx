@@ -17,7 +17,7 @@ const DetailLayout = ({
   return (
     <>
       {isLoading && <p>Loading...</p>}
-      {errorMessage && <ErrorTexts>{errorMessage}</ErrorTexts>}
+      <ErrorTexts message={errorMessage} />
       {!isLoading && !errorMessage && hasData && children}
     </>
   );

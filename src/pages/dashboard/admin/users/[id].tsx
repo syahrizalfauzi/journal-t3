@@ -4,8 +4,6 @@ import DashboardAdminLayout from "../../../../components/layout/dashboard/Dashbo
 import InputLabel from "../../../../components/InputLabel";
 import Checkboxes from "../../../../components/Checkboxes";
 import SelectOptions from "../../../../components/SelectOptions";
-import ErrorTexts from "../../../../components/ErrorTexts";
-import SuccessTexts from "../../../../components/SuccessTexts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { getRoleMap, getRoleNumber } from "../../../../utils/role";
@@ -14,6 +12,7 @@ import { z } from "zod";
 import { updateUserValidators } from "../../../../server/validators/user";
 import { useRouter } from "next/router";
 import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
+import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidators>, "role"> & {
   isReviewer: boolean;
@@ -28,17 +27,15 @@ const DashboardAdminUserEditPage: NextPage = () => {
   if (!query.id) return null;
 
   const {
-    data: queryData,
+    data: user,
     isLoading: queryLoading,
     error: queryError,
   } = trpc.user.get.useQuery(query.id as string);
 
-  const {
-    mutate: mutationUpdate,
-    isLoading: mutationLoading,
-    error: mutationError,
-    data: mutationData,
-  } = trpc.user.update.useMutation();
+  const { mutate: mutationUpdate, isLoading: mutationLoading } =
+    trpc.user.update.useMutation({
+      onSettled: toastSettleHandler(true),
+    });
 
   const { register, handleSubmit, reset } = useForm<EditUserForm>();
 
@@ -62,24 +59,24 @@ const DashboardAdminUserEditPage: NextPage = () => {
   };
 
   useEffect(() => {
-    if (!queryData?.user) return;
+    if (!user) return;
 
     reset({
-      ...queryData.user,
-      ...getRoleMap(queryData.user.role),
+      ...user,
+      ...getRoleMap(user.role),
       profile: {
-        ...queryData.user.profile,
-        expertise: queryData.user.profile?.expertise.join(", "),
-        keywords: queryData.user.profile?.keywords.join(", "),
+        ...user.profile,
+        expertise: user.profile?.expertise.join(", "),
+        keywords: user.profile?.keywords.join(", "),
       },
     });
-  }, [queryData]);
+  }, [user]);
 
   return (
     <DashboardAdminLayout>
       <DetailLayout
         isLoading={queryLoading}
-        hasData={queryData !== undefined}
+        hasData={user !== undefined}
         errorMessage={queryError?.message}
       >
         <p className="text-xl font-medium">Create User</p>
@@ -276,12 +273,6 @@ const DashboardAdminUserEditPage: NextPage = () => {
             />
           </InputLabel>
           <p>* Required fields</p>
-          {mutationError && (
-            <ErrorTexts>
-              {mutationError.data?.zodError ?? mutationError.message}
-            </ErrorTexts>
-          )}
-          {mutationData && <SuccessTexts>{mutationData.message}</SuccessTexts>}
           <input
             disabled={mutationLoading}
             type="submit"

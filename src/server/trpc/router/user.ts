@@ -36,7 +36,7 @@ export const userRouter = t.router({
         },
       });
 
-      return { message: `User '${user.username}' successfully created` };
+      return `User '${user.username}' successfully created`;
     }),
   get: t.procedure
     .use(authGuard(["admin"]))
@@ -58,9 +58,7 @@ export const userRouter = t.router({
       if (!user)
         throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
 
-      return {
-        user,
-      };
+      return user;
     }),
   list: t.procedure
     .use(authGuard(["admin"]))
@@ -157,12 +155,9 @@ export const userRouter = t.router({
           },
         });
 
-        return {
-          user,
-          message: `User '${user.username}' has been updated`,
-        };
+        return `User '${user.username}' has been updated`;
       } catch (e) {
-        return mutationError(e, notFoundMessage);
+        throw mutationError(e, notFoundMessage);
       }
     }),
   activate: t.procedure
@@ -198,11 +193,9 @@ export const userRouter = t.router({
           },
         });
 
-        return {
-          message: `User '${user.username}' has been ${
-            input.isActivated ? "activated" : "deactivated"
-          }`,
-        };
+        return `User '${user.username}' has been ${
+          input.isActivated ? "activated" : "deactivated"
+        }`;
       } catch (e) {
         throw mutationError(e, notFoundMessage);
       }
@@ -223,9 +216,7 @@ export const userRouter = t.router({
           select: { username: true },
         });
 
-        return {
-          message: `User '${user.username}' deleted succesfully`,
-        };
+        return `User '${user.username}' deleted successfully`;
       } catch (e) {
         throw mutationError(e, notFoundMessage);
       }

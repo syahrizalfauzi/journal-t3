@@ -1,12 +1,18 @@
 import React from "react";
-import LayoutProps from "../types/LayoutProps";
 
-const SuccessTexts = ({ children }: LayoutProps) => {
-  return (
-    <div className="alert alert-success flex-col items-start gap-1 text-white">
-      <p className="whitespace-pre-line">{children}</p>
-    </div>
-  );
+type SuccessTextsProps = {
+  message?: string;
+};
+
+const SuccessTexts = ({ message }: SuccessTextsProps) => {
+  if (message)
+    return (
+      <div className="alert alert-success flex-col items-start gap-1 text-white">
+        <p className="whitespace-pre-line">{message}</p>
+      </div>
+    );
+
+  return null;
 };
 
 export default SuccessTexts;
