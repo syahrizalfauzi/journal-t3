@@ -1,6 +1,6 @@
 import { Sorts } from "../types/SortOrder";
 
-export const userListSorts: readonly Sorts[] = [
+export const USER_LIST_SORTS: readonly Sorts[] = [
   "createdAt",
   "username",
   "role",
@@ -10,7 +10,7 @@ export const userListSorts: readonly Sorts[] = [
   "country",
 ] as const;
 
-export const questionListSorts: readonly Sorts[] = [
+export const QUESTION_LIST_SORTS: readonly Sorts[] = [
   "createdAt",
   "maxScale",
   "question",

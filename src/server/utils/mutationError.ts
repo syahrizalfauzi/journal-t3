@@ -9,9 +9,6 @@ const mutationError = (error: unknown, message?: string) => {
       code: "BAD_REQUEST",
       message: message ?? "Record not found",
     });
-  // return res
-  //   .status(404)
-  //   .json({ ...errorMessageObject(message ?? "Record not found") });
 
   if (err.code === "P2002") {
     return new TRPCError({
@@ -24,7 +21,5 @@ const mutationError = (error: unknown, message?: string) => {
 
   return new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `${error}` });
 };
-
-//   return res.status(500).json({ error });
 
 export default mutationError;

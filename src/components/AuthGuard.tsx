@@ -2,7 +2,7 @@ import LayoutProps from "../types/LayoutProps";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { getHasRole } from "../utils/role";
+import { getHasRole, getRoleSelector } from "../utils/role";
 
 type AuthGuardProps = LayoutProps & {
   allowedRole:
@@ -38,7 +38,7 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
         if (allowedRole !== "loggedIn") {
           const canAccess = getHasRole(
             session.data.user.role,
-            `is${allowedRole.at(0)?.toUpperCase()}${allowedRole.slice(1)}`
+            getRoleSelector(allowedRole)
           );
           if (!canAccess) {
             await router.push(redirectTo ?? "/auth/login");

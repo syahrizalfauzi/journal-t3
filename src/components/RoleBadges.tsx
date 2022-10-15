@@ -1,12 +1,12 @@
 import React from "react";
-import { roleMap } from "../utils/role";
+import { ROLE_MAP } from "../constants/role";
 
 type RoleBadgesProps = {
   role: number;
 };
 
 const RoleBadges = ({ role }: RoleBadgesProps) => {
-  const parsedRole = roleMap[role];
+  const parsedRole = ROLE_MAP[role];
 
   return (
     <div className="flex flex-wrap gap-1">

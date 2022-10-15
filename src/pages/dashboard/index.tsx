@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import { useEffect } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { roleMap } from "../../utils/role";
+import { ROLE_MAP } from "../../constants/role";
 
 const DashboardPage: NextPage = () => {
   const session = useSession();
@@ -23,7 +23,7 @@ const DashboardPage: NextPage = () => {
       const roleNumber = session.data.user.role;
 
       if (roleNumber > 0) {
-        const role = roleMap[roleNumber];
+        const role = ROLE_MAP[roleNumber];
         if (!role) {
           await handleLogOut();
           return;

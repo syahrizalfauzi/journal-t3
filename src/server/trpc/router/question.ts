@@ -7,7 +7,7 @@ import {
 import { questionListQuery } from "../../queries";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
-import { questionListSorts } from "../../../utils/sorts";
+import { QUESTION_LIST_SORTS } from "../../../constants/sorts";
 import mutationError from "../../utils/mutationError";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -57,7 +57,7 @@ export const questionRouter = t.router({
       const getCount = ctx.prisma.reviewQuestion.count();
       const getQuestions = ctx.prisma.reviewQuestion.findMany({
         ...paginationQuery(input.page),
-        orderBy: getOrderQuery({ ...input }, questionListSorts) ?? {
+        orderBy: getOrderQuery({ ...input }, QUESTION_LIST_SORTS) ?? {
           createdAt: "desc",
         },
         select: {

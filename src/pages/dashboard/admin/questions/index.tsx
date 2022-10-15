@@ -7,14 +7,17 @@ import { FaTrashAlt } from "react-icons/fa";
 import parseDate from "../../../../utils/parseDate";
 import Link from "next/link";
 import { z } from "zod";
-import { questionListSorts, userListSorts } from "../../../../utils/sorts";
+import {
+  QUESTION_LIST_SORTS,
+  USER_LIST_SORTS,
+} from "../../../../constants/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { questionListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
-const sortOrders = getSortOrder(questionListSorts);
-type QuestionListSorts = typeof questionListSorts[number];
+const sortOrders = getSortOrder(QUESTION_LIST_SORTS);
+type QuestionListSorts = typeof QUESTION_LIST_SORTS[number];
 type QuestionListQuery = Omit<z.infer<typeof questionListQuery>, "sort"> & {
   sort: QuestionListSorts;
 };
@@ -50,7 +53,7 @@ const DashboardAdminQuestionsPage: NextPage = () => {
       <ListLayout
         queryResult={questionListQuery}
         sortOrders={sortOrders}
-        allowedSorts={userListSorts}
+        allowedSorts={USER_LIST_SORTS}
         onChangePage={handleChangePage}
         onChangeSort={handleChangeSort}
         create={

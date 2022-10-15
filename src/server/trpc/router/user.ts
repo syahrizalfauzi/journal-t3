@@ -8,8 +8,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { newUserValidators, updateUserValidators } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
-import { roleMap } from "../../../utils/role";
 import mutationError from "../../utils/mutationError";
+import { ROLE_MAP } from "../../../constants/role";
 
 const notFoundMessage = "User not found";
 
@@ -32,7 +32,6 @@ export const userRouter = t.router({
         select: {
           id: true,
           username: true,
-          // profile: { select: { email: true } },
         },
       });
 
@@ -118,7 +117,7 @@ export const userRouter = t.router({
     .input(updateUserValidators)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.session!;
-      const requestRole = roleMap[user.role];
+      const requestRole = ROLE_MAP[user.role];
 
       if (!requestRole || (input.id !== user.id && !requestRole.isAdmin))
         throw new TRPCError({

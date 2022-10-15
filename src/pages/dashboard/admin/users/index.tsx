@@ -10,14 +10,14 @@ import { FaTrashAlt } from "react-icons/fa";
 import parseDate from "../../../../utils/parseDate";
 import Link from "next/link";
 import { z } from "zod";
-import { userListSorts } from "../../../../utils/sorts";
+import { USER_LIST_SORTS } from "../../../../constants/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { userListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
-const sortOrders = getSortOrder(userListSorts);
-type UserListSorts = typeof userListSorts[number];
+const sortOrders = getSortOrder(USER_LIST_SORTS);
+type UserListSorts = typeof USER_LIST_SORTS[number];
 type UserListQuery = Omit<z.infer<typeof userListQuery>, "sort"> & {
   sort: UserListSorts;
 };
@@ -65,7 +65,7 @@ const DashboardAdminUsersPage: NextPage = () => {
       <ListLayout
         queryResult={userListQuery}
         sortOrders={sortOrders}
-        allowedSorts={userListSorts}
+        allowedSorts={USER_LIST_SORTS}
         onChangePage={handleChangePage}
         onChangeSort={handleChangeSort}
         create={

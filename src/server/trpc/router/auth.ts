@@ -29,7 +29,6 @@ export const authRouter = t.router({
         select: {
           id: true,
           username: true,
-          // profile: { select: { email: true } },
         },
       });
 

@@ -1,3 +1,5 @@
+import { AVAILABLE_ROLES } from "../constants/role";
+
 export interface Role extends Record<string, boolean> {
   isAdmin: boolean;
   isChief: boolean;
@@ -5,4 +7,4 @@ export interface Role extends Record<string, boolean> {
   isAuthor: boolean;
 }
 
-export type AvailableRoles = "author" | "reviewer" | "chief" | "admin";
+export type AvailableRoles = typeof AVAILABLE_ROLES[number];
