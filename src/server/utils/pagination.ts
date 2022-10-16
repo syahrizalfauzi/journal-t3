@@ -7,9 +7,12 @@ const getSkipPagination = (pageInput: number) => {
   return (clampedPage - 1) * ITEM_COUNT_PER_PAGE;
 };
 
-export const paginationMetadata = (totalCount: number, pageInput?: number) => {
-  const page = pageInput ?? 1;
-  const clampedPage = page <= 1 ? 1 : page;
+export const paginationMetadata = (
+  totalCount: number,
+  { page }: { page?: number }
+) => {
+  // const page = pageInput ?? 1;
+  const clampedPage = page ?? 1 <= 1 ? 1 : page;
 
   return {
     _metadata: {
@@ -21,7 +24,7 @@ export const paginationMetadata = (totalCount: number, pageInput?: number) => {
   };
 };
 
-export const paginationQuery = (pageInput?: number) => ({
-  skip: getSkipPagination(pageInput ?? 1),
+export const paginationQuery = ({ page }: { page?: number }) => ({
+  skip: getSkipPagination(page ?? 1),
   take: ITEM_COUNT_PER_PAGE,
 });

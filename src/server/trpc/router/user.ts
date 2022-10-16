@@ -78,7 +78,7 @@ export const userRouter = t.router({
       });
 
       const getUsers = ctx.prisma.user.findMany({
-        ...paginationQuery(input.page),
+        ...paginationQuery(input),
         where: filter,
         orderBy: profileOrder
           ? {
@@ -108,7 +108,7 @@ export const userRouter = t.router({
       ]);
 
       return {
-        ...paginationMetadata(totalCount, input.page),
+        ...paginationMetadata(totalCount, input),
         users,
       };
     }),
