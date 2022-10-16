@@ -10,13 +10,38 @@ export const USER_LIST_SORTS: readonly Sorts[] = [
   "country",
 ] as const;
 
+export const USER_REVIEWER_SORTS: readonly Sorts[] = [
+  "username",
+  "email",
+  "country",
+];
+
 export const QUESTION_LIST_SORTS: readonly Sorts[] = [
   "createdAt",
   "maxScale",
   "question",
 ] as const;
 
-// export const userSortOrders: SortOrder[] = getSortOrder([
+export const MANUSCRIPT_AUTHOR_SORTS: readonly Sorts[] = [
+  "updatedAt",
+  "createdAt",
+  "title",
+];
+
+export const MANUSCRIPT_CHIEF_SORTS: readonly Sorts[] = [
+  "updatedAt",
+  "createdAt",
+  "title",
+  "status",
+];
+
+export const INVITATION_LIST_SORTS: readonly Sorts[] = [
+  "updatedAt",
+  "createdAt",
+  "status",
+];
+
+// export const userSortOrdersreadonly : Sorts[] = ([
 //   "createdAt",
 //   "username",
 //   "role",
@@ -26,7 +51,7 @@ export const QUESTION_LIST_SORTS: readonly Sorts[] = [
 //   "country",
 // ]);
 
-// export const userChiefSortOrders: SortOrder[] = getSortOrder([
+// export const userChiefSortOrdersreadonly : Sorts[] = ([
 //   "username",
 //   "email",
 //   "country",
