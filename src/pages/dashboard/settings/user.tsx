@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { z } from "zod";
-import { updateUserValidators } from "../../../server/validators/user";
+import { updateUserValidator } from "../../../server/validators/user";
 import { trpc } from "../../../utils/trpc";
 import { toastSettleHandler } from "../../../utils/toastSettleHandler";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ import InputLabel from "../../../components/InputLabel";
 import SelectOptions from "../../../components/SelectOptions";
 import DetailLayout from "../../../components/layout/dashboard/DetailLayout";
 
-type EditUserForm = Omit<z.infer<typeof updateUserValidators>, "role">;
+type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role">;
 
 const DashboardSettingsUserPage = () => {
   const {

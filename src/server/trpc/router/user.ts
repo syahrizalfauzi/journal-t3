@@ -6,7 +6,7 @@ import { t } from "../trpc";
 import { authGuard } from "../authGuard";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { newUserValidators, updateUserValidators } from "../../validators/user";
+import { newUserValidator, updateUserValidator } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 import mutationError from "../../utils/mutationError";
 import { ROLE_MAP } from "../../../constants/role";
@@ -16,7 +16,7 @@ const notFoundMessage = "User not found";
 export const userRouter = t.router({
   create: t.procedure
     .use(authGuard(["admin"]))
-    .input(newUserValidators)
+    .input(newUserValidator)
     .mutation(async ({ ctx, input }) => {
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
@@ -114,7 +114,7 @@ export const userRouter = t.router({
     }),
   update: t.procedure
     .use(authGuard())
-    .input(updateUserValidators)
+    .input(updateUserValidator)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.session!;
       const requestRole = ROLE_MAP[user.role];

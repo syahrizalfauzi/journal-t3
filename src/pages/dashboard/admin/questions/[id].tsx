@@ -8,9 +8,9 @@ import { z } from "zod";
 import { useRouter } from "next/router";
 import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { updateQuestionValidators } from "../../../../server/validators/question";
+import { updateQuestionValidator } from "../../../../server/validators/question";
 
-type EditQuestionForm = z.infer<typeof updateQuestionValidators>;
+type EditQuestionForm = z.infer<typeof updateQuestionValidator>;
 
 const DashboardAdminQuestionEditPage: NextPage = () => {
   const { query } = useRouter();

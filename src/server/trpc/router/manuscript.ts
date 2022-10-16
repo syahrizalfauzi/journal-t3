@@ -1,6 +1,9 @@
 import { t } from "../trpc";
 import { authGuard } from "../authGuard";
-import { manuscriptValidators } from "../../validators/manuscript";
+import {
+  manuscriptValidator,
+  updateOptionalFileValidator,
+} from "../../validators/manuscript";
 import { HISTORY_STATUS } from "../../../constants/numbers";
 import {
   manuscriptAuthorQuery,
@@ -10,11 +13,20 @@ import {
 import { Prisma } from "@prisma/client";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
+import { z } from "zod";
+import {
+  CHIEF_HISTORY_SELECTION,
+  REVIEWER_HISTORY_SELECTION,
+} from "../../../constants/historySelections";
+import { TRPCError } from "@trpc/server";
+import mutationError from "../../utils/mutationError";
+
+const notFoundMessage = "Manuscript not found";
 
 export const manuscriptRoute = t.router({
   create: t.procedure
     .use(authGuard(["author"]))
-    .input(manuscriptValidators)
+    .input(manuscriptValidator)
     .mutation(async ({ ctx, input }) => {
       const keywords = input.keywords
         .replace(/\s/g, "")
@@ -290,5 +302,121 @@ export const manuscriptRoute = t.router({
         ...paginationMetadata(totalCount, input),
         manuscripts: mappedManuscripts,
       };
+    }),
+  getForChief: t.procedure
+    .use(authGuard(["chief"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const manuscript = await ctx.prisma.manuscript.findUnique({
+        where: { id: input },
+        select: {
+          id: true,
+          isBlind: true,
+          title: true,
+          createdAt: true,
+          abstract: true,
+          authors: true,
+          coverFileUrl: true,
+          optionalFileUrl: true,
+          keywords: { select: { keyword: true } },
+          team: {
+            select: {
+              users: {
+                select: { id: true, profile: { select: { name: true } } },
+                orderBy: { id: "asc" },
+              },
+            },
+          },
+          history: {
+            orderBy: { createdAt: "desc" },
+            select: CHIEF_HISTORY_SELECTION,
+          },
+          author: {
+            select: {
+              profile: { select: { name: true, email: true, country: true } },
+            },
+          },
+        },
+      });
+
+      if (!manuscript)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return manuscript;
+    }),
+  getForReviewer: t.procedure
+    .use(authGuard(["reviewer"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const manuscript = await ctx.prisma.manuscript.findFirst({
+        where: {
+          AND: [
+            { id: input },
+            { team: { users: { some: { id: ctx.session?.user.id } } } },
+          ],
+        },
+        select: {
+          id: true,
+          isBlind: true,
+          title: true,
+          createdAt: true,
+          abstract: true,
+          authors: true,
+          coverFileUrl: true,
+          optionalFileUrl: true,
+          author: {
+            select: {
+              profile: { select: { name: true, email: true, country: true } },
+            },
+          },
+          team: {
+            select: { users: { select: { id: true }, orderBy: { id: "asc" } } },
+          },
+          keywords: { select: { keyword: true } },
+          history: {
+            where: {
+              status: {
+                gte: HISTORY_STATUS.inviting,
+                lte: HISTORY_STATUS.revision,
+              },
+            },
+            orderBy: { createdAt: "desc" },
+            select: REVIEWER_HISTORY_SELECTION,
+          },
+        },
+      });
+
+      if (!manuscript)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return manuscript;
+    }),
+  updateOptionalFile: t.procedure
+    .use(authGuard(["author"]))
+    .input(updateOptionalFileValidator)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.manuscript.update({
+          where: { id: input.id },
+          data: { optionalFileUrl: input.optionalFileUrl },
+        });
+        return "Successfully uploaded optional file";
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
+      }
+    }),
+  deleteOptionalFile: t.procedure
+    .use(authGuard(["chief"]))
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const manuscript = await ctx.prisma.manuscript.delete({
+          where: { id: input },
+          select: { title: true },
+        });
+        return `Deleted manuscript '${manuscript.title}'`;
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
+      }
     }),
 });

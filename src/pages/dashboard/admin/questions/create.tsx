@@ -6,9 +6,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { z } from "zod";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { questionValidators } from "../../../../server/validators/question";
+import { questionValidator } from "../../../../server/validators/question";
 
-type CreateQuestionForm = z.infer<typeof questionValidators>;
+type CreateQuestionForm = z.infer<typeof questionValidator>;
 
 const DashboardAdminQuestionCreatePage: NextPage = () => {
   const { register, handleSubmit, reset } = useForm<CreateQuestionForm>();

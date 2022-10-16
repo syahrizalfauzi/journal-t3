@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { prisma } from "../db/client";
 
-export const userValidators = z.object({
+export const userValidator = z.object({
   username: z.string(),
   role: z.number(),
   profile: z.object({
@@ -41,7 +41,7 @@ export const userValidators = z.object({
       }, "must be at least five"),
   }),
 });
-export const createUserValidators = z.object({
+export const createUserValidator = z.object({
   password: z.string().min(6),
   username: z.string().refine(async (username) => {
     const userExists =
@@ -70,13 +70,13 @@ export const createUserValidators = z.object({
   }),
 });
 
-export const updateUserValidators = z
+export const updateUserValidator = z
   .object({
     id: z.string(),
   })
-  .merge(userValidators);
-export const newUserValidators = createUserValidators.merge(userValidators);
-export const changePasswordValidators = z.object({
+  .merge(userValidator);
+export const newUserValidator = createUserValidator.merge(userValidator);
+export const changePasswordValidator = z.object({
   oldPassword: z.string(),
   newPassword: z.string().min(6, "New Password anu"),
 });

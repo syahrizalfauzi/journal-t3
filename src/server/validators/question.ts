@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const questionValidators = z.object({
+export const questionValidator = z.object({
   question: z.string(),
   maxScale: z.number(),
 });
 
-export const updateQuestionValidators = z
+export const updateQuestionValidator = z
   .object({
     id: z.string(),
   })
-  .merge(questionValidators);
+  .merge(questionValidator);

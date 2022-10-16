@@ -1,8 +1,8 @@
 import { t } from "../trpc";
 import { authGuard } from "../authGuard";
 import {
-  questionValidators,
-  updateQuestionValidators,
+  questionValidator,
+  updateQuestionValidator,
 } from "../../validators/question";
 import { questionListQuery } from "../../queries";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
@@ -17,7 +17,7 @@ const notFoundMessage = "Review question not found";
 export const questionRouter = t.router({
   create: t.procedure
     .use(authGuard(["admin"]))
-    .input(questionValidators)
+    .input(questionValidator)
     .mutation(async ({ ctx, input }) => {
       const { id } = await ctx.prisma.reviewQuestion.create({
         data: {
@@ -80,7 +80,7 @@ export const questionRouter = t.router({
     }),
   update: t.procedure
     .use(authGuard(["admin"]))
-    .input(updateQuestionValidators)
+    .input(updateQuestionValidator)
     .mutation(async ({ ctx, input }) => {
       try {
         const { id } = await ctx.prisma.reviewQuestion.update({

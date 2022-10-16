@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const manuscriptValidators = z.object({
+export const manuscriptValidator = z.object({
   abstract: z.string(),
   authors: z.string(),
   title: z.string(),
@@ -18,8 +18,13 @@ export const manuscriptValidators = z.object({
   }, "must be at least one"),
 });
 
-export const updateManuscriptValidators = z
+export const updateManuscriptValidator = z
   .object({
     id: z.string(),
   })
-  .merge(manuscriptValidators);
+  .merge(manuscriptValidator);
+
+export const updateOptionalFileValidator = z.object({
+  id: z.string(),
+  optionalFileUrl: z.string().url(),
+});

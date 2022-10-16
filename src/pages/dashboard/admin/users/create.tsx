@@ -9,10 +9,10 @@ import { trpc } from "../../../../utils/trpc";
 import { getRoleNumber } from "../../../../utils/role";
 import moment from "moment/moment";
 import { z } from "zod";
-import { newUserValidators } from "../../../../server/validators/user";
+import { newUserValidator } from "../../../../server/validators/user";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
-type CreateUserForm = Omit<z.infer<typeof newUserValidators>, "role"> & {
+type CreateUserForm = Omit<z.infer<typeof newUserValidator>, "role"> & {
   isReviewer: boolean;
   isAuthor: boolean;
   isChief: boolean;

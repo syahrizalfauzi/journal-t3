@@ -9,12 +9,12 @@ import { trpc } from "../../../../utils/trpc";
 import { getRoleMap, getRoleNumber } from "../../../../utils/role";
 import moment from "moment/moment";
 import { z } from "zod";
-import { updateUserValidators } from "../../../../server/validators/user";
+import { updateUserValidator } from "../../../../server/validators/user";
 import { useRouter } from "next/router";
 import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
-type EditUserForm = Omit<z.infer<typeof updateUserValidators>, "role"> & {
+type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role"> & {
   isReviewer: boolean;
   isAuthor: boolean;
   isChief: boolean;

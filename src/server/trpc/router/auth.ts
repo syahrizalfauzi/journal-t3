@@ -1,7 +1,7 @@
 import { t } from "../trpc";
 import {
-  changePasswordValidators,
-  newUserValidators,
+  changePasswordValidator,
+  newUserValidator,
 } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 import { TRPCError } from "@trpc/server";
@@ -13,7 +13,7 @@ const notFoundMessage = "User not found";
 
 export const authRouter = t.router({
   register: t.procedure
-    .input(newUserValidators)
+    .input(newUserValidator)
     .mutation(async ({ input, ctx }) => {
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
@@ -55,7 +55,7 @@ export const authRouter = t.router({
   }),
   changePassword: t.procedure
     .use(authGuard())
-    .input(changePasswordValidators)
+    .input(changePasswordValidator)
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findUnique({
         where: {
