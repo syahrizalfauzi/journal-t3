@@ -36,7 +36,7 @@ export const authRouter = t.router({
     }),
   user: t.procedure.use(authGuard()).query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
-      where: { id: ctx.session?.user.id },
+      where: { id: ctx.session.user.id },
       select: {
         id: true,
         username: true,
@@ -59,7 +59,7 @@ export const authRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findUnique({
         where: {
-          id: ctx.session?.user.id,
+          id: ctx.session.user.id,
         },
       });
 

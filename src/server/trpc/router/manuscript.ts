@@ -36,7 +36,7 @@ export const manuscriptRoute = t.router({
       const manuscriptCreate = ctx.prisma.manuscript.create({
         data: {
           ...input,
-          authorId: ctx.session!.user.id,
+          authorId: ctx.session.user.id,
           isBlind: true,
           keywords: {
             connectOrCreate: keywords.map((keyword) => ({
@@ -150,7 +150,7 @@ export const manuscriptRoute = t.router({
     .input(manuscriptAuthorQuery)
     .query(async ({ ctx, input }) => {
       const filter = {
-        authorId: ctx.session?.user.id,
+        authorId: ctx.session.user.id,
         ...(input.filter?.status
           ? {
               latestHistory: {
@@ -214,7 +214,7 @@ export const manuscriptRoute = t.router({
     .input(manuscriptReviewerQuery)
     .query(async ({ ctx, input }) => {
       const filter = {
-        team: { users: { some: { id: ctx.session?.user.id } } },
+        team: { users: { some: { id: ctx.session.user.id } } },
         history: {
           some: {
             status: {
@@ -225,8 +225,8 @@ export const manuscriptRoute = t.router({
               assesment: input.filter?.assessed
                 ? [
                     undefined,
-                    { none: { userId: ctx.session?.user.id } },
-                    { some: { userId: ctx.session?.user.id, isDone: true } },
+                    { none: { userId: ctx.session.user.id } },
+                    { some: { userId: ctx.session.user.id, isDone: true } },
                   ][Number(input.filter.assessed)]
                 : undefined,
             },
@@ -275,7 +275,7 @@ export const manuscriptRoute = t.router({
                 select: {
                   dueDate: true,
                   assesment: {
-                    where: { userId: ctx.session?.user.id, isDone: true },
+                    where: { userId: ctx.session.user.id, isDone: true },
                     select: { decision: true },
                   },
                 },
@@ -294,7 +294,7 @@ export const manuscriptRoute = t.router({
         ...e,
         team: undefined,
         reviewerNumber:
-          (e.team?.users.findIndex(({ id }) => ctx.session?.user.id === id) ??
+          (e.team?.users.findIndex(({ id }) => ctx.session.user.id === id) ??
             -1) + 1,
       }));
 
@@ -352,7 +352,7 @@ export const manuscriptRoute = t.router({
         where: {
           AND: [
             { id: input },
-            { team: { users: { some: { id: ctx.session?.user.id } } } },
+            { team: { users: { some: { id: ctx.session.user.id } } } },
           ],
         },
         select: {

@@ -163,7 +163,7 @@ export const userRouter = t.router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (ctx.session?.user.id === input.id) {
+      if (ctx.session.user.id === input.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Can't modify activation on own account",
