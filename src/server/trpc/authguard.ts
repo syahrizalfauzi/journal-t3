@@ -16,7 +16,7 @@ const defaultGuards: AvailableRoles[] = [
 //If this is used with custom params, a route can be accessed by logged-in user that satisfies the role from param
 export const authGuard = (roleGuard: AvailableRoles[] = defaultGuards) =>
   t.middleware(async ({ ctx, next }) => {
-    const session = ctx.session;
+    const session = ctx.session; //session : Session | null
 
     if (!session) throw new TRPCError({ code: "UNAUTHORIZED" });
     const roles = ROLE_MAP[session.user.role];
@@ -28,5 +28,10 @@ export const authGuard = (roleGuard: AvailableRoles[] = defaultGuards) =>
         : roleGuard.some((role) => roles[getRoleSelector(role)]);
 
     if (!isAllowed) throw new TRPCError({ code: "UNAUTHORIZED" });
-    return await next();
+    return await next({
+      ctx: {
+        ...ctx,
+        session, //session : Session
+      },
+    });
   });
