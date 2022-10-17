@@ -1,10 +1,10 @@
 import { t } from "../trpc";
 import {
-  historyAcceptValidator,
-  historyFinalizeValidator,
-  historyProofreadValidator,
-  historyRejectValidator,
-  historyReviseValidator,
+  acceptHistoryValidator,
+  finalizeHistoryValidator,
+  proofreadHistoryValidator,
+  rejectHistoryValidator,
+  reviseHistoryValidator,
 } from "../../validators/history";
 import { previousHistoryGuard } from "../middlewares/previousHistoryGuard";
 import { HISTORY_STATUS, REVIEW_DECISION } from "../../../constants/numbers";
@@ -17,8 +17,8 @@ import { authGuard } from "../middlewares/authGuard";
 export const historyRouter = t.router({
   reject: t.procedure
     .use(authGuard(["chief"]))
-    .input(historyRejectValidator)
-    .use(previousHistoryGuard(historyRejectValidator, "submitted"))
+    .input(rejectHistoryValidator)
+    .use(previousHistoryGuard(rejectHistoryValidator, "submitted"))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.previousHistory.submission)
         throw new TRPCError({
@@ -54,8 +54,8 @@ export const historyRouter = t.router({
     }),
   accept: t.procedure
     .use(authGuard(["chief"]))
-    .input(historyAcceptValidator)
-    .use(previousHistoryGuard(historyAcceptValidator, "submitted"))
+    .input(acceptHistoryValidator)
+    .use(previousHistoryGuard(acceptHistoryValidator, "submitted"))
     .mutation(async ({ ctx, input }) => {
       const historyCreate = ctx.prisma.history.create({
         data: {
@@ -96,8 +96,8 @@ export const historyRouter = t.router({
     }),
   revise: t.procedure
     .use(authGuard(["author"]))
-    .input(historyReviseValidator)
-    .use(previousHistoryGuard(historyReviseValidator, "reviewed"))
+    .input(reviseHistoryValidator)
+    .use(previousHistoryGuard(reviseHistoryValidator, "reviewed"))
     .mutation(async ({ ctx, input }) => {
       const { review } = ctx.previousHistory;
 
@@ -144,8 +144,8 @@ export const historyRouter = t.router({
     }),
   proofread: t.procedure
     .use(authGuard(["chief"]))
-    .input(historyProofreadValidator)
-    .use(previousHistoryGuard(historyProofreadValidator, "reviewed"))
+    .input(proofreadHistoryValidator)
+    .use(previousHistoryGuard(proofreadHistoryValidator, "reviewed"))
     .mutation(async ({ ctx, input }) => {
       const { review } = ctx.previousHistory;
 
@@ -179,8 +179,8 @@ export const historyRouter = t.router({
     }),
   finalize: t.procedure
     .use(authGuard(["author"]))
-    .input(historyFinalizeValidator)
-    .use(previousHistoryGuard(historyFinalizeValidator, "proofread"))
+    .input(finalizeHistoryValidator)
+    .use(previousHistoryGuard(finalizeHistoryValidator, "proofread"))
     .mutation(async ({ ctx, input }) => {
       const history = await ctx.prisma.history.create({
         data: {

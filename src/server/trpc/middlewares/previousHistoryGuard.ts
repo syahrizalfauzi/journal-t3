@@ -1,11 +1,11 @@
 import { t } from "../trpc";
-import { historyManuscriptIdValidator } from "../../validators/history";
 import { TRPCError } from "@trpc/server";
 import { HistoryStatus } from "../../../types/History";
 import { HISTORY_STATUS } from "../../../constants/numbers";
+import { manuscriptIdValidator } from "../../validators/manuscript";
 
 export const previousHistoryGuard = (
-  inputValidator: typeof historyManuscriptIdValidator,
+  inputValidator: typeof manuscriptIdValidator,
   historyStatus: HistoryStatus
 ) =>
   t.middleware(async ({ ctx, input, next }) => {

@@ -28,3 +28,7 @@ export const updateOptionalFileValidator = z.object({
   id: z.string(),
   optionalFileUrl: z.string().url(),
 });
+
+export const manuscriptIdValidator = z.object({
+  manuscriptId: z.string(),
+});
