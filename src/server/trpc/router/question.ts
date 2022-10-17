@@ -84,13 +84,8 @@ export const questionRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       try {
         const { id } = await ctx.prisma.reviewQuestion.update({
-          where: {
-            id: input.id,
-          },
-          data: {
-            maxScale: input.maxScale,
-            question: input.question,
-          },
+          where: { id: input.id },
+          data: { ...input },
           select: {
             id: true,
           },

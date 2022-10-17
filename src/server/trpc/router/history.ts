@@ -140,7 +140,7 @@ export const historyRouter = t.router({
 
       await ctx.prisma.$transaction([latestHistoryUpdate]);
 
-      return `Revision successfully submitted`;
+      return "Revision successfully submitted";
     }),
   proofread: t.procedure
     .use(authGuard(["chief"]))
@@ -175,7 +175,7 @@ export const historyRouter = t.router({
         data: { history: { connect: { id } } },
       });
 
-      return `Review successfully accepted`;
+      return "Review successfully accepted";
     }),
   finalize: t.procedure
     .use(authGuard(["author"]))
