@@ -1,8 +1,8 @@
-import { t } from "./trpc";
-import { AvailableRoles } from "../../types/Role";
+import { t } from "../trpc";
+import { AvailableRoles } from "../../../types/Role";
 import { TRPCError } from "@trpc/server";
-import { ROLE_MAP } from "../../constants/role";
-import { getRoleSelector } from "../../utils/role";
+import { ROLE_MAP } from "../../../constants/role";
+import { getRoleSelector } from "../../../utils/role";
 
 const defaultGuards: AvailableRoles[] = [
   "author",

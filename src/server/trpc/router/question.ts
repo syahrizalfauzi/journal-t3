@@ -1,5 +1,5 @@
 import { t } from "../trpc";
-import { authGuard } from "../authGuard";
+import { authGuard } from "../middlewares/authGuard";
 import {
   questionValidator,
   updateQuestionValidator,

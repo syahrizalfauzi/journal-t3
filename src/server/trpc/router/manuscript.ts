@@ -1,5 +1,5 @@
 import { t } from "../trpc";
-import { authGuard } from "../authGuard";
+import { authGuard } from "../middlewares/authGuard";
 import {
   manuscriptValidator,
   updateOptionalFileValidator,
@@ -23,7 +23,7 @@ import mutationError from "../../utils/mutationError";
 
 const notFoundMessage = "Manuscript not found";
 
-export const manuscriptRoute = t.router({
+export const manuscriptRouter = t.router({
   create: t.procedure
     .use(authGuard(["author"]))
     .input(manuscriptValidator)

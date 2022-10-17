@@ -5,7 +5,7 @@ import {
 } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 import { TRPCError } from "@trpc/server";
-import { authGuard } from "../authGuard";
+import { authGuard } from "../middlewares/authGuard";
 import { compareSync } from "bcrypt";
 import mutationError from "../../utils/mutationError";
 

@@ -3,7 +3,7 @@ import { userListQuery } from "../../queries";
 import { paginationQuery, paginationMetadata } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
-import { authGuard } from "../authGuard";
+import { authGuard } from "../middlewares/authGuard";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { newUserValidator, updateUserValidator } from "../../validators/user";
