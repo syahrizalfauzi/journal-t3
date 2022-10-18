@@ -6,7 +6,7 @@ type StatusBadgeProps = {
   role: Exclude<AvailableRoles, "admin">;
   history: {
     status: number;
-    review?: { decision?: number; dueDate?: string } | null;
+    review?: { decision?: number; dueDate?: Date | null } | null;
   };
   hasSelfAssesment?: boolean;
 };

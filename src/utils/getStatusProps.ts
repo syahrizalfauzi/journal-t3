@@ -3,7 +3,11 @@ import { AvailableRoles } from "../types/Role";
 const getStatusProps = (
   history: {
     status: number;
-    review?: { decision?: number; dueDate?: string; assesment?: any[] } | null;
+    review?: {
+      decision?: number;
+      dueDate?: Date | null;
+      assesment?: any[];
+    } | null;
   },
   role?: Exclude<AvailableRoles, "admin">,
   hasSelfAssesment?: boolean,
