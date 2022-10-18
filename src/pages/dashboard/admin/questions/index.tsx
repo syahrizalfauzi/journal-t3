@@ -11,11 +11,10 @@ import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { questionListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { ListQuery } from "../../../../types/ListQuery";
+import { z } from "zod";
 
 const sortOrders = getSortOrder(QUESTION_LIST_SORTS);
-type QuestionListSorts = typeof QUESTION_LIST_SORTS[number];
-type QuestionListQuery = ListQuery<typeof questionListQuery, QuestionListSorts>;
+type QuestionListQuery = z.infer<typeof questionListQuery>;
 
 const DashboardAdminQuestionsPage: NextPage = () => {
   const [queryOptions, setQueryOptions] = useState<QuestionListQuery>({

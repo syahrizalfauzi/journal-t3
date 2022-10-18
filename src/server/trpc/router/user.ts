@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { userListQuery } from "../../queries";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
@@ -69,17 +68,10 @@ export const userRouter = t.router({
         "country",
       ]);
 
-      const filter = {
-        isActivated: { equals: input.filter?.isActivated },
-      } as Prisma.UserWhereInput;
-
-      const getCount = ctx.prisma.user.count({
-        where: filter,
-      });
+      const getCount = ctx.prisma.user.count({});
 
       const getUsers = ctx.prisma.user.findMany({
         ...paginationQuery(input),
-        where: filter,
         orderBy: profileOrder
           ? {
               profile: { ...profileOrder },

@@ -16,20 +16,20 @@ const parseSortLabel = (sort: Sorts) =>
     status: "Status",
   }[sort]);
 
-const getSortOrder = (
-  allowedSorts: readonly Sorts[],
+const getSortOrder = <T extends readonly Sorts[]>(
+  allowedSorts: T,
   descFirst = true
-): SortOrder[] => {
+): SortOrder<T[number]>[] => {
   return allowedSorts
-    .map<SortOrder[]>((allowedSort) => {
-      const sorts: SortOrder[] = [
+    .map<SortOrder<T[number]>[]>((allowedSort) => {
+      const sorts: SortOrder<T[number]>[] = [
         {
-          sort: allowedSort,
+          sort: allowedSort as T[number],
           order: "desc",
           label: `${parseSortLabel(allowedSort)} (DESC)`,
         },
         {
-          sort: allowedSort,
+          sort: allowedSort as T[number],
           order: "asc",
           label: `${parseSortLabel(allowedSort)} (ASC)`,
         },

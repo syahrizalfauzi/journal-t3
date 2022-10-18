@@ -90,11 +90,14 @@ export const manuscriptRouter = t.router({
     .use(authGuard(["chief"]))
     .input(manuscriptChiefQuery)
     .query(async ({ ctx, input }) => {
-      const filter = input.filter?.status
-        ? ({
-            latestHistory: { history: { status: Number(input.filter.status) } },
-          } as Prisma.ManuscriptWhereInput)
-        : undefined;
+      const filter =
+        input.filter?.key === "status"
+          ? ({
+              latestHistory: {
+                history: { status: Number(input.filter.value) },
+              },
+            } as Prisma.ManuscriptWhereInput)
+          : undefined;
 
       const historyOrder = getOrderQuery({ ...input }, ["status", "updatedAt"]);
 
@@ -153,10 +156,10 @@ export const manuscriptRouter = t.router({
     .query(async ({ ctx, input }) => {
       const filter = {
         authorId: ctx.session.user.id,
-        ...(input.filter?.status
+        ...(input.filter?.key === "status"
           ? {
               latestHistory: {
-                history: { status: Number(input.filter.status) },
+                history: { status: Number(input.filter.value) },
               },
             }
           : undefined),
@@ -224,13 +227,14 @@ export const manuscriptRouter = t.router({
               lte: HISTORY_STATUS.revision,
             },
             review: {
-              assesment: input.filter?.assessed
-                ? [
-                    undefined,
-                    { none: { userId: ctx.session.user.id } },
-                    { some: { userId: ctx.session.user.id, isDone: true } },
-                  ][Number(input.filter.assessed)]
-                : undefined,
+              assesment:
+                input.filter?.key === "assessed"
+                  ? [
+                      undefined,
+                      { none: { userId: ctx.session.user.id } },
+                      { some: { userId: ctx.session.user.id, isDone: true } },
+                    ][Number(input.filter.value)]
+                  : undefined,
             },
           },
         },

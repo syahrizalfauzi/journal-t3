@@ -10,14 +10,10 @@ import Link from "next/link";
 import parseDate from "../../../../utils/parseDate";
 import KeywordBadges from "../../../../components/KeywordBadges";
 import StatusBadge from "../../../../components/StatusBadge";
-import { ListQuery } from "../../../../types/ListQuery";
+import { z } from "zod";
 
 const sortOrders = getSortOrder(MANUSCRIPT_AUTHOR_SORTS);
-type ManuscriptAuthorSorts = typeof MANUSCRIPT_AUTHOR_SORTS[number];
-type ManuscriptAuthorQuery = ListQuery<
-  typeof manuscriptAuthorQuery,
-  ManuscriptAuthorSorts
->;
+type ManuscriptAuthorQuery = z.infer<typeof manuscriptAuthorQuery>;
 
 const DashboardAuthorSubmissionsPage: NextPage = () => {
   const [queryOptions, setQueryOptions] = useState<ManuscriptAuthorQuery>({

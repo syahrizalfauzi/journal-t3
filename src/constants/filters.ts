@@ -1,6 +1,6 @@
-import { Filter } from "../types/Filter";
+//Removed Filter[] so that it's a literal type
 
-export const MANUSCRIPT_CHIEF_AUTHOR_FILTERS: readonly Filter[] = [
+export const MANUSCRIPT_CHIEF_AUTHOR_FILTERS = [
   {
     key: "status",
     label: "Status",
@@ -44,7 +44,8 @@ export const MANUSCRIPT_CHIEF_AUTHOR_FILTERS: readonly Filter[] = [
     ],
   },
 ] as const;
-export const MANUSCRIPT_REVIEWER_FILTERS: readonly Filter[] = [
+
+export const MANUSCRIPT_REVIEWER_FILTERS = [
   {
     key: "assessed",
     label: "Status",
@@ -60,7 +61,7 @@ export const MANUSCRIPT_REVIEWER_FILTERS: readonly Filter[] = [
     ],
   },
 ] as const;
-export const INVITATION_FILTERS: readonly Filter[] = [
+export const INVITATION_FILTERS = [
   {
     key: "status",
     label: "Status",

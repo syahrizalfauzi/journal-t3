@@ -13,20 +13,19 @@ import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { userListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { ListQuery } from "../../../../types/ListQuery";
 import { useSession } from "next-auth/react";
+import { z } from "zod";
 
 const sortOrders = getSortOrder(USER_LIST_SORTS);
-type UserListSorts = typeof USER_LIST_SORTS[number];
-type UserListQuery = ListQuery<typeof userListQuery, UserListSorts>;
+type UserListQuery = z.infer<typeof userListQuery>;
 
 const DashboardAdminUsersPage: NextPage = () => {
   const session = useSession();
 
   const [queryOptions, setQueryOptions] = useState<UserListQuery>({
-    sort: sortOrders[0]?.sort,
-    order: sortOrders[0]?.order,
-  } as UserListQuery);
+    sort: sortOrders[0]!.sort,
+    order: sortOrders[0]!.order,
+  });
   const userListQuery = trpc.user.list.useQuery(queryOptions);
   const { mutate: activationMutate } = trpc.user.activate.useMutation({
     onSettled: toastSettleHandler,

@@ -12,8 +12,8 @@ export type Sorts =
   | "title"
   | "status";
 
-export interface SortOrder {
-  sort: Sorts;
+export interface SortOrder<T extends Sorts> {
+  sort: T;
   order: "asc" | "desc";
   label: string;
 }
