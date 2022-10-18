@@ -1,4 +1,4 @@
-import { Sorts, SortOrder } from "../types/SortOrder";
+import { SortOrder, Sorts } from "../types/SortOrder";
 
 const parseSortLabel = (sort: Sorts) =>
   ({

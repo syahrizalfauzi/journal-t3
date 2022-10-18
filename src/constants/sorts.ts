@@ -1,6 +1,6 @@
-import { Sorts } from "../types/SortOrder";
+//Removed Sorts[] so that it's a literal type
 
-export const USER_LIST_SORTS: readonly Sorts[] = [
+export const USER_LIST_SORTS = [
   "createdAt",
   "username",
   "role",
@@ -10,49 +10,29 @@ export const USER_LIST_SORTS: readonly Sorts[] = [
   "country",
 ] as const;
 
-export const USER_REVIEWER_SORTS: readonly Sorts[] = [
-  "username",
-  "email",
-  "country",
-];
+export const USER_REVIEWER_SORTS = ["username", "email", "country"] as const;
 
-export const QUESTION_LIST_SORTS: readonly Sorts[] = [
+export const QUESTION_LIST_SORTS = [
   "createdAt",
   "maxScale",
   "question",
 ] as const;
 
-export const MANUSCRIPT_AUTHOR_SORTS: readonly Sorts[] = [
+export const MANUSCRIPT_AUTHOR_SORTS = [
   "updatedAt",
   "createdAt",
   "title",
-];
+] as const;
 
-export const MANUSCRIPT_CHIEF_SORTS: readonly Sorts[] = [
+export const MANUSCRIPT_CHIEF_SORTS = [
   "updatedAt",
   "createdAt",
   "title",
   "status",
-];
+] as const;
 
-export const INVITATION_LIST_SORTS: readonly Sorts[] = [
+export const INVITATION_LIST_SORTS = [
   "updatedAt",
   "createdAt",
   "status",
-];
-
-// export const userSortOrdersreadonly : Sorts[] = ([
-//   "createdAt",
-//   "username",
-//   "role",
-//   "isActivated",
-//   "email",
-//   "name",
-//   "country",
-// ]);
-
-// export const userChiefSortOrdersreadonly : Sorts[] = ([
-//   "username",
-//   "email",
-//   "country",
-// ]);
+] as const;

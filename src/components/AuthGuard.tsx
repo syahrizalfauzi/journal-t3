@@ -3,15 +3,10 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { getHasRole, getRoleSelector } from "../utils/role";
+import { AvailableRoles } from "../types/Role";
 
 type AuthGuardProps = LayoutProps & {
-  allowedRole:
-    | "author"
-    | "reviewer"
-    | "chief"
-    | "admin"
-    | "loggedIn"
-    | "loggedOut";
+  allowedRole: AvailableRoles | "loggedIn" | "loggedOut";
   redirectTo?: string;
 };
 

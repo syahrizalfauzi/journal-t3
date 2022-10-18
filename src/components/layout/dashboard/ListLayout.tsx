@@ -1,36 +1,45 @@
 import React from "react";
 import ErrorTexts from "../../ErrorTexts";
-import { SortOrder } from "../../../types/SortOrder";
+import { Sorts } from "../../../types/SortOrder";
 import Paginator from "../../Paginator";
 import { PaginationMetadata } from "../../../utils/getItemIndex";
 import { UseTRPCQueryResult } from "@trpc/react/shared";
+import getSortOrder from "../../../utils/getSortOrder";
 
-type ListLayoutProps<T> = {
+type ListLayoutProps<T extends Sorts> = {
   main: React.ReactNode;
   queryResult: UseTRPCQueryResult<{ _metadata: PaginationMetadata }, any>;
-  sortOrders: SortOrder[];
   allowedSorts: readonly T[];
-  onChangeSort: (newSort: T, newOrder: "asc" | "desc") => any;
-  onChangePage: (newPage: number) => any;
+  setQueryOptions: React.Dispatch<
+    React.SetStateAction<{ sort: T; order?: "asc" | "desc"; page?: number }>
+  >;
   paginated?: boolean;
   create?: React.ReactNode;
 };
 
-const ListLayout = <T extends unknown>({
+const ListLayout = <T extends Sorts>({
   main,
   queryResult,
-  sortOrders,
-  onChangeSort,
-  onChangePage,
+  allowedSorts,
+  setQueryOptions,
   paginated = true,
   create,
 }: ListLayoutProps<T>) => {
+  const sortOrders = getSortOrder(allowedSorts);
+
   const handleChangeSortOrder = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sortOrder = sortOrders[Number(e.target.value)];
     if (!sortOrder) return;
-    onChangeSort(sortOrder.sort as T, sortOrder.order);
+
+    setQueryOptions((state) => ({
+      ...state,
+      order: sortOrder.order,
+      sort: sortOrder.sort as T,
+    }));
   };
 
+  const handleChangePage = (page: number) =>
+    setQueryOptions((state) => ({ ...state, page }));
   return (
     <div className="flex flex-col items-stretch gap-4">
       <div className="flex flex-row items-center justify-between">
@@ -71,7 +80,7 @@ const ListLayout = <T extends unknown>({
       {paginated && queryResult.data?._metadata && (
         <Paginator
           metadata={queryResult.data._metadata}
-          onChangePage={onChangePage}
+          onChangePage={handleChangePage}
         />
       )}
     </div>

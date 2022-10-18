@@ -32,4 +32,4 @@ export const ASSESSMENT_DECISION = {
 } as const;
 
 export const MAX_TEAM_USERS = 4;
-export const ITEM_COUNT_PER_PAGE = 20;
+export const ITEM_COUNT_PER_PAGE = 1;

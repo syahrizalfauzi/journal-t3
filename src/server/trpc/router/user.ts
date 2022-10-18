@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { userListQuery } from "../../queries";
-import { paginationQuery, paginationMetadata } from "../../utils/pagination";
+import { paginationMetadata, paginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
 import { authGuard } from "../middlewares/authGuard";

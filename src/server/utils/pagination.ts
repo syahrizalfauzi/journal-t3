@@ -12,7 +12,7 @@ export const paginationMetadata = (
   { page }: { page?: number }
 ) => {
   // const page = pageInput ?? 1;
-  const clampedPage = page ?? 1 <= 1 ? 1 : page;
+  const clampedPage = (page ?? 1) <= 1 ? 1 : page;
 
   return {
     _metadata: {

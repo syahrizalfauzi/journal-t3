@@ -6,21 +6,16 @@ import { trpc } from "../../../../utils/trpc";
 import { FaTrashAlt } from "react-icons/fa";
 import parseDate from "../../../../utils/parseDate";
 import Link from "next/link";
-import { z } from "zod";
-import {
-  QUESTION_LIST_SORTS,
-  USER_LIST_SORTS,
-} from "../../../../constants/sorts";
+import { QUESTION_LIST_SORTS } from "../../../../constants/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { questionListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
+import { ListQuery } from "../../../../types/ListQuery";
 
 const sortOrders = getSortOrder(QUESTION_LIST_SORTS);
 type QuestionListSorts = typeof QUESTION_LIST_SORTS[number];
-type QuestionListQuery = Omit<z.infer<typeof questionListQuery>, "sort"> & {
-  sort: QuestionListSorts;
-};
+type QuestionListQuery = ListQuery<typeof questionListQuery, QuestionListSorts>;
 
 const DashboardAdminQuestionsPage: NextPage = () => {
   const [queryOptions, setQueryOptions] = useState<QuestionListQuery>({
@@ -28,20 +23,10 @@ const DashboardAdminQuestionsPage: NextPage = () => {
     order: sortOrders[0]?.order,
   } as QuestionListQuery);
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
+
   const { mutate: deleteMutate } = trpc.question.delete.useMutation({
     onSettled: toastSettleHandler(),
   });
-
-  const handleChangeSort = (sort: QuestionListSorts, order: "asc" | "desc") => {
-    setQueryOptions((state) => ({
-      ...state,
-      sort,
-      order,
-    }));
-  };
-
-  const handleChangePage = (page: number) =>
-    setQueryOptions((state) => ({ ...state, page }));
 
   const handleDelete = (id: string, question: string) => {
     if (confirm(`Delete question '${question}'?\n\nID : ${id}`))
@@ -52,10 +37,8 @@ const DashboardAdminQuestionsPage: NextPage = () => {
       <p className="text-xl font-medium">Question List</p>
       <ListLayout
         queryResult={questionListQuery}
-        sortOrders={sortOrders}
-        allowedSorts={USER_LIST_SORTS}
-        onChangePage={handleChangePage}
-        onChangeSort={handleChangeSort}
+        allowedSorts={QUESTION_LIST_SORTS}
+        setQueryOptions={setQueryOptions}
         create={
           <Link href="/dashboard/admin/questions/create">
             <a className="btn btn-info btn-sm text-white">
@@ -76,33 +59,39 @@ const DashboardAdminQuestionsPage: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {questionListQuery.data?.questions.map((question, index) => (
-                  <tr key={question.id} className="hover">
-                    <th>
-                      {getItemIndex(questionListQuery.data._metadata, index)}
-                    </th>
-                    <td>
-                      <Link href={`/dashboard/admin/questions/${question.id}`}>
-                        <a className="link">{question.question}</a>
-                      </Link>
-                    </td>
-                    <td>{question.maxScale}</td>
-                    <td>{parseDate(question.createdAt)}</td>
-                    <td>
-                      <div
-                        onClick={() =>
-                          handleDelete(question.id, question.question)
-                        }
-                      >
-                        <FaTrashAlt
-                          className="cursor-pointer"
-                          color="red"
-                          size="18px"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {(questionListQuery.data?.questions.length ?? 0) <= 0 ? (
+                  <p>No review questions</p>
+                ) : (
+                  questionListQuery.data?.questions.map((question, index) => (
+                    <tr key={question.id} className="hover">
+                      <th>
+                        {getItemIndex(questionListQuery.data._metadata, index)}
+                      </th>
+                      <td>
+                        <Link
+                          href={`/dashboard/admin/questions/${question.id}`}
+                        >
+                          <a className="link">{question.question}</a>
+                        </Link>
+                      </td>
+                      <td>{question.maxScale}</td>
+                      <td>{parseDate(question.createdAt)}</td>
+                      <td>
+                        <div
+                          onClick={() =>
+                            handleDelete(question.id, question.question)
+                          }
+                        >
+                          <FaTrashAlt
+                            className="cursor-pointer"
+                            color="red"
+                            size="18px"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </>
