@@ -1,5 +1,5 @@
 import { NextPage } from "next/types";
-import React, { useState } from "react";
+import React from "react";
 import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import RoleBadges from "../../../../components/RoleBadges";
@@ -14,18 +14,22 @@ import getItemIndex from "../../../../utils/getItemIndex";
 import { userListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { useSession } from "next-auth/react";
-import { z } from "zod";
+import { useQueryOptions } from "../../../../utils/useQueryOptions";
 
 const sortOrders = getSortOrder(USER_LIST_SORTS);
-type UserListQuery = z.infer<typeof userListQuery>;
+type QueryOptions = typeof userListQuery;
+type Sorts = typeof USER_LIST_SORTS[number];
 
 const DashboardAdminUsersPage: NextPage = () => {
   const session = useSession();
 
-  const [queryOptions, setQueryOptions] = useState<UserListQuery>({
-    sort: sortOrders[0]!.sort,
-    order: sortOrders[0]!.order,
-  });
+  const { queryOptions, ...rest } = useQueryOptions<QueryOptions, Sorts, never>(
+    {
+      sort: sortOrders[0]!.sort,
+      order: sortOrders[0]!.order,
+    },
+    USER_LIST_SORTS
+  );
   const userListQuery = trpc.user.list.useQuery(queryOptions);
   const { mutate: activationMutate } = trpc.user.activate.useMutation({
     onSettled: toastSettleHandler,
@@ -50,8 +54,7 @@ const DashboardAdminUsersPage: NextPage = () => {
       <p className="text-xl font-medium">User List</p>
       <ListLayout
         queryResult={userListQuery}
-        allowedSorts={USER_LIST_SORTS}
-        setQueryOptions={setQueryOptions}
+        useQueryOptionsReturn={{ queryOptions, ...rest }}
         create={
           <Link href="/dashboard/admin/users/create">
             <a className="btn btn-info btn-sm text-white">New User</a>

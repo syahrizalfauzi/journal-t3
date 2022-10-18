@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next/types";
 import DashboardAuthorLayout from "../../../../components/layout/dashboard/DashboardAuthorLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
@@ -10,16 +10,28 @@ import Link from "next/link";
 import parseDate from "../../../../utils/parseDate";
 import KeywordBadges from "../../../../components/KeywordBadges";
 import StatusBadge from "../../../../components/StatusBadge";
-import { z } from "zod";
+import { useQueryOptions } from "../../../../utils/useQueryOptions";
+import { MANUSCRIPT_CHIEF_AUTHOR_FILTERS } from "../../../../constants/filters";
 
 const sortOrders = getSortOrder(MANUSCRIPT_AUTHOR_SORTS);
-type ManuscriptAuthorQuery = z.infer<typeof manuscriptAuthorQuery>;
+
+type QueryOptions = typeof manuscriptAuthorQuery;
+type Sorts = typeof MANUSCRIPT_AUTHOR_SORTS[number];
+type Filters = typeof MANUSCRIPT_CHIEF_AUTHOR_FILTERS[number];
 
 const DashboardAuthorSubmissionsPage: NextPage = () => {
-  const [queryOptions, setQueryOptions] = useState<ManuscriptAuthorQuery>({
-    sort: sortOrders[0]!.sort,
-    order: sortOrders[0]!.order,
-  } as ManuscriptAuthorQuery);
+  const { queryOptions, ...rest } = useQueryOptions<
+    QueryOptions,
+    Sorts,
+    Filters
+  >(
+    {
+      sort: sortOrders[0]!.sort,
+      order: sortOrders[0]!.order,
+    },
+    MANUSCRIPT_AUTHOR_SORTS,
+    MANUSCRIPT_CHIEF_AUTHOR_FILTERS
+  );
   const manuscriptAuthorQuery =
     trpc.manuscript.listForAuthor.useQuery(queryOptions);
 
@@ -28,8 +40,7 @@ const DashboardAuthorSubmissionsPage: NextPage = () => {
       <p className="text-xl font-medium">Submission List</p>
       <ListLayout
         queryResult={manuscriptAuthorQuery}
-        allowedSorts={MANUSCRIPT_AUTHOR_SORTS}
-        setQueryOptions={setQueryOptions}
+        useQueryOptionsReturn={{ queryOptions, ...rest }}
         create={
           <Link href="/dashboard/author/submissions/create">
             <a className="btn btn-info btn-sm text-white">New Submission</a>

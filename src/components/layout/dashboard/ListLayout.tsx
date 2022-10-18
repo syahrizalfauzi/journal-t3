@@ -1,45 +1,64 @@
-import React from "react";
+import React, { Fragment } from "react";
 import ErrorTexts from "../../ErrorTexts";
 import { Sorts } from "../../../types/SortOrder";
 import Paginator from "../../Paginator";
 import { PaginationMetadata } from "../../../utils/getItemIndex";
 import { UseTRPCQueryResult } from "@trpc/react/shared";
 import getSortOrder from "../../../utils/getSortOrder";
+import { Filter } from "../../../types/Filter";
+import {
+  QueryType,
+  UseQueryOptionsReturn,
+} from "../../../utils/useQueryOptions";
 
-type ListLayoutProps<T extends Sorts> = {
+type ListLayoutProps<I extends QueryType, S extends Sorts, F extends Filter> = {
   main: React.ReactNode;
+  useQueryOptionsReturn: UseQueryOptionsReturn<I, S, F>;
   queryResult: UseTRPCQueryResult<{ _metadata: PaginationMetadata }, any>;
-  allowedSorts: readonly T[];
-  setQueryOptions: React.Dispatch<
-    React.SetStateAction<{ sort: T; order?: "asc" | "desc"; page?: number }>
-  >;
   paginated?: boolean;
   create?: React.ReactNode;
 };
 
-const ListLayout = <T extends Sorts>({
+const ListLayout = <I extends QueryType, S extends Sorts, F extends Filter>({
   main,
   queryResult,
-  allowedSorts,
-  setQueryOptions,
+  useQueryOptionsReturn,
   paginated = true,
   create,
-}: ListLayoutProps<T>) => {
-  const sortOrders = getSortOrder(allowedSorts);
+}: ListLayoutProps<I, S, F>) => {
+  const {
+    allowedSorts,
+    allowedFilters,
+    handleChangeSortOrder,
+    handleChangePage,
+    handleChangeFilter,
+  } = useQueryOptionsReturn;
 
-  const handleChangeSortOrder = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const sortOrders = getSortOrder(allowedSorts ?? []);
+
+  const onChangeSortOrder = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const sortOrder = sortOrders[Number(e.target.value)];
     if (!sortOrder) return;
 
-    setQueryOptions((state) => ({
-      ...state,
-      order: sortOrder.order,
-      sort: sortOrder.sort as T,
-    }));
+    handleChangeSortOrder(sortOrder.order, sortOrder.sort);
   };
 
-  const handleChangePage = (page: number) =>
-    setQueryOptions((state) => ({ ...state, page }));
+  const onChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const [index, valueIndex] = e.target.value.split("|").map((e) => Number(e));
+
+    if (index === undefined || valueIndex === undefined || !allowedFilters)
+      return;
+
+    const filterValue = allowedFilters[index]?.availableValues[valueIndex];
+
+    if (index === -1) {
+      handleChangeFilter(undefined, undefined);
+      return;
+    }
+
+    if (!filterValue) return;
+    handleChangeFilter(allowedFilters[index]!.key, filterValue.value);
+  };
   return (
     <div className="flex flex-col items-stretch gap-4">
       <div className="flex flex-row items-center justify-between">
@@ -47,7 +66,7 @@ const ListLayout = <T extends Sorts>({
           {sortOrders.length > 0 && (
             <select
               className="select select-bordered max-w-xs"
-              onChange={handleChangeSortOrder}
+              onChange={onChangeSortOrder}
             >
               {sortOrders.map((sortOrder, index) => (
                 <option
@@ -59,18 +78,27 @@ const ListLayout = <T extends Sorts>({
               ))}
             </select>
           )}
-          {/*{filter}*/}
-          {/*{#if filters.length > 0}*/}
-          {/*	<select bind:value={filterString} className="select select-bordered max-w-xs">*/}
-          {/*		<option value={undefined} selected>No Filter</option>*/}
-          {/*		{#each filters as filter}*/}
-          {/*			<option disabled>{filter.label}</option>*/}
-          {/*			{#each filter.availableValues as filterValue}*/}
-          {/*				<option value={`${filter.key}=${filterValue.value}`}>{filterValue.label}</option>*/}
-          {/*			{/each}*/}
-          {/*		{/each}*/}
-          {/*	</select>*/}
-          {/*{/if} */}
+          {allowedFilters && allowedFilters?.length > 0 && (
+            <select
+              className="select select-bordered max-w-xs"
+              onChange={onChangeFilter}
+            >
+              <option value={-1}>No Filter</option>
+              {allowedFilters.map(({ label, availableValues, key }, index) => (
+                <Fragment key={key}>
+                  <option disabled>{label}</option>
+                  {availableValues.map(({ label }, valueIndex) => (
+                    <option
+                      key={`${index}|${valueIndex}`}
+                      value={`${index}|${valueIndex}`}
+                    >
+                      {label}
+                    </option>
+                  ))}
+                </Fragment>
+              ))}
+            </select>
+          )}
         </div>
         {!queryResult.isLoading && !queryResult.error && create}
       </div>

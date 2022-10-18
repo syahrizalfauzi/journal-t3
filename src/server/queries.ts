@@ -14,7 +14,7 @@ import {
   MANUSCRIPT_REVIEWER_FILTERS,
 } from "../constants/filters";
 
-const paginationInput = z.object({
+export const paginationInput = z.object({
   order: z.enum(["asc", "desc"]).optional(),
   page: z.number().optional(),
 });

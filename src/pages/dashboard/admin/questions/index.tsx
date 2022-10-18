@@ -1,5 +1,5 @@
 import { NextPage } from "next/types";
-import React, { useState } from "react";
+import React from "react";
 import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import { trpc } from "../../../../utils/trpc";
@@ -11,16 +11,20 @@ import getSortOrder from "../../../../utils/getSortOrder";
 import getItemIndex from "../../../../utils/getItemIndex";
 import { questionListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { z } from "zod";
+import { useQueryOptions } from "../../../../utils/useQueryOptions";
 
 const sortOrders = getSortOrder(QUESTION_LIST_SORTS);
-type QuestionListQuery = z.infer<typeof questionListQuery>;
+type QueryOptions = typeof questionListQuery;
+type Sorts = typeof QUESTION_LIST_SORTS[number];
 
 const DashboardAdminQuestionsPage: NextPage = () => {
-  const [queryOptions, setQueryOptions] = useState<QuestionListQuery>({
-    sort: sortOrders[0]?.sort,
-    order: sortOrders[0]?.order,
-  } as QuestionListQuery);
+  const { queryOptions, ...rest } = useQueryOptions<QueryOptions, Sorts, never>(
+    {
+      sort: sortOrders[0]!.sort,
+      order: sortOrders[0]!.order,
+    },
+    QUESTION_LIST_SORTS
+  );
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
 
   const { mutate: deleteMutate } = trpc.question.delete.useMutation({
@@ -36,8 +40,7 @@ const DashboardAdminQuestionsPage: NextPage = () => {
       <p className="text-xl font-medium">Question List</p>
       <ListLayout
         queryResult={questionListQuery}
-        allowedSorts={QUESTION_LIST_SORTS}
-        setQueryOptions={setQueryOptions}
+        useQueryOptionsReturn={{ queryOptions, ...rest }}
         create={
           <Link href="/dashboard/admin/questions/create">
             <a className="btn btn-info btn-sm text-white">

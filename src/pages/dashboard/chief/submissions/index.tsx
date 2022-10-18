@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next/types";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import getSortOrder from "../../../../utils/getSortOrder";
@@ -9,17 +9,29 @@ import Link from "next/link";
 import parseDate from "../../../../utils/parseDate";
 import KeywordBadges from "../../../../components/KeywordBadges";
 import StatusBadge from "../../../../components/StatusBadge";
-import { z } from "zod";
 import DashboardChiefLayout from "../../../../components/layout/dashboard/DashboardChiefLayout";
+import { useQueryOptions } from "../../../../utils/useQueryOptions";
+import { MANUSCRIPT_CHIEF_AUTHOR_FILTERS } from "../../../../constants/filters";
 
 const sortOrders = getSortOrder(MANUSCRIPT_CHIEF_SORTS);
-type ManuscriptChiefQuery = z.infer<typeof manuscriptChiefQuery>;
+
+type QueryOptions = typeof manuscriptChiefQuery;
+type Sorts = typeof MANUSCRIPT_CHIEF_SORTS[number];
+type Filters = typeof MANUSCRIPT_CHIEF_AUTHOR_FILTERS[number];
 
 const DashboardChiefSubmissionsPage: NextPage = () => {
-  const [queryOptions, setQueryOptions] = useState<ManuscriptChiefQuery>({
-    sort: sortOrders[0]!.sort,
-    order: sortOrders[0]!.order,
-  } as ManuscriptChiefQuery);
+  const { queryOptions, ...rest } = useQueryOptions<
+    QueryOptions,
+    Sorts,
+    Filters
+  >(
+    {
+      sort: sortOrders[0]!.sort,
+      order: sortOrders[0]!.order,
+    },
+    MANUSCRIPT_CHIEF_SORTS,
+    MANUSCRIPT_CHIEF_AUTHOR_FILTERS
+  );
   const manuscriptChiefQuery =
     trpc.manuscript.listForChief.useQuery(queryOptions);
 
@@ -28,8 +40,7 @@ const DashboardChiefSubmissionsPage: NextPage = () => {
       <p className="text-xl font-medium">Submission List</p>
       <ListLayout
         queryResult={manuscriptChiefQuery}
-        allowedSorts={MANUSCRIPT_CHIEF_SORTS}
-        setQueryOptions={setQueryOptions}
+        useQueryOptionsReturn={{ queryOptions, ...rest }}
         main={
           (manuscriptChiefQuery.data?.manuscripts.length ?? 0) <= 0 ? (
             <p>You have no submissions</p>
