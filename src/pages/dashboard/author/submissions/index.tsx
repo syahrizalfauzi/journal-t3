@@ -44,7 +44,10 @@ const DashboardAuthorSubmissionsPage: NextPage = () => {
             <p>You have no submissions</p>
           ) : (
             manuscriptAuthorQuery.data?.manuscripts.map((submission) => (
-              <Link href={`/dashboard/author/submissions/${submission.id}`}>
+              <Link
+                key={submission.id}
+                href={`/dashboard/author/submissions/${submission.id}`}
+              >
                 <a className="flex flex-row items-center rounded-xl border p-4 shadow-lg transition-all duration-100 hover:bg-gray-100">
                   <div className="flex flex-1 flex-col items-start gap-1">
                     <p className="font-bold">{submission.title}</p>

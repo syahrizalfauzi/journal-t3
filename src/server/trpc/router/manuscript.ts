@@ -33,9 +33,11 @@ export const manuscriptRouter = t.router({
         .toLowerCase()
         .split(",");
 
+      const { fileUrl, ...manuscriptInput } = input;
+
       const manuscriptCreate = ctx.prisma.manuscript.create({
         data: {
-          ...input,
+          ...manuscriptInput,
           authorId: ctx.session.user.id,
           isBlind: true,
           keywords: {
@@ -49,7 +51,7 @@ export const manuscriptRouter = t.router({
               status: HISTORY_STATUS.submitted,
               submission: {
                 create: {
-                  fileUrl: input.fileUrl,
+                  fileUrl,
                 },
               },
             },

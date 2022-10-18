@@ -22,7 +22,7 @@ type CreateUserForm = Omit<z.infer<typeof newUserValidator>, "role"> & {
 const DashboardAdminUserCreatePage: NextPage = () => {
   const { register, handleSubmit, reset } = useForm<CreateUserForm>();
   const { mutate, isLoading } = trpc.user.create.useMutation({
-    onSettled: toastSettleHandler(true),
+    onSettled: toastSettleHandler,
   });
 
   const onSubmit: SubmitHandler<CreateUserForm> = (data) => {

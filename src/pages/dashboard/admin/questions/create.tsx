@@ -13,7 +13,7 @@ type CreateQuestionForm = z.infer<typeof questionValidator>;
 const DashboardAdminQuestionCreatePage: NextPage = () => {
   const { register, handleSubmit, reset } = useForm<CreateQuestionForm>();
   const { mutate, isLoading } = trpc.question.create.useMutation({
-    onSettled: toastSettleHandler(true),
+    onSettled: toastSettleHandler,
   });
 
   const onSubmit: SubmitHandler<CreateQuestionForm> = ({

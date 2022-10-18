@@ -25,7 +25,7 @@ const DashboardAdminQuestionsPage: NextPage = () => {
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
 
   const { mutate: deleteMutate } = trpc.question.delete.useMutation({
-    onSettled: toastSettleHandler(),
+    onSettled: toastSettleHandler,
   });
 
   const handleDelete = (id: string, question: string) => {

@@ -25,7 +25,7 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
 
   const { mutate: mutationUpdate, isLoading: mutationLoading } =
     trpc.question.update.useMutation({
-      onSettled: toastSettleHandler(true),
+      onSettled: toastSettleHandler,
     });
 
   const { register, handleSubmit, reset } = useForm<EditQuestionForm>();

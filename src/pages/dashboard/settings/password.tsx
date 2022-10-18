@@ -12,7 +12,7 @@ type ChangePasswordForm = z.infer<typeof changePasswordValidator>;
 const DashboardSettingsPasswordPage = () => {
   const { mutate: mutationUpdate, isLoading: mutationLoading } =
     trpc.auth.changePassword.useMutation({
-      onSettled: toastSettleHandler(true),
+      onSettled: toastSettleHandler,
     });
 
   const { register, handleSubmit } = useForm<ChangePasswordForm>();

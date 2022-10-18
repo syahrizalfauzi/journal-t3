@@ -29,10 +29,10 @@ const DashboardAdminUsersPage: NextPage = () => {
   } as UserListQuery);
   const userListQuery = trpc.user.list.useQuery(queryOptions);
   const { mutate: activationMutate } = trpc.user.activate.useMutation({
-    onSettled: toastSettleHandler(),
+    onSettled: toastSettleHandler,
   });
   const { mutate: deleteMutate } = trpc.user.delete.useMutation({
-    onSettled: toastSettleHandler(),
+    onSettled: toastSettleHandler,
   });
 
   const handleActivate = (id: string, isActivated: boolean) =>
