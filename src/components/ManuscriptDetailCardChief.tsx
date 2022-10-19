@@ -6,36 +6,17 @@ import KeywordBadges from "./KeywordBadges";
 import parseDate from "../utils/parseDate";
 import FileInput from "./FileInput";
 
-type ManuscriptDetailCardAuthorProps = {
+type ManuscriptDetailCardChiefProps = {
   manuscriptDetail: inferProcedureOutput<
-    AppRouter["manuscript"]["getForAuthor"]
+    AppRouter["manuscript"]["getForChief"]
   >;
-  onUpdateOptionalFile: (optionalFile: File) => unknown;
-  isLoading: boolean;
-};
-
-type OptionalFileForm = {
-  optionalFile: FileList;
 };
 
 const ManuscriptDetailCardAuthor = ({
   manuscriptDetail,
-  isLoading,
-  onUpdateOptionalFile,
-}: ManuscriptDetailCardAuthorProps) => {
-  const { register, handleSubmit, control } = useForm<OptionalFileForm>();
-  const { optionalFile } = useWatch({
-    control,
-  });
-
-  const onSubmit: SubmitHandler<OptionalFileForm> = ({ optionalFile }) =>
-    onUpdateOptionalFile(optionalFile.item(0)!);
-
+}: ManuscriptDetailCardChiefProps) => {
   return (
-    <form
-      className="stretch flex flex-col gap-2 rounded-xl border p-4 shadow-xl"
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <div className="stretch flex flex-col gap-2 rounded-xl border p-4 shadow-xl">
       <p className="text-xl font-bold">Submission Detail</p>
       <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left align-middle">
         <tr>
@@ -57,6 +38,14 @@ const ManuscriptDetailCardAuthor = ({
           <td>{manuscriptDetail.authors}</td>
         </tr>
         <tr>
+          <th>Submitted By</th>
+          <td>{manuscriptDetail.author.profile!.name}</td>
+        </tr>
+        <tr>
+          <th>Review Type</th>
+          <td>{manuscriptDetail.isBlind ? "Double Blind" : "Single Blind"}</td>
+        </tr>
+        <tr>
           <th className="w-32">Date Created</th>
           <td>{parseDate(manuscriptDetail.createdAt)}</td>
         </tr>
@@ -67,13 +56,12 @@ const ManuscriptDetailCardAuthor = ({
               href={manuscriptDetail.coverFileUrl}
               className="link"
               target="_blank"
-              rel="noreferrer"
             >
               {manuscriptDetail.coverFileUrl}
             </a>
           </td>
         </tr>
-        {manuscriptDetail.optionalFileUrl ? (
+        {manuscriptDetail.optionalFileUrl && (
           <tr>
             <th className="w-36">Optional File</th>
             <td>
@@ -81,36 +69,9 @@ const ManuscriptDetailCardAuthor = ({
                 href={manuscriptDetail.optionalFileUrl}
                 className="link"
                 target="_blank"
-                rel="noreferrer"
               >
                 {manuscriptDetail.optionalFileUrl}
               </a>
-            </td>
-          </tr>
-        ) : (
-          <tr className="align-bottom">
-            <th className="w-36">Optional File</th>
-            <td>
-              <FileInput>
-                <input
-                  {...register("optionalFile")}
-                  disabled={isLoading}
-                  required
-                  type="file"
-                />
-              </FileInput>
-            </td>
-          </tr>
-        )}
-        {optionalFile && optionalFile.length > 0 && (
-          <tr>
-            <td colSpan={2} className="text-right">
-              <input
-                disabled={isLoading}
-                type="submit"
-                value="Submit"
-                className="btn btn-info btn-sm text-white"
-              />
             </td>
           </tr>
         )}
@@ -121,7 +82,7 @@ const ManuscriptDetailCardAuthor = ({
           </td>
         </tr>
       </table>
-    </form>
+    </div>
   );
 };
 

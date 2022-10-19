@@ -8,6 +8,7 @@ import { manuscriptRouter } from "./manuscript";
 import { historyRouter } from "./history";
 import { assesmentRouter } from "./assesment";
 import { invitationRouter } from "./invitation";
+import { reviewRouter } from "./review";
 
 export const appRouter = t.router({
   auth: authRouter,
@@ -17,6 +18,7 @@ export const appRouter = t.router({
   history: historyRouter,
   assesment: assesmentRouter,
   invitation: invitationRouter,
+  review: reviewRouter,
 });
 
 // export type definition of API

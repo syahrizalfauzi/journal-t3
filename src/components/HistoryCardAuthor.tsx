@@ -20,8 +20,8 @@ type HistoryCardAuthorProps = {
     >["latestHistory"]
   >["history"];
   isLoading: boolean;
-  onSubmitRevision: (file: File) => any;
-  onSubmitFinalization: (file: File | null) => any;
+  onRevise: (file: File) => unknown;
+  onFinalize: (file: File | null) => unknown;
 };
 
 type ReviseForm = {
@@ -36,8 +36,8 @@ type FinalizeForm = {
 const HistoryCardAuthor = ({
   history,
   isLoading,
-  onSubmitRevision,
-  onSubmitFinalization,
+  onRevise,
+  onFinalize,
 }: HistoryCardAuthorProps) => {
   const { label, color, message } = getStatusProps(history, "author");
   const reviseForm = useForm<ReviseForm>();
@@ -53,10 +53,13 @@ const HistoryCardAuthor = ({
       "width=800,height=1000"
     );
 
-  const onSubmitRevise: SubmitHandler<ReviseForm> = ({ revisionFile }) =>
-    onSubmitRevision(revisionFile.item(0)!);
+  const onSubmitRevise: SubmitHandler<ReviseForm> = ({ revisionFile }) => {
+    if (revisionFile.length <= 0) return;
+    const file = revisionFile.item(0);
+    if (file) return onRevise(file);
+  };
   const onSubmitFinalize: SubmitHandler<FinalizeForm> = ({ finalizeFile }) =>
-    onSubmitFinalization(finalizeFile.item(0));
+    onFinalize(finalizeFile.item(0));
 
   return (
     <div
@@ -72,11 +75,12 @@ const HistoryCardAuthor = ({
           <th>Latest File</th>
           <td>
             <a
-              href={history.submission!.fileUrl}
+              href={history.submission?.fileUrl}
               className="link"
               target="_blank"
+              rel="noreferrer"
             >
-              {history.submission!.fileUrl}
+              {history.submission?.fileUrl}
             </a>
           </td>
         </tr>
@@ -90,7 +94,7 @@ const HistoryCardAuthor = ({
                 .map(({ id, decision }, index) => {
                   const { label, className } = parseAssesmentDecision(decision);
                   return (
-                    <tr>
+                    <tr key={id}>
                       <th>Reviewer {index + 1}</th>
                       <td
                         onClick={() => handleOpenAssesment(id)}
@@ -125,7 +129,7 @@ const HistoryCardAuthor = ({
         {history.status === -1 && (
           <tr>
             <th>Comment</th>
-            <td>{history.submission!.message}</td>
+            <td>{history.submission?.message}</td>
           </tr>
         )}
       </table>

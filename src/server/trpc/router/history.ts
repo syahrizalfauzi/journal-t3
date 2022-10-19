@@ -50,7 +50,7 @@ export const historyRouter = t.router({
         data: { history: { connect: { id } } },
       });
 
-      return `Manuscript is successfully rejected (ID: ${manuscript.title})`;
+      return `Manuscript is successfully rejected (${manuscript.title})`;
     }),
   accept: t.procedure
     .use(authGuard(["chief"]))
@@ -92,7 +92,7 @@ export const historyRouter = t.router({
         data: { history: { connect: { id } } },
       });
 
-      return `Manuscript is successfully accepted (ID: ${title})`;
+      return `Manuscript is successfully accepted (${title})`;
     }),
   revise: t.procedure
     .use(authGuard(["author"]))
@@ -175,7 +175,7 @@ export const historyRouter = t.router({
         data: { history: { connect: { id } } },
       });
 
-      return "Review successfully accepted";
+      return "Proofread article successfully submitted";
     }),
   finalize: t.procedure
     .use(authGuard(["author"]))

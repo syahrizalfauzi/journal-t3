@@ -18,6 +18,7 @@ const DashboardAuthorSubmissionsDetailPage = () => {
     data: manuscript,
     isLoading: queryLoading,
     error: queryError,
+    refetch,
   } = trpc.manuscript.getForAuthor.useQuery(query.id as string);
 
   const updateOptionalFile = trpc.manuscript.updateOptionalFile.useMutation({
@@ -36,28 +37,34 @@ const DashboardAuthorSubmissionsDetailPage = () => {
     revise.isLoading ||
     finalize.isLoading;
 
-  const handleSubmitOptionalFile = (optionalFile: File) => {
+  const handleUpdateOptionalFile = (optionalFile: File) => {
     console.log("TODO : optional file upload", optionalFile);
-    updateOptionalFile.mutate({
-      id: query.id as string,
-      optionalFileUrl: SAMPLE_FILE_URL,
-    });
+    updateOptionalFile.mutate(
+      { id: query.id as string, optionalFileUrl: SAMPLE_FILE_URL },
+      { onSuccess: () => refetch() }
+    );
   };
 
-  const handleSubmitRevision = (file: File) => {
+  const handleRevise = (file: File) => {
     console.log("TODO : revision file upload", file);
-    revise.mutate({
-      manuscriptId: query.id as string,
-      fileUrl: SAMPLE_FILE_URL,
-    });
+    revise.mutate(
+      {
+        manuscriptId: query.id as string,
+        fileUrl: SAMPLE_FILE_URL,
+      },
+      { onSuccess: () => refetch() }
+    );
   };
 
-  const handleSubmitFinalization = (file: File | null) => {
+  const handleFinalize = (file: File | null) => {
     console.log("TODO : finalization file upload", file);
-    finalize.mutate({
-      manuscriptId: query.id as string,
-      fileUrl: file ? SAMPLE_FILE_URL : undefined,
-    });
+    finalize.mutate(
+      {
+        manuscriptId: query.id as string,
+        fileUrl: file ? SAMPLE_FILE_URL : undefined,
+      },
+      { onSuccess: () => refetch() }
+    );
   };
 
   return (
@@ -71,14 +78,14 @@ const DashboardAuthorSubmissionsDetailPage = () => {
             <ManuscriptSteps status={data.latestHistory!.history.status} />
             <ManuscriptDetailCardAuthor
               manuscriptDetail={data}
-              onSubmitOptionalFile={handleSubmitOptionalFile}
+              onUpdateOptionalFile={handleUpdateOptionalFile}
               isLoading={isLoading}
             />
             <HistoryCardAuthor
               history={data.latestHistory!.history}
               isLoading={isLoading}
-              onSubmitRevision={handleSubmitRevision}
-              onSubmitFinalization={handleSubmitFinalization}
+              onRevise={handleRevise}
+              onFinalize={handleFinalize}
             />
           </div>
         )}
