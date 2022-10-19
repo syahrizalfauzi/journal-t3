@@ -15,6 +15,7 @@ import { getOrderQuery } from "../../utils/sortOrder";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
 import { z } from "zod";
 import {
+  AUTHOR_HISTORY_SELECTION,
   CHIEF_HISTORY_SELECTION,
   REVIEWER_HISTORY_SELECTION,
 } from "../../../constants/historySelections";
@@ -388,6 +389,33 @@ export const manuscriptRouter = t.router({
             },
             orderBy: { createdAt: "desc" },
             select: REVIEWER_HISTORY_SELECTION,
+          },
+        },
+      });
+
+      if (!manuscript)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return manuscript;
+    }),
+  getForAuthor: t.procedure
+    .use(authGuard(["author"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const manuscript = await ctx.prisma.manuscript.findFirst({
+        where: { id: input },
+        select: {
+          id: true,
+          title: true,
+          createdAt: true,
+          abstract: true,
+          authors: true,
+          authorId: true,
+          coverFileUrl: true,
+          optionalFileUrl: true,
+          keywords: { select: { keyword: true } },
+          latestHistory: {
+            select: { history: { select: AUTHOR_HISTORY_SELECTION } },
           },
         },
       });

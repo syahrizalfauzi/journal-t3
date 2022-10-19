@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
+//Removed type annotation & cast as readonly so that the query result would actually have the type
 
-export const AUTHOR_HISTORY_SELECTION: Prisma.HistorySelect = {
+export const AUTHOR_HISTORY_SELECTION = {
   updatedAt: true,
   status: true,
   submission: true,
@@ -17,9 +17,9 @@ export const AUTHOR_HISTORY_SELECTION: Prisma.HistorySelect = {
       },
     },
   },
-};
+} as const;
 
-export const REVIEWER_HISTORY_SELECTION: Prisma.HistorySelect = {
+export const REVIEWER_HISTORY_SELECTION = {
   updatedAt: true,
   status: true,
   submission: true,
@@ -41,9 +41,9 @@ export const REVIEWER_HISTORY_SELECTION: Prisma.HistorySelect = {
       },
     },
   },
-};
+} as const;
 
-export const CHIEF_HISTORY_SELECTION: Prisma.HistorySelect = {
+export const CHIEF_HISTORY_SELECTION = {
   updatedAt: true,
   status: true,
   submission: true,
@@ -67,4 +67,4 @@ export const CHIEF_HISTORY_SELECTION: Prisma.HistorySelect = {
       },
     },
   },
-};
+} as const;

@@ -2,7 +2,7 @@ import React from "react";
 import LayoutProps from "../types/LayoutProps";
 
 type FileInput = LayoutProps & {
-  label: string;
+  label?: string;
 };
 
 const FileInput = ({ children, label }: FileInput) => {

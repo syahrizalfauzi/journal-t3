@@ -47,40 +47,46 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
     <DashboardAdminLayout>
       <DetailLayout
         isLoading={queryLoading}
-        hasData={question !== undefined}
+        data={question}
         errorMessage={queryError?.message}
-      >
-        <p className="text-xl font-medium">Edit Review Question</p>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <InputLabel label="Question">
-            <input
-              {...register("question")}
-              disabled={mutationLoading}
-              required
-              type="text"
-              placeholder="Question"
-              className="input input-bordered w-full"
-            />
-          </InputLabel>
-          <InputLabel label="Max Scale">
-            <input
-              {...register("maxScale")}
-              disabled={mutationLoading}
-              required
-              type="number"
-              placeholder="Maximum Scale (number)"
-              className="input input-bordered w-full"
-            />
-          </InputLabel>
+        render={(_) => (
+          <>
+            <p className="text-xl font-medium">Edit Review Question</p>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col gap-4"
+            >
+              <InputLabel label="Question">
+                <input
+                  {...register("question")}
+                  disabled={mutationLoading}
+                  required
+                  type="text"
+                  placeholder="Question"
+                  className="input input-bordered w-full"
+                />
+              </InputLabel>
+              <InputLabel label="Max Scale">
+                <input
+                  {...register("maxScale")}
+                  disabled={mutationLoading}
+                  required
+                  type="number"
+                  placeholder="Maximum Scale (number)"
+                  className="input input-bordered w-full"
+                />
+              </InputLabel>
 
-          <input
-            disabled={mutationLoading}
-            type="submit"
-            value="Create Review Question"
-            className="btn"
-          />
-        </form>
-      </DetailLayout>
+              <input
+                disabled={mutationLoading}
+                type="submit"
+                value="Create Review Question"
+                className="btn"
+              />
+            </form>
+          </>
+        )}
+      />
     </DashboardAdminLayout>
   );
 };

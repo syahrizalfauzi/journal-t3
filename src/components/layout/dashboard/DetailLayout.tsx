@@ -1,24 +1,24 @@
 import React from "react";
-import LayoutProps from "../../../types/LayoutProps";
 import ErrorTexts from "../../ErrorTexts";
 
-type DetailLayoutProps = LayoutProps & {
+type DetailLayoutProps<T> = {
   isLoading: boolean;
-  hasData: boolean;
+  data: T | undefined;
   errorMessage?: string;
+  render: (data: T) => React.ReactNode;
 };
 
-const DetailLayout = ({
+const DetailLayout = <T extends unknown>({
   isLoading,
   errorMessage,
-  hasData,
-  children,
-}: DetailLayoutProps) => {
+  data,
+  render,
+}: DetailLayoutProps<T>) => {
   return (
     <>
       {isLoading && <p>Loading...</p>}
       <ErrorTexts message={errorMessage} />
-      {!isLoading && !errorMessage && hasData && children}
+      {!isLoading && !errorMessage && data && render(data)}
     </>
   );
 };

@@ -15,8 +15,8 @@ type CreateManuscriptForm = Omit<
   z.infer<typeof manuscriptValidator>,
   "fileUrl" | "coverFileUrl"
 > & {
-  file: File;
-  coverFile: File;
+  file: FileList;
+  coverFile: FileList;
 };
 const DashboardAuthorSubmissionsCreatePage: NextPage = () => {
   const router = useRouter();
