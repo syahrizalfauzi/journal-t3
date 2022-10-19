@@ -10,7 +10,12 @@ export const USER_LIST_SORTS = [
   "country",
 ] as const;
 
-export const USER_REVIEWER_SORTS = ["username", "email", "country"] as const;
+export const USER_REVIEWER_SORTS = [
+  "name",
+  "username",
+  "email",
+  "country",
+] as const;
 
 export const QUESTION_LIST_SORTS = [
   "createdAt",

@@ -57,7 +57,7 @@ export const questionRouter = t.router({
       const getCount = ctx.prisma.reviewQuestion.count();
       const getQuestions = ctx.prisma.reviewQuestion.findMany({
         ...paginationQuery(input),
-        orderBy: getOrderQuery({ ...input }, QUESTION_LIST_SORTS) ?? {
+        orderBy: getOrderQuery(input, QUESTION_LIST_SORTS) ?? {
           createdAt: "desc",
         },
         select: {

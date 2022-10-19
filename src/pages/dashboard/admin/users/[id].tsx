@@ -71,7 +71,7 @@ const DashboardAdminUserEditPage: NextPage = () => {
         keywords: user.profile?.keywords.join(", "),
       },
     });
-  }, [user]);
+  }, [reset, user]);
 
   return (
     <DashboardAdminLayout>
@@ -79,7 +79,7 @@ const DashboardAdminUserEditPage: NextPage = () => {
         isLoading={queryLoading}
         data={user}
         errorMessage={queryError?.message}
-        render={(_) => (
+        render={() => (
           <>
             <p className="text-xl font-medium">Edit User</p>
             <form

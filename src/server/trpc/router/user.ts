@@ -1,4 +1,4 @@
-import { userListQuery } from "../../queries";
+import { userListQuery, userReviewerQuery } from "../../queries";
 import { paginationMetadata, paginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
@@ -9,6 +9,8 @@ import { newUserValidator, updateUserValidator } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 import mutationError from "../../utils/mutationError";
 import { ROLE_MAP } from "../../../constants/role";
+import { getRoleNumbers } from "../../../utils/role";
+import { Prisma } from "@prisma/client";
 
 const notFoundMessage = "User not found";
 
@@ -62,13 +64,9 @@ export const userRouter = t.router({
     .use(authGuard(["admin"]))
     .input(userListQuery)
     .query(async ({ ctx, input }) => {
-      const profileOrder = getOrderQuery({ ...input }, [
-        "email",
-        "name",
-        "country",
-      ]);
+      const profileOrder = getOrderQuery(input, ["email", "name", "country"]);
 
-      const getCount = ctx.prisma.user.count({});
+      const getCount = ctx.prisma.user.count();
 
       const getUsers = ctx.prisma.user.findMany({
         ...paginationQuery(input),
@@ -76,7 +74,7 @@ export const userRouter = t.router({
           ? {
               profile: { ...profileOrder },
             }
-          : getOrderQuery({ ...input }, [
+          : getOrderQuery(input, [
               "username",
               "role",
               "isActivated",
@@ -90,6 +88,49 @@ export const userRouter = t.router({
           role: true,
           isActivated: true,
           createdAt: true,
+          profile: { select: { email: true, name: true, country: true } },
+        },
+      });
+
+      const [totalCount, users] = await ctx.prisma.$transaction([
+        getCount,
+        getUsers,
+      ]);
+
+      return {
+        ...paginationMetadata(totalCount, input),
+        users,
+      };
+    }),
+  reviewer: t.procedure
+    .use(authGuard(["chief"]))
+    .input(userReviewerQuery)
+    .query(async ({ ctx, input }) => {
+      const profileOrder = getOrderQuery(input, ["email", "name", "country"]);
+
+      const filter = {
+        AND: [
+          { OR: getRoleNumbers("reviewer").map((num) => ({ role: num })) },
+          { isActivated: true },
+        ],
+      } as Prisma.UserWhereInput;
+
+      const getCount = ctx.prisma.user.count({
+        where: filter,
+      });
+      const getUsers = ctx.prisma.user.findMany({
+        ...paginationQuery(input),
+        where: filter,
+        orderBy: profileOrder
+          ? {
+              profile: profileOrder,
+            }
+          : getOrderQuery(input, ["username"]) ?? {
+              username: "asc",
+            },
+        select: {
+          id: true,
+          username: true,
           profile: { select: { email: true, name: true, country: true } },
         },
       });

@@ -100,7 +100,7 @@ export const manuscriptRouter = t.router({
             } as Prisma.ManuscriptWhereInput)
           : undefined;
 
-      const historyOrder = getOrderQuery({ ...input }, ["status", "updatedAt"]);
+      const historyOrder = getOrderQuery(input, ["status", "updatedAt"]);
 
       const getCount = ctx.prisma.manuscript.count({
         where: filter,
@@ -110,7 +110,7 @@ export const manuscriptRouter = t.router({
         where: filter,
         orderBy: historyOrder
           ? { latestHistory: { history: { ...historyOrder } } }
-          : getOrderQuery({ ...input }, ["createdAt", "title"]) ?? {
+          : getOrderQuery(input, ["createdAt", "title"]) ?? {
               createdAt: "desc",
             },
 
@@ -166,7 +166,7 @@ export const manuscriptRouter = t.router({
           : undefined),
       } as Prisma.ManuscriptWhereInput;
 
-      const historyOrder = getOrderQuery({ ...input }, ["updatedAt"]);
+      const historyOrder = getOrderQuery(input, ["updatedAt"]);
 
       const getCount = ctx.prisma.manuscript.count({
         where: filter,
@@ -180,7 +180,7 @@ export const manuscriptRouter = t.router({
               latestHistory: { history: { ...historyOrder } },
             }
           : {
-              ...(getOrderQuery({ ...input }, ["createdAt", "title"]) ?? {
+              ...(getOrderQuery(input, ["createdAt", "title"]) ?? {
                 createdAt: "desc",
               }),
             },

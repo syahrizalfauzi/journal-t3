@@ -9,6 +9,7 @@ export const invitationRouter = t.router({
     .use(authGuard(["chief"]))
     .input(createInvitationValidator)
     .mutation(async ({ ctx, input }) => {
+      await new Promise<void>((res) => setTimeout(() => res(), 3000));
       try {
         const { user } = await ctx.prisma.invitation.create({
           data: {
