@@ -12,7 +12,10 @@ type QueryOptions<
   F extends Filter | never
 > = z.infer<Q> & {
   sort?: S;
-  filter?: F;
+  filter?: {
+    key: F["key"];
+    value: F["availableValues"][number]["value"];
+  };
 };
 
 export const useQueryOptions = <

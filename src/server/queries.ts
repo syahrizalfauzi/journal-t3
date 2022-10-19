@@ -10,7 +10,8 @@ import { z } from "zod";
 import { Sorts } from "../types/SortOrder";
 import { Filter } from "../types/Filter";
 import {
-  MANUSCRIPT_CHIEF_AUTHOR_FILTERS,
+  MANUSCRIPT_AUTHOR_FILTERS,
+  MANUSCRIPT_CHIEF_FILTERS,
   MANUSCRIPT_REVIEWER_FILTERS,
 } from "../constants/filters";
 
@@ -55,14 +56,14 @@ export const questionListQuery = paginationInput.merge(
 );
 export const manuscriptAuthorQuery = paginationInput
   .merge(generateSortInput(MANUSCRIPT_AUTHOR_SORTS))
-  .merge(generateFilterInput(MANUSCRIPT_CHIEF_AUTHOR_FILTERS));
+  .merge(generateFilterInput(MANUSCRIPT_AUTHOR_FILTERS));
 
 export const manuscriptReviewerQuery = paginationInput.merge(
   generateFilterInput(MANUSCRIPT_REVIEWER_FILTERS)
 );
 export const manuscriptChiefQuery = paginationInput
   .merge(generateSortInput(MANUSCRIPT_CHIEF_SORTS))
-  .merge(generateFilterInput(MANUSCRIPT_CHIEF_AUTHOR_FILTERS));
+  .merge(generateFilterInput(MANUSCRIPT_CHIEF_FILTERS));
 export const invitationListQuery = paginationInput.merge(
   generateSortInput(INVITATION_LIST_SORTS)
 );

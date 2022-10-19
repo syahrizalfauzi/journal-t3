@@ -11,13 +11,13 @@ import parseDate from "../../../../utils/parseDate";
 import KeywordBadges from "../../../../components/KeywordBadges";
 import StatusBadge from "../../../../components/StatusBadge";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
-import { MANUSCRIPT_CHIEF_AUTHOR_FILTERS } from "../../../../constants/filters";
+import { MANUSCRIPT_AUTHOR_FILTERS } from "../../../../constants/filters";
 
 const sortOrders = getSortOrder(MANUSCRIPT_AUTHOR_SORTS);
 
 type QueryOptions = typeof manuscriptAuthorQuery;
 type Sorts = typeof MANUSCRIPT_AUTHOR_SORTS[number];
-type Filters = typeof MANUSCRIPT_CHIEF_AUTHOR_FILTERS[number];
+type Filters = typeof MANUSCRIPT_AUTHOR_FILTERS[number];
 
 const DashboardAuthorSubmissionsPage: NextPage = () => {
   const { queryOptions, ...rest } = useQueryOptions<
@@ -30,7 +30,7 @@ const DashboardAuthorSubmissionsPage: NextPage = () => {
       order: sortOrders[0]!.order,
     },
     MANUSCRIPT_AUTHOR_SORTS,
-    MANUSCRIPT_CHIEF_AUTHOR_FILTERS
+    MANUSCRIPT_AUTHOR_FILTERS
   );
   const manuscriptAuthorQuery =
     trpc.manuscript.listForAuthor.useQuery(queryOptions);

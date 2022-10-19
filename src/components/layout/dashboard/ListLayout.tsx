@@ -46,15 +46,12 @@ const ListLayout = <I extends QueryType, S extends Sorts, F extends Filter>({
   const onChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const [index, valueIndex] = e.target.value.split("|").map((e) => Number(e));
 
-    if (index === undefined || valueIndex === undefined || !allowedFilters)
-      return;
-
-    const filterValue = allowedFilters[index]?.availableValues[valueIndex];
-
-    if (index === -1) {
+    if (index === undefined || valueIndex === undefined || !allowedFilters) {
       handleChangeFilter(undefined, undefined);
       return;
     }
+
+    const filterValue = allowedFilters[index]?.availableValues[valueIndex];
 
     if (!filterValue) return;
     handleChangeFilter(allowedFilters[index]!.key, filterValue.value);
