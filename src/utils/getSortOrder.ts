@@ -37,7 +37,7 @@ const getSortOrder = <T extends readonly Sorts[]>(
 
       return descFirst ? sorts : sorts.reverse();
     })
-    .reduce((a, b) => [...a, ...b]);
+    .reduce((a, b) => [...a, ...b], []);
 };
 
 export default getSortOrder;
