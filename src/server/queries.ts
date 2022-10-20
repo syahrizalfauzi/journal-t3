@@ -10,6 +10,7 @@ import { z } from "zod";
 import { Sorts } from "../types/SortOrder";
 import { Filter } from "../types/Filter";
 import {
+  INVITATION_LIST_FILTERS,
   MANUSCRIPT_AUTHOR_FILTERS,
   MANUSCRIPT_CHIEF_FILTERS,
   MANUSCRIPT_REVIEWER_FILTERS,
@@ -64,6 +65,6 @@ export const manuscriptReviewerQuery = paginationInput.merge(
 export const manuscriptChiefQuery = paginationInput
   .merge(generateSortInput(MANUSCRIPT_CHIEF_SORTS))
   .merge(generateFilterInput(MANUSCRIPT_CHIEF_FILTERS));
-export const invitationListQuery = paginationInput.merge(
-  generateSortInput(INVITATION_LIST_SORTS)
-);
+export const invitationListQuery = paginationInput
+  .merge(generateSortInput(INVITATION_LIST_SORTS))
+  .merge(generateFilterInput(INVITATION_LIST_FILTERS));

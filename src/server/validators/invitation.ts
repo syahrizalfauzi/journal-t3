@@ -7,8 +7,7 @@ export const createInvitationValidator = z
   })
   .merge(manuscriptIdValidator);
 
-export const updateInvitationValidator = z
-  .object({
-    status: z.boolean(),
-  })
-  .merge(manuscriptIdValidator);
+export const updateInvitationValidator = z.object({
+  status: z.boolean(),
+  id: z.string(),
+});

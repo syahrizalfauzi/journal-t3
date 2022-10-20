@@ -14,7 +14,7 @@ const sortOrders = getSortOrder(USER_REVIEWER_SORTS);
 type QueryOptions = typeof userReviewerQuery;
 type Sorts = typeof USER_REVIEWER_SORTS[number];
 
-type UserInvite = {
+type UserInviteStatus = {
   isInvited: "loading" | "false" | "true";
   username: string;
   id: string;
@@ -38,21 +38,10 @@ const InvitePage = () => {
     USER_REVIEWER_SORTS
   );
   const userReviewerQuery = trpc.user.reviewer.useQuery(queryOptions);
-  const [users, setUsers] = useState<UserInvite[]>([]);
+  const [users, setUsers] = useState<UserInviteStatus[]>([]);
   const createInvitation = trpc.invitation.create.useMutation({
     onSettled: toastSettleHandler,
   });
-
-  useEffect(() => {
-    if (!userReviewerQuery.data) return;
-
-    setUsers(
-      userReviewerQuery.data.users.map<UserInvite>((user) => ({
-        ...user,
-        isInvited: "false",
-      }))
-    );
-  }, [userReviewerQuery.data]);
 
   const handleInvite = (reviewerId: string) => async () => {
     setUsers((prevState) => {
@@ -61,15 +50,12 @@ const InvitePage = () => {
       newState[index] = {
         ...newState[index],
         isInvited: "loading",
-      } as UserInvite;
+      } as UserInviteStatus;
       return [...newState];
     });
 
     createInvitation.mutate(
-      {
-        manuscriptId: query.id as string,
-        reviewerId,
-      },
+      { manuscriptId: query.id as string, reviewerId },
       {
         onSuccess: () => {
           setUsers((prevState) => {
@@ -79,8 +65,7 @@ const InvitePage = () => {
             newState[index] = {
               ...newState[index],
               isInvited: "true",
-            } as UserInvite;
-            console.log("setUser on success", newState);
+            } as UserInviteStatus;
 
             return [...newState];
           });
@@ -88,6 +73,17 @@ const InvitePage = () => {
       }
     );
   };
+
+  useEffect(() => {
+    if (!userReviewerQuery.data) return;
+
+    setUsers(
+      userReviewerQuery.data.users.map<UserInviteStatus>((user) => ({
+        ...user,
+        isInvited: "false",
+      }))
+    );
+  }, [userReviewerQuery.data]);
 
   return (
     <AuthGuard allowedRole="chief" redirectTo="/dashboard">
@@ -110,7 +106,10 @@ const InvitePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {!!userReviewerQuery.data &&
+                  {users.length <= 0 ? (
+                    <p>No reviewers available</p>
+                  ) : (
+                    !!userReviewerQuery.data &&
                     users.map((user, index) => (
                       <tr key={user.id} className="hover">
                         <th>
@@ -140,7 +139,8 @@ const InvitePage = () => {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </>

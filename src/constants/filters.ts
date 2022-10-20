@@ -105,7 +105,7 @@ export const MANUSCRIPT_REVIEWER_FILTERS = [
     ],
   },
 ] as const;
-export const INVITATION_FILTERS = [
+export const INVITATION_LIST_FILTERS = [
   {
     key: "status",
     label: "Status",
