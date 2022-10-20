@@ -20,6 +20,7 @@ export const AUTHOR_HISTORY_SELECTION = {
 } as const;
 
 export const REVIEWER_HISTORY_SELECTION = {
+  id: true,
   updatedAt: true,
   status: true,
   submission: true,

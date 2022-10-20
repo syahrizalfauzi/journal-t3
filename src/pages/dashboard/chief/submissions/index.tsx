@@ -59,18 +59,22 @@ const DashboardChiefSubmissionsPage: NextPage = () => {
                     <p className="text-gray-400">
                       Submitted : {parseDate(submission.createdAt)}
                     </p>
-                    <p className="text-gray-400">
-                      Last Updated :{" "}
-                      {parseDate(submission.latestHistory!.history.updatedAt)}
-                    </p>
+                    {!!submission.latestHistory && (
+                      <p className="text-gray-400">
+                        Last Updated :{" "}
+                        {parseDate(submission.latestHistory.history.updatedAt)}
+                      </p>
+                    )}
                     <KeywordBadges keywords={submission.keywords} />
                   </div>
                   <div className="divider divider-horizontal" />
                   <div className="flex w-36 justify-center">
-                    <StatusBadge
-                      history={submission.latestHistory!.history}
-                      role="chief"
-                    />
+                    {!!submission.latestHistory && (
+                      <StatusBadge
+                        history={submission.latestHistory.history}
+                        role="chief"
+                      />
+                    )}
                   </div>
                 </a>
               </Link>

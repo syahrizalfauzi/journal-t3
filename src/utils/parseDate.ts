@@ -1,6 +1,11 @@
 import moment from "moment";
 
-const parseDate = (date: string | Date) =>
-  moment(date).format("ddd, D MMM YYYY, HH:mm");
+const parseDate = (date: Date, fallback?: string) => {
+  const momentDate = moment(date);
+
+  return momentDate.isValid()
+    ? momentDate.format("ddd, D MMM YYYY, HH:mm")
+    : fallback ?? "Not set";
+};
 
 export default parseDate;

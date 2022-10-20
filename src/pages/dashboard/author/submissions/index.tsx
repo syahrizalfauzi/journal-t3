@@ -59,12 +59,14 @@ const DashboardAuthorSubmissionsPage: NextPage = () => {
                   <div className="flex flex-1 flex-col items-start gap-1">
                     <p className="font-bold">{submission.title}</p>
                     <p className="text-gray-400">
-                      Submitted : {parseDate(submission.createdAt)}
+                      Submitted: {parseDate(submission.createdAt)}
                     </p>
-                    <p className="text-gray-400">
-                      Last Updated :{" "}
-                      {parseDate(submission.latestHistory!.history.updatedAt)}
-                    </p>
+                    {!!submission.latestHistory && (
+                      <p className="text-gray-400">
+                        Last Updated :
+                        {parseDate(submission.latestHistory.history.updatedAt)}
+                      </p>
+                    )}
                     <KeywordBadges keywords={submission.keywords} />
                   </div>
                   <div className="divider divider-horizontal" />

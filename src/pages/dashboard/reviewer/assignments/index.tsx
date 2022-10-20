@@ -1,14 +1,14 @@
 import classNames from "classnames";
 import Link from "next/link";
 import React from "react";
-import DashboardReviewerLayout from "../../../components/layout/dashboard/DashboardReviewerLayout";
-import ListLayout from "../../../components/layout/dashboard/ListLayout";
-import StatusBadge from "../../../components/StatusBadge";
-import { MANUSCRIPT_REVIEWER_FILTERS } from "../../../constants/filters";
-import { manuscriptReviewerQuery } from "../../../server/queries";
-import parseDate from "../../../utils/parseDate";
-import { trpc } from "../../../utils/trpc";
-import { useQueryOptions } from "../../../utils/useQueryOptions";
+import DashboardReviewerLayout from "../../../../components/layout/dashboard/DashboardReviewerLayout";
+import ListLayout from "../../../../components/layout/dashboard/ListLayout";
+import StatusBadge from "../../../../components/StatusBadge";
+import { MANUSCRIPT_REVIEWER_FILTERS } from "../../../../constants/filters";
+import { manuscriptReviewerQuery } from "../../../../server/queries";
+import parseDate from "../../../../utils/parseDate";
+import { trpc } from "../../../../utils/trpc";
+import { useQueryOptions } from "../../../../utils/useQueryOptions";
 
 type QueryOptions = typeof manuscriptReviewerQuery;
 type Filters = typeof MANUSCRIPT_REVIEWER_FILTERS[number];

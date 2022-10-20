@@ -86,7 +86,7 @@ const HistoryCardAuthor = ({
         </tr>
 
         {history.status === 3 &&
-          history.review &&
+          !!history.review &&
           history.review.decision !== 0 && (
             <>
               {history.review.assesment
@@ -136,7 +136,7 @@ const HistoryCardAuthor = ({
 
       {message.length > 0 && <p>{message}</p>}
 
-      {history.status === 3 && history.review && history.review.decision === 1 && (
+      {history.status === 3 && (history.review?.decision ?? 0) === 1 && (
         <form onSubmit={reviseForm.handleSubmit(onSubmitRevise)}>
           <HistoryCardAction isLoading={isLoading}>
             <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">

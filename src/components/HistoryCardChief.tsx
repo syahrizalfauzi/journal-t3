@@ -62,7 +62,11 @@ const HistoryCardChief = ({
     },
   });
   const updateDueDateForm = useForm<UpdateDueDateForm>();
-  const updateDecisionForm = useForm<UpdateDecisionForm>();
+  const updateDecisionForm = useForm<UpdateDecisionForm>({
+    defaultValues: {
+      comment: history.review?.comment ?? "",
+    },
+  });
 
   const { initialDecision } = useWatch({ control: initialReviewForm.control });
   const { reviewDecision } = useWatch({ control: updateDecisionForm.control });
@@ -74,11 +78,7 @@ const HistoryCardChief = ({
       "width=800,height=1000"
     );
   const handleOpenAssesment = (id: string) =>
-    window.open(
-      `/assesment/author/${id}`,
-      "newwindow",
-      "width=800,height=1000"
-    );
+    window.open(`/assesment/chief/${id}`, "newwindow", "width=800,height=1000");
 
   const onSubmitInitialReview: SubmitHandler<InitialReviewForm> = ({
     blindType,
@@ -154,16 +154,15 @@ const HistoryCardChief = ({
         )}
 
         {(history.status >= 2 || history.status <= 4) &&
-          history.review &&
-          history.review.dueDate && (
+          !!history.review?.dueDate && (
             <tr>
               <th>Due Date</th>
-              <td>{parseDate(history.review.dueDate ?? "Not set")}</td>
+              <td>{parseDate(history.review.dueDate)}</td>
             </tr>
           )}
       </table>
 
-      {history.review && <p>{history.review.decision}</p>}
+      {!!history.review && <p>{history.review.decision}</p>}
 
       {(history.status >= 2 || history.status <= 4) &&
         history.review &&
@@ -202,7 +201,7 @@ const HistoryCardChief = ({
 
               {history.status === 3 && (
                 <>
-                  {manuscript.team && (
+                  {!!manuscript.team && (
                     <>
                       <tr>
                         <th>Due Date</th>
@@ -340,7 +339,7 @@ const HistoryCardChief = ({
                 </form>
               );
             case 1:
-              if (manuscript.team)
+              if (!!manuscript.team)
                 return (
                   <HistoryCardAction isLoading={isLoading} withSubmit={false}>
                     <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
@@ -365,7 +364,7 @@ const HistoryCardChief = ({
                 );
             case 2:
             case 4:
-              if (history.review && !history.review.dueDate)
+              if (!!history.review && !history.review.dueDate)
                 return (
                   <form
                     onSubmit={updateDueDateForm.handleSubmit(
@@ -390,7 +389,7 @@ const HistoryCardChief = ({
                   </form>
                 );
             case 3:
-              if (history.review)
+              if (!!history.review)
                 return (
                   <form
                     onSubmit={updateDecisionForm.handleSubmit(onSubmitReview)}

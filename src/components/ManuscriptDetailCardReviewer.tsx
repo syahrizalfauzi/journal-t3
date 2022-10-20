@@ -4,15 +4,15 @@ import { AppRouter } from "../server/trpc/router";
 import KeywordBadges from "./KeywordBadges";
 import parseDate from "../utils/parseDate";
 
-type ManuscriptDetailCardChiefProps = {
+type ManuscriptDetailCardReviewerProps = {
   manuscriptDetail: inferProcedureOutput<
-    AppRouter["manuscript"]["getForChief"]
+    AppRouter["manuscript"]["getForReviewer"]
   >;
 };
 
-const ManuscriptDetailCardChief = ({
+const ManuscriptDetailCardReviewer = ({
   manuscriptDetail,
-}: ManuscriptDetailCardChiefProps) => {
+}: ManuscriptDetailCardReviewerProps) => {
   return (
     <div className="stretch flex flex-col gap-2 rounded-xl border p-4 shadow-xl">
       <p className="text-xl font-bold">Submission Detail</p>
@@ -31,14 +31,18 @@ const ManuscriptDetailCardChief = ({
             <KeywordBadges keywords={manuscriptDetail.keywords} />
           </td>
         </tr>
-        <tr>
-          <th>Authors</th>
-          <td>{manuscriptDetail.authors}</td>
-        </tr>
-        <tr>
-          <th>Submitted By</th>
-          <td>{manuscriptDetail.author.profile!.name}</td>
-        </tr>
+        {!manuscriptDetail.isBlind && (
+          <>
+            <tr>
+              <th>Authors</th>
+              <td>{manuscriptDetail.authors}</td>
+            </tr>
+            <tr>
+              <th>Submitted By</th>
+              <td>{manuscriptDetail.author.profile!.name}</td>
+            </tr>
+          </>
+        )}
         {(manuscriptDetail.history[0]?.status ?? 0) > 0 && (
           <tr>
             <th>Review Type</th>
@@ -90,4 +94,4 @@ const ManuscriptDetailCardChief = ({
   );
 };
 
-export default ManuscriptDetailCardChief;
+export default ManuscriptDetailCardReviewer;
