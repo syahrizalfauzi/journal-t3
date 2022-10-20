@@ -4,7 +4,7 @@ import { AppRouter } from "../server/trpc/router";
 import getStatusProps from "../utils/getStatusProps";
 import parseDate from "../utils/parseDate";
 import {
-  parseAssesmentDecision,
+  parseAssessmentDecision,
   parseReviewDecision,
 } from "../utils/parseDecision";
 import classNames from "classnames";
@@ -14,6 +14,7 @@ import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import FileInput from "./FileInput";
 import InputLabel from "./InputLabel";
 import { MAX_TEAM_USERS } from "../constants/numbers";
+import moment from "moment";
 
 type HistoryCardChiefProps = {
   history: inferProcedureOutput<
@@ -65,6 +66,7 @@ const HistoryCardChief = ({
   const updateDecisionForm = useForm<UpdateDecisionForm>({
     defaultValues: {
       comment: history.review?.comment ?? "",
+      reviewDecision: (history.review?.decision ?? 0).toString(),
     },
   });
 
@@ -77,8 +79,12 @@ const HistoryCardChief = ({
       "newwindow",
       "width=800,height=1000"
     );
-  const handleOpenAssesment = (id: string) =>
-    window.open(`/assesment/chief/${id}`, "newwindow", "width=800,height=1000");
+  const handleOpenAssessment = (id: string) =>
+    window.open(
+      `/assessment/chief/${id}`,
+      "newwindow",
+      "width=800,height=1000"
+    );
 
   const onSubmitInitialReview: SubmitHandler<InitialReviewForm> = ({
     blindType,
@@ -97,7 +103,8 @@ const HistoryCardChief = ({
   const onSubmitSetDueDate: SubmitHandler<UpdateDueDateForm> = ({
     dueDate,
   }) => {
-    if (history.review) callbacks.onUpdateDueDate(history.review?.id, dueDate);
+    if (history.review)
+      callbacks.onUpdateDueDate(history.review?.id, moment(dueDate).toDate());
   };
   const onSubmitReview: SubmitHandler<UpdateDecisionForm> = ({
     comment,
@@ -162,21 +169,19 @@ const HistoryCardChief = ({
           )}
       </table>
 
-      {!!history.review && <p>{history.review.decision}</p>}
-
       {(history.status >= 2 || history.status <= 4) &&
         history.review &&
         history.review.dueDate && (
           <>
             <p className="text-xl font-bold">Reviewers</p>
-            <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left align-top">
+            <table className="border-separate border-spacing-y-2 border-spacing-x-4 self-start text-left align-top">
               {(history.status === 2 || history.status === 4) &&
                 manuscript.team?.users.map(({ id, profile }) => {
                   const userAssessment = history.review?.assesment.find(
                     ({ user }) => user.id === id
                   );
 
-                  const { className, label } = parseAssesmentDecision(
+                  const { className, label } = parseAssessmentDecision(
                     userAssessment?.decision
                   );
 
@@ -184,13 +189,13 @@ const HistoryCardChief = ({
                     <tr key={id}>
                       <th>{profile?.name}</th>
                       <td
-                        className={classNames({
-                          link: !!userAssessment,
-                          className,
-                        })}
+                        className={classNames(
+                          { link: !!userAssessment },
+                          className
+                        )}
                         onClick={() => {
                           if (userAssessment)
-                            handleOpenAssesment(userAssessment.id);
+                            handleOpenAssessment(userAssessment.id);
                         }}
                       >
                         {label}
@@ -210,14 +215,14 @@ const HistoryCardChief = ({
                       {history.review.assesment.map(
                         ({ id, decision, user }) => {
                           const { className, label } =
-                            parseAssesmentDecision(decision);
+                            parseAssessmentDecision(decision);
 
                           return (
                             <tr key={id}>
                               <th>{user.profile?.name}</th>
                               <td
                                 className={`link ${className}`}
-                                onClick={() => handleOpenAssesment(id)}
+                                onClick={() => handleOpenAssessment(id)}
                               >
                                 {label}
                               </td>
@@ -389,72 +394,76 @@ const HistoryCardChief = ({
                   </form>
                 );
             case 3:
-              if (!!history.review)
-                return (
-                  <form
-                    onSubmit={updateDecisionForm.handleSubmit(onSubmitReview)}
+              if (
+                !history.review ||
+                history.review.assesment.length < MAX_TEAM_USERS
+              )
+                return;
+              return (
+                <form
+                  onSubmit={updateDecisionForm.handleSubmit(onSubmitReview)}
+                >
+                  <HistoryCardAction
+                    isLoading={isLoading}
+                    withSubmit={reviewDecision !== "0"}
+                    outside={
+                      (reviewDecision === "-1" || reviewDecision === "1") && (
+                        <InputLabel label="Comment">
+                          <textarea
+                            {...updateDecisionForm.register("comment")}
+                            disabled={isLoading}
+                            required
+                            placeholder="Review comment"
+                            className="textarea textarea-bordered w-full"
+                          />
+                        </InputLabel>
+                      )
+                    }
                   >
-                    <HistoryCardAction
-                      isLoading={isLoading}
-                      withSubmit={reviewDecision !== "0"}
-                      outside={
-                        (reviewDecision === "-1" || reviewDecision === "1") && (
-                          <InputLabel label="Comment">
-                            <textarea
-                              {...updateDecisionForm.register("comment")}
-                              disabled={isLoading}
-                              required
-                              placeholder="Review comment"
-                              className="textarea textarea-bordered w-full"
+                    <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
+                      <tr>
+                        <th>Review Decision</th>
+                        <td>
+                          <select
+                            {...updateDecisionForm.register("reviewDecision")}
+                            className="select select-bordered select-sm flex-1"
+                          >
+                            <SelectOptions
+                              selectData={[
+                                {
+                                  label: "Unanswered",
+                                  value: "0",
+                                  disabled: true,
+                                },
+                                { label: "Reject", value: "-1" },
+                                { label: "Revision", value: "1" },
+                                { label: "Accept", value: "2" },
+                              ]}
                             />
-                          </InputLabel>
-                        )
-                      }
-                    >
-                      <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
+                          </select>
+                        </td>
+                      </tr>
+                      {reviewDecision === "2" && (
                         <tr>
-                          <th>Review Decision</th>
+                          <th>Upload Proofread Article</th>
                           <td>
-                            <select
-                              {...updateDecisionForm.register("reviewDecision")}
-                              className="select select-bordered select-sm flex-1"
-                            >
-                              <SelectOptions
-                                selectData={[
-                                  {
-                                    label: "Unanswered",
-                                    value: "0",
-                                    disabled: true,
-                                  },
-                                  { label: "Reject", value: "-1" },
-                                  { label: "Revision", value: "1" },
-                                  { label: "Accept", value: "2" },
-                                ]}
+                            <FileInput>
+                              <input
+                                {...updateDecisionForm.register(
+                                  "proofreadFile"
+                                )}
+                                required
+                                disabled={isLoading}
+                                type="file"
                               />
-                            </select>
+                            </FileInput>
                           </td>
                         </tr>
-                        {reviewDecision === "2" && (
-                          <tr>
-                            <th>Upload Proofread Article</th>
-                            <td>
-                              <FileInput>
-                                <input
-                                  {...updateDecisionForm.register(
-                                    "proofreadFile"
-                                  )}
-                                  required
-                                  disabled={isLoading}
-                                  type="file"
-                                />
-                              </FileInput>
-                            </td>
-                          </tr>
-                        )}
-                      </table>
-                    </HistoryCardAction>
-                  </form>
-                );
+                      )}
+                    </table>
+                  </HistoryCardAction>
+                </form>
+              );
             case 6:
               return (
                 <HistoryCardAction isLoading={isLoading}>

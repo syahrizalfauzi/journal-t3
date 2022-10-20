@@ -281,7 +281,7 @@ const DashboardAdminUserEditPage: NextPage = () => {
               <input
                 disabled={isLoading}
                 type="submit"
-                value="Create User"
+                value="Save User"
                 className="btn"
               />
             </form>

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import { HISTORY_STATUS } from "../constants/numbers";
 import { MANUSCRIPT_STEPS_LABEL } from "../constants/others";
@@ -8,12 +9,17 @@ interface ManuscriptStepsProps {
 
 const ManuscriptSteps = ({ status }: ManuscriptStepsProps) => {
   return (
-    <ul className="steps">
+    <ul className="steps -z-10">
       {status === -1 && <li className="step step-primary">Rejected</li>}
       {MANUSCRIPT_STEPS_LABEL.map((step, index) => (
         <li
           key={index}
-          className={`step ${status >= index ? "step-primary" : ""}`}
+          className={classNames(
+            {
+              "step-primary": status >= index,
+            },
+            "step"
+          )}
         >
           {step}
         </li>

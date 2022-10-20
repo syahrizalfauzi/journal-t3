@@ -41,7 +41,7 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
     if (!question) return;
 
     reset(question);
-  }, [question]);
+  }, [question, reset]);
 
   return (
     <DashboardAdminLayout>
@@ -49,7 +49,7 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
         isLoading={queryLoading}
         data={question}
         errorMessage={queryError?.message}
-        render={(_) => (
+        render={() => (
           <>
             <p className="text-xl font-medium">Edit Review Question</p>
             <form

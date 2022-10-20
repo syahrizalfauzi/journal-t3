@@ -4,7 +4,7 @@ import { AppRouter } from "../server/trpc/router";
 import getStatusProps from "../utils/getStatusProps";
 import parseDate from "../utils/parseDate";
 import {
-  parseAssesmentDecision,
+  parseAssessmentDecision,
   parseReviewDecision,
 } from "../utils/parseDecision";
 import classNames from "classnames";
@@ -46,9 +46,9 @@ const HistoryCardAuthor = ({
     control: finalizeForm.control,
   });
 
-  const handleOpenAssesment = (id: string) =>
+  const handleOpenAssessment = (id: string) =>
     window.open(
-      `/assesment/author/${id}`,
+      `/assessment/author/${id}`,
       "newwindow",
       "width=800,height=1000"
     );
@@ -63,7 +63,7 @@ const HistoryCardAuthor = ({
 
   return (
     <div
-      className={`flex flex-col items-start gap-2 rounded-xl border p-4 shadow-xl border-${color}`}
+      className={`flex flex-col items-stretch gap-2 rounded-xl border p-4 shadow-xl border-${color}`}
     >
       <p className="text-xl font-bold"> Status : {label}</p>
       <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left align-top">
@@ -92,12 +92,13 @@ const HistoryCardAuthor = ({
               {history.review.assesment
                 .filter(({ decision }) => decision !== 0)
                 .map(({ id, decision }, index) => {
-                  const { label, className } = parseAssesmentDecision(decision);
+                  const { label, className } =
+                    parseAssessmentDecision(decision);
                   return (
                     <tr key={id}>
                       <th>Reviewer {index + 1}</th>
                       <td
-                        onClick={() => handleOpenAssesment(id)}
+                        onClick={() => handleOpenAssessment(id)}
                         className={`link ${className}`}
                       >
                         {label}
@@ -140,7 +141,7 @@ const HistoryCardAuthor = ({
         <form onSubmit={reviseForm.handleSubmit(onSubmitRevise)}>
           <HistoryCardAction isLoading={isLoading}>
             <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-              <tr>
+              <tr className="align-bottom">
                 <th>Upload Revision</th>
                 <td>
                   <FileInput>

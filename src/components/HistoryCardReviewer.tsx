@@ -4,7 +4,7 @@ import { AppRouter } from "../server/trpc/router";
 import getStatusProps from "../utils/getStatusProps";
 import parseDate from "../utils/parseDate";
 import {
-  parseAssesmentDecision,
+  parseAssessmentDecision,
   parseReviewDecision,
 } from "../utils/parseDecision";
 import classNames from "classnames";
@@ -18,38 +18,49 @@ type HistoryCardReviewerProps = {
   history: Manuscript["history"][number];
   manuscript: Pick<Manuscript, "id" | "team">;
   withAction: boolean;
-  onAssess: (assessment: Manuscript["history"][number]["review"]) => unknown;
 };
 
 const HistoryCardReviewer = ({
   history,
   manuscript,
   withAction,
-  onAssess,
 }: HistoryCardReviewerProps) => {
   const { data: currentUser } = useSession();
-  const { label, color, message } = getStatusProps(history, "author");
-
   const selfAssessment = history.review?.assesment.find(
     ({ user }) => user.id === currentUser?.user.id
   );
 
-  const handleOpenAssesment = (id: string) =>
+  const { label, color, message } = getStatusProps(
+    history,
+    "reviewer",
+    !!selfAssessment,
+    !!selfAssessment?.isDone
+  );
+
+  const handleOpenAssessment = (id: string) =>
     window.open(
-      `/assesment/reviewer/${id}`,
+      `/assessment/reviewer/${id}`,
       "newwindow",
       "width=800,height=1000"
     );
 
-  const handleOpenSelfAssesment = () => {
+  const handleOpenSelfAssessment = () => {
     if (!selfAssessment) return;
     window.open(
-      `/assesment/reviewer/${selfAssessment.id}`,
+      `/assessment/reviewer/${selfAssessment.id}`,
       "newwindow",
       "width=800,height=1000"
     );
   };
 
+  const handleCreateAssessment = () => {
+    if (!history.review) return;
+    window.open(
+      `/assessment/create/${manuscript.id}/${history.review?.id}`,
+      "newwindow",
+      "width=800,height=1000"
+    );
+  };
   return (
     <div
       className={classNames(
@@ -92,7 +103,7 @@ const HistoryCardReviewer = ({
             <p className="text-xl font-bold">Reviewers</p>
             <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left align-top">
               {history.review.assesment.map(({ decision, id, user }, index) => {
-                const { className, label } = parseAssesmentDecision(decision);
+                const { className, label } = parseAssessmentDecision(decision);
 
                 return (
                   <tr key={id}>
@@ -102,7 +113,7 @@ const HistoryCardReviewer = ({
                         : `Reviewer ${index + 1}`}
                     </th>
                     <td
-                      onClick={() => handleOpenAssesment(id)}
+                      onClick={() => handleOpenAssessment(id)}
                       className={classNames(className, {
                         link: decision !== 0,
                       })}
@@ -144,7 +155,7 @@ const HistoryCardReviewer = ({
               <tr>
                 <td colSpan={2}>
                   <button
-                    onClick={handleOpenSelfAssesment}
+                    onClick={handleOpenSelfAssessment}
                     className="btn btn-sm"
                   >
                     Open Submitted Assesment
@@ -155,7 +166,8 @@ const HistoryCardReviewer = ({
               <tr>
                 <td colSpan={2}>
                   <button
-                    onClick={() => onAssess(history.review)}
+                    // onClick={() => onAssess(history.review)}
+                    onClick={handleCreateAssessment}
                     className="btn btn-sm"
                   >
                     Open Assesment Window

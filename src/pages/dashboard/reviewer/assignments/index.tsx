@@ -35,7 +35,7 @@ const DashboardReviewerAssignmentsPage = () => {
             manuscriptReviewerQuery.data?.manuscripts.map((assignment) => {
               if (!assignment.history[0]) return;
 
-              const assesmentLength =
+              const assessmentLength =
                 assignment.history[0].review?.assesment.length ?? 0;
               return (
                 <Link
@@ -45,8 +45,8 @@ const DashboardReviewerAssignmentsPage = () => {
                   <a className="card card-side shadow-lg transition-all duration-100 hover:bg-gray-100">
                     <figure
                       className={classNames({
-                        "bg-success": assesmentLength > 0,
-                        "bg-gray-200": assesmentLength <= 0,
+                        "bg-success": assessmentLength > 0,
+                        "bg-gray-200": assessmentLength <= 0,
                         "w-4": true,
                       })}
                     />
@@ -70,7 +70,7 @@ const DashboardReviewerAssignmentsPage = () => {
                         <StatusBadge
                           history={assignment.history[0]}
                           role="reviewer"
-                          hasSelfAssesment={
+                          hasSelfAssessment={
                             (assignment.history[0].review?.assesment.length ??
                               1) > 0
                           }

@@ -8,14 +8,18 @@ type StatusBadgeProps = {
     status: number;
     review?: { decision?: number; dueDate?: Date | null } | null;
   };
-  hasSelfAssesment?: boolean;
+  hasSelfAssessment?: boolean;
 };
 
-const StatusBadge = ({ hasSelfAssesment, history, role }: StatusBadgeProps) => {
+const StatusBadge = ({
+  hasSelfAssessment,
+  history,
+  role,
+}: StatusBadgeProps) => {
   const { color, label } = getStatusProps(
     history,
     role,
-    hasSelfAssesment,
+    hasSelfAssessment,
     true
   );
 

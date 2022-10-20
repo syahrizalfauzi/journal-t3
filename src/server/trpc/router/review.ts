@@ -7,10 +7,33 @@ import {
 import mutationError from "../../utils/mutationError";
 import { HISTORY_STATUS } from "../../../constants/numbers";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
 const notFoundMessage = "Review not found";
 
 export const reviewRouter = t.router({
+  get: t.procedure
+    .use(authGuard(["reviewer", "chief"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const review = await ctx.prisma.review.findUnique({
+        where: { id: input },
+        include: {
+          assesment: {
+            select: {
+              user: { select: { id: true } },
+              id: true,
+              decision: true,
+              isDone: true,
+            },
+          },
+        },
+      });
+      if (!review)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return review;
+    }),
   updateDueDate: t.procedure
     .use(authGuard(["chief"]))
     .input(reviewUpdateDueValidator)

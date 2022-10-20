@@ -1,21 +1,31 @@
 import { t } from "../trpc";
 import { authGuard } from "../middlewares/authGuard";
 import {
-  createAssesmentValidator,
-  updateAssesmentValidator,
-} from "../../validators/assesment";
+  createAssessmentValidator,
+  updateAssessmentValidator,
+} from "../../validators/assessment";
 import { TRPCError } from "@trpc/server";
-import { HISTORY_STATUS, MAX_TEAM_USERS } from "../../../constants/numbers";
+import {
+  HISTORY_STATUS,
+  MAX_TEAM_USERS,
+  REVIEW_DECISION,
+} from "../../../constants/numbers";
 import mutationError from "../../utils/mutationError";
 import { z } from "zod";
 
-const notFoundMessage = "Assesment not found";
+const notFoundMessage = "Assessment not found";
 
-export const assesmentRouter = t.router({
+export const assessmentRouter = t.router({
   create: t.procedure
     .use(authGuard(["reviewer"]))
-    .input(createAssesmentValidator)
+    .input(createAssessmentValidator)
     .mutation(async ({ ctx, input }) => {
+      if (input.isDone && input.decision === REVIEW_DECISION.unanswered)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Decision required to submit",
+        });
+
       const existingAssesment = await ctx.prisma.assesment.findFirst({
         where: {
           AND: [{ userId: ctx.session.user.id }, { reviewId: input.reviewId }],
@@ -103,9 +113,12 @@ export const assesmentRouter = t.router({
           // chiefEmailFetch,
         }
 
-        return input.isDone
-          ? "Assessment successfully submitted"
-          : "Assessment draft saved";
+        return {
+          id: assesment.id,
+          message: input.isDone
+            ? "Assessment successfully submitted"
+            : "Assessment draft saved",
+        };
       } catch (e) {
         throw mutationError(e, "Review question ID is invalid");
       }
@@ -191,6 +204,9 @@ export const assesmentRouter = t.router({
         },
       });
 
+      if (!assesment)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
       const mappedAssesment = {
         ...assesment,
         user: undefined,
@@ -206,9 +222,6 @@ export const assesmentRouter = t.router({
                 (e) => e.id === assesment.user.id
               ) ?? -1) + 1,
       };
-
-      if (!assesment)
-        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
 
       return mappedAssesment;
     }),
@@ -241,8 +254,8 @@ export const assesmentRouter = t.router({
         },
       });
 
-      if (!assesment)
-        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+      // if (!assesment)
+      //   throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
 
       return assesment;
     }),
@@ -277,8 +290,14 @@ export const assesmentRouter = t.router({
     }),
   update: t.procedure
     .use(authGuard(["reviewer"]))
-    .input(updateAssesmentValidator)
+    .input(updateAssessmentValidator)
     .mutation(async ({ ctx, input }) => {
+      if (input.isDone && input.decision === REVIEW_DECISION.unanswered)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Decision required to submit",
+        });
+
       try {
         await ctx.prisma.reviewAnswer.deleteMany({
           where: {

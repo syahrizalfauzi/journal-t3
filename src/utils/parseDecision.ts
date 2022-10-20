@@ -1,4 +1,4 @@
-export const parseAssesmentDecision = (decision: number = 0) => {
+export const parseAssessmentDecision = (decision?: number) => {
   switch (decision) {
     case -1:
       return { label: "Rejected", className: "text-error" };

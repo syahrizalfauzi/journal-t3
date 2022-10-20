@@ -22,21 +22,26 @@ export const userRouter = t.router({
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
 
-      const user = await ctx.prisma.user.create({
-        data: {
-          ...input,
-          password: passwordEncryptor(input.password),
-          profile: {
-            create: { ...input.profile, expertise, keywords },
+      //For some reason, zod refine is not running
+      try {
+        const user = await ctx.prisma.user.create({
+          data: {
+            ...input,
+            password: passwordEncryptor(input.password),
+            profile: {
+              create: { ...input.profile, expertise, keywords },
+            },
           },
-        },
-        select: {
-          id: true,
-          username: true,
-        },
-      });
+          select: {
+            id: true,
+            username: true,
+          },
+        });
 
-      return `User '${user.username}' successfully created`;
+        return `User '${user.username}' successfully created`;
+      } catch (e) {
+        throw mutationError(e);
+      }
     }),
   get: t.procedure
     .use(authGuard(["admin"]))

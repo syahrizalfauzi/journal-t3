@@ -75,13 +75,13 @@ const ListLayout = <I extends QueryType, S extends Sorts, F extends Filter>({
               ))}
             </select>
           )}
-          {allowedFilters && allowedFilters?.length > 0 && (
+          {(allowedFilters?.length ?? 0) > 0 && (
             <select
               className="select select-bordered max-w-xs"
               onChange={onChangeFilter}
             >
               <option value={-1}>No Filter</option>
-              {allowedFilters.map(({ label, availableValues, key }, index) => (
+              {allowedFilters?.map(({ label, availableValues, key }, index) => (
                 <Fragment key={key}>
                   <option disabled>{label}</option>
                   {availableValues.map(({ label }, valueIndex) => (

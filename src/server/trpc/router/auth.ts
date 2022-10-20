@@ -17,22 +17,26 @@ export const authRouter = t.router({
     .mutation(async ({ input, ctx }) => {
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
-
-      const user = await ctx.prisma.user.create({
-        data: {
-          ...input,
-          password: passwordEncryptor(input.password),
-          profile: {
-            create: { ...input.profile, expertise, keywords },
+      //For some reason, zod refine is not running
+      try {
+        const user = await ctx.prisma.user.create({
+          data: {
+            ...input,
+            password: passwordEncryptor(input.password),
+            profile: {
+              create: { ...input.profile, expertise, keywords },
+            },
           },
-        },
-        select: {
-          id: true,
-          username: true,
-        },
-      });
+          select: {
+            id: true,
+            username: true,
+          },
+        });
 
-      return `User '${user.username}' successfully created`;
+        return `User '${user.username}' successfully created`;
+      } catch (e) {
+        throw mutationError(e);
+      }
     }),
   user: t.procedure.use(authGuard()).query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
@@ -87,7 +91,7 @@ export const authRouter = t.router({
         });
 
         return "Password changed successfully";
-      } catch (e: any) {
+      } catch (e) {
         throw mutationError(e, notFoundMessage);
       }
     }),

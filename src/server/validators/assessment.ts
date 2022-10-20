@@ -5,7 +5,7 @@ import { z } from "zod";
 // majorRevision: 1,
 // minorRevision: 2,
 // accepted: 3,
-export const assesmentValidator = z.object({
+export const assessmentValidator = z.object({
   isDone: z.boolean(),
   authorComment: z.string(),
   editorComment: z.string(),
@@ -20,13 +20,13 @@ export const assesmentValidator = z.object({
   ),
 });
 
-export const createAssesmentValidator = z
+export const createAssessmentValidator = z
   .object({
     reviewId: z.string(),
   })
-  .merge(assesmentValidator);
-export const updateAssesmentValidator = z
+  .merge(assessmentValidator);
+export const updateAssessmentValidator = z
   .object({
     id: z.string(),
   })
-  .merge(assesmentValidator);
+  .merge(assessmentValidator);

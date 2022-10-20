@@ -6,7 +6,7 @@ import { userRouter } from "./user";
 import { questionRouter } from "./question";
 import { manuscriptRouter } from "./manuscript";
 import { historyRouter } from "./history";
-import { assesmentRouter } from "./assesment";
+import { assessmentRouter } from "./assessment";
 import { invitationRouter } from "./invitation";
 import { reviewRouter } from "./review";
 
@@ -16,7 +16,7 @@ export const appRouter = t.router({
   question: questionRouter,
   manuscript: manuscriptRouter,
   history: historyRouter,
-  assesment: assesmentRouter,
+  assessment: assessmentRouter,
   invitation: invitationRouter,
   review: reviewRouter,
 });

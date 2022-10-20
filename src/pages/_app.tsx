@@ -9,6 +9,9 @@ import { Session } from "next-auth";
 import React from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import Modal from "react-modal";
+
+Modal.setAppElement("#__next");
 
 const MyApp: AppType = ({ Component, pageProps }: any) => {
   return (
