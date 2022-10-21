@@ -11,9 +11,9 @@ import { trpc } from "../../../utils/trpc";
 const AssessmentReviewerPage = () => {
   const { query } = useRouter();
 
-  const { data: currentUser } = useSession();
-
   if (!query.id) return null;
+
+  const { data: currentUser } = useSession();
 
   const {
     data: assessment,

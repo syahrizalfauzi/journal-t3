@@ -56,7 +56,7 @@ const DashboardAuthorSubmissionsDetailPage = () => {
     );
   };
 
-  const handleFinalize = (file: File | null) => {
+  const handleFinalize = (file: File | undefined | null) => {
     console.log("TODO : finalization file upload", file);
     finalize.mutate(
       {

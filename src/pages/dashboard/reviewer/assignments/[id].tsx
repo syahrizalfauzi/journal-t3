@@ -20,14 +20,6 @@ const DashboardReviewAssignmentsDetailPage = () => {
 
   return (
     <>
-      {/* <ReactModal
-        isOpen={!!review}
-        onRequestClose={() => setReview(null)}
-        contentLabel="Submit Assessment"
-        className="container grid h-full items-center"
-      >
-        {!!review && <AssessmentModal review={review} />}
-      </ReactModal> */}
       <DashboardReviewerLayout>
         <DetailLayout
           isLoading={queryLoading}

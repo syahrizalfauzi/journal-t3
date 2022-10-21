@@ -444,7 +444,7 @@ const HistoryCardChief = ({
                         </td>
                       </tr>
                       {reviewDecision === "2" && (
-                        <tr>
+                        <tr className="align-bottom">
                           <th>Upload Proofread Article</th>
                           <td>
                             <FileInput>

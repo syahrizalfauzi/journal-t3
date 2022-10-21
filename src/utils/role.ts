@@ -4,12 +4,13 @@ import { AVAILABLE_ROLES, ROLE_MAP, ROLE_TEXTS } from "../constants/role";
 export const getRoleNumber = (role: Role) =>
   ROLE_TEXTS.indexOf(JSON.stringify(role));
 export const getRoleNumbers = (role: AvailableRoles) => {
-  let roleNumbers: number[] = [];
+  const roleNumbers: number[] = [];
 
   for (let i = 0; i < Math.pow(2, AVAILABLE_ROLES.length); i++) {
     const parsedRole = ROLE_MAP[i];
     if (!parsedRole) break;
-    if (parsedRole[role]) roleNumbers.push(i);
+    if (parsedRole[`is${role[0]?.toUpperCase()}${role.slice(1)}`])
+      roleNumbers.push(i);
   }
 
   return roleNumbers;

@@ -115,7 +115,11 @@ export const userRouter = t.router({
 
       const filter = {
         AND: [
-          { OR: getRoleNumbers("reviewer").map((num) => ({ role: num })) },
+          {
+            OR: getRoleNumbers("reviewer").map((equals) => ({
+              role: { equals },
+            })),
+          },
           { isActivated: true },
         ],
       } as Prisma.UserWhereInput;

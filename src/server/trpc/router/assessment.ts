@@ -305,7 +305,7 @@ export const assessmentRouter = t.router({
           },
         });
 
-        const assesment = await ctx.prisma.assesment.update({
+        const assessment = await ctx.prisma.assesment.update({
           where: { id: input.id },
           data: {
             ...input,
@@ -340,9 +340,9 @@ export const assessmentRouter = t.router({
 
         //TRIGGER ZONE
         //If the reviewers are done reviewing, change history status to reviewed
-        if (assesment.review.assesment.length >= MAX_TEAM_USERS) {
+        if (assessment.review.assesment.length >= MAX_TEAM_USERS) {
           const historyUpdate = ctx.prisma.history.update({
-            where: { id: assesment.review.history.id },
+            where: { id: assessment.review.history.id },
             data: { status: HISTORY_STATUS.reviewed },
             select: {
               updatedAt: true,
@@ -404,9 +404,12 @@ export const assessmentRouter = t.router({
           //   });
         }
 
-        return input.isDone
-          ? "Assessment successfully submitted"
-          : "Assessment draft saved";
+        return {
+          id: assessment.id,
+          message: input.isDone
+            ? "Assessment successfully submitted"
+            : "Assessment draft saved",
+        };
 
         // if (req.body.isDone && assesment.user.profile) {
         //   await sendEmail({

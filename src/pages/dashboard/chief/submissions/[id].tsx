@@ -103,10 +103,13 @@ const DashboardChiefSubmissionsDetailPage = () => {
       },
       {
         onSuccess: () => {
-          proofread.mutate({
-            fileUrl: SAMPLE_FILE_URL,
-            manuscriptId: query.id as string,
-          });
+          proofread.mutate(
+            {
+              fileUrl: SAMPLE_FILE_URL,
+              manuscriptId: query.id as string,
+            },
+            { onSuccess: () => refetch() }
+          );
         },
       }
     );

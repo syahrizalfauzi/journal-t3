@@ -145,7 +145,7 @@ const getStatusProps = (
       return {
         color:
           role === "reviewer"
-            ? history.review?.dueDate && hasSelfAssessment
+            ? history.review?.dueDate && hasSelfAssessment && isDoneAssessing
               ? "success"
               : "primary"
             : "gray-200",
@@ -153,7 +153,7 @@ const getStatusProps = (
           author:
             "Your revision is under review by the reviewers, please wait for further update.",
           reviewer: history.review?.dueDate
-            ? hasSelfAssessment
+            ? hasSelfAssessment && isDoneAssessing
               ? ""
               : "Please do a review on the latest file of this submission"
             : "Awaiting chief editor to set a due date, please wait for further update",
@@ -165,7 +165,7 @@ const getStatusProps = (
         label: {
           author: "Revision Peer Review",
           reviewer: history.review?.dueDate
-            ? hasSelfAssessment
+            ? hasSelfAssessment && isDoneAssessing
               ? "Assessment Submitted"
               : "Need Assessment"
             : "Waiting For Due Date",

@@ -32,13 +32,13 @@ type CreateAssessmentForm = Pick<
   decision: string;
   file: FileList;
   chiefFile: FileList;
+  // reviewAnswers: ReviewAnswer;
 };
 
 type QueryOptions = typeof questionListQuery;
 
 type ReviewAnswer = {
-  reviewQuestionId: string;
-  answer: number;
+  [key: string]: string;
 };
 
 const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
@@ -49,7 +49,7 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
   });
 
   const updateAssessment = trpc.assessment.update.useMutation({
-    onSettled: toastSettleHandler,
+    onSettled: (data, err) => toastSettleHandler(data?.message, err),
   });
 
   const { queryOptions, ...rest } = useQueryOptions<QueryOptions, Sorts, never>(
@@ -61,21 +61,16 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
   );
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
 
-  const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswer[]>([]);
+  const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswer>({});
 
   const isLoading = createAssessment.isLoading || selfAssessmentQuery.isLoading;
 
   const handleReviewAnswerChange = (questionId: string, value: number) =>
     setReviewAnswers((prevState) => {
-      const newAnswerIndex = prevState.findIndex(
-        ({ reviewQuestionId }) => reviewQuestionId === questionId
-      );
-      if (newAnswerIndex === -1) return prevState;
-
-      const newState = prevState;
-      newState[newAnswerIndex]!.answer = value;
-
-      return [...newState];
+      return {
+        ...prevState,
+        [questionId]: value.toString(),
+      };
     });
 
   const handleSubmitCreate = (isDone: boolean) => {
@@ -85,7 +80,12 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
           {
             ...data,
             decision: Number(decision),
-            reviewAnswers,
+            reviewAnswers: Object.entries(reviewAnswers).map(
+              ([reviewQuestionId, answer]) => ({
+                reviewQuestionId,
+                answer: Number(answer),
+              })
+            ),
             isDone,
             reviewId: review.id,
             fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
@@ -95,7 +95,7 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
             onSuccess: ({ id }) => {
               selfAssessmentQuery.refetch();
               onSubmit();
-              router.push(`/assessment/reviewer/${id}`);
+              if (isDone) router.push(`/assessment/reviewer/${id}`);
             },
           }
         );
@@ -104,16 +104,22 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
           {
             ...data,
             decision: Number(decision),
-            reviewAnswers,
+            reviewAnswers: Object.entries(reviewAnswers).map(
+              ([reviewQuestionId, answer]) => ({
+                reviewQuestionId,
+                answer: Number(answer),
+              })
+            ),
             isDone,
             fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
             chiefFileUrl: chiefFile.item(0) ? SAMPLE_FILE_URL : undefined,
             id: selfAssessmentQuery.data.id,
           },
           {
-            onSuccess: () => {
+            onSuccess: ({ id }) => {
               selfAssessmentQuery.refetch();
               onSubmit();
+              if (isDone) router.push(`/assessment/reviewer/${id}`);
             },
           }
         );
@@ -122,20 +128,18 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
 
   useEffect(() => {
     if (!questionListQuery.data) return;
-    const newReviewAnswers = questionListQuery.data.questions.map(
-      (question) => {
-        return {
-          reviewQuestionId: question.id,
-          answer:
-            selfAssessmentQuery.data?.reviewAnswers.find(
-              ({ reviewQuestion }) => reviewQuestion.id === question.id
-            )?.answer ?? 1,
-        };
-      }
+    const newReviewAnswers = Object.fromEntries(
+      questionListQuery.data.questions.map(({ id }) => [
+        id,
+        (
+          selfAssessmentQuery.data?.reviewAnswers.find(
+            ({ reviewQuestion }) => reviewQuestion.id === id
+          )?.answer ?? 1
+        ).toString(),
+      ])
     );
-    // console.log(newReviewAnswers);
-    setReviewAnswers([...newReviewAnswers]);
-  }, [questionListQuery.data, selfAssessmentQuery.data]);
+    setReviewAnswers({ ...newReviewAnswers });
+  }, [questionListQuery.data, reset, selfAssessmentQuery.data]);
 
   useEffect(() => {
     const selfAssessment = selfAssessmentQuery.data;
@@ -157,22 +161,24 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
           onSubmit={(e) => e.preventDefault()}
           className="flex flex-col items-stretch gap-4"
         >
-          <p className="text-lg font-semibold">Submit Assessment</p>
+          <p className="text-lg font-semibold">
+            Submit Assessment {!!selfAssessmentQuery.data && "(Draft Loaded)"}
+          </p>
           {questionListQuery.data?.questions.map(
-            ({ id, maxScale, question }, index) => {
-              const reviewAnswer = reviewAnswers[index];
+            ({ id, maxScale, question }) => {
+              const reviewAnswer = reviewAnswers[id];
               if (!reviewAnswer) return;
 
               return (
                 <Fragment key={id}>
                   <p>{question}</p>
                   <input
-                    value={reviewAnswer.answer.toString()}
+                    value={reviewAnswer}
                     onChange={(e) =>
                       handleReviewAnswerChange(id, Number(e.target.value))
                     }
-                    disabled={isLoading}
                     name={id}
+                    disabled={isLoading}
                     type="range"
                     min="1"
                     max={maxScale}

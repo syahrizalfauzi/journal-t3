@@ -21,7 +21,7 @@ type HistoryCardAuthorProps = {
   >["history"];
   isLoading: boolean;
   onRevise: (file: File) => unknown;
-  onFinalize: (file: File | null) => unknown;
+  onFinalize: (file: File | undefined | null) => unknown;
 };
 
 type ReviseForm = {
@@ -59,7 +59,7 @@ const HistoryCardAuthor = ({
     if (file) return onRevise(file);
   };
   const onSubmitFinalize: SubmitHandler<FinalizeForm> = ({ finalizeFile }) =>
-    onFinalize(finalizeFile.item(0));
+    onFinalize(finalizeFile?.item(0) as File | null | undefined);
 
   return (
     <div
@@ -184,7 +184,7 @@ const HistoryCardAuthor = ({
                 </td>
               </tr>
               {finalizeDecision === "1" && (
-                <tr>
+                <tr className="align-bottom">
                   <th>Upload Revision</th>
                   <td>
                     <FileInput>
