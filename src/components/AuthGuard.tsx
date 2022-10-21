@@ -18,19 +18,30 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
     (async () => {
       if (session.status === "loading") return;
 
-      const hasUser = session.status === "authenticated";
+      const hasUser = session.status === "authenticated" && !!session.data;
 
-      if (allowedRole === "loggedOut") {
-        if (hasUser) {
-          await router.push(redirectTo ?? "/auth/login");
-          return;
-        }
-      } else {
-        if (!hasUser) {
-          await router.push(redirectTo ?? "/auth/login");
-          return;
-        }
-        if (allowedRole !== "loggedIn") {
+      // loggedOut, push if hasUser
+      // loggedIn, push if !hasUser
+      // else, push if !hasUser && !canAccess
+
+      switch (allowedRole) {
+        case "loggedOut":
+          if (hasUser) {
+            await router.push(redirectTo ?? "/auth/login");
+            return;
+          }
+          break;
+        case "loggedIn":
+          if (!hasUser) {
+            await router.push(redirectTo ?? "/auth/login");
+            return;
+          }
+          break;
+        default:
+          if (!hasUser) {
+            await router.push(redirectTo ?? "/auth/login");
+            return;
+          }
           const canAccess = getHasRole(
             session.data.user.role,
             getRoleSelector(allowedRole)
@@ -39,7 +50,6 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
             await router.push(redirectTo ?? "/auth/login");
             return;
           }
-        }
       }
     })();
   }, [allowedRole, redirectTo, router, session]);
