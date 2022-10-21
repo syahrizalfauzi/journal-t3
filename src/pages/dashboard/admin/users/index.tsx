@@ -6,7 +6,7 @@ import RoleBadges from "../../../../components/RoleBadges";
 import { trpc } from "../../../../utils/trpc";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaTrashAlt } from "react-icons/fa";
-import parseDate from "../../../../utils/parseDate";
+import { parseDate } from "../../../../utils/parseDate";
 import Link from "next/link";
 import { USER_LIST_SORTS } from "../../../../constants/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";

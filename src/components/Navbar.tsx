@@ -42,9 +42,9 @@ const Navbar = () => {
               <ActiveLink
                 className="btn-ghost rounded-lg "
                 activeClassName="font-bold bg-gray-200"
-                pathName="/announcements"
+                pathName="/about"
               >
-                <a>Announcements</a>
+                <a>About</a>
               </ActiveLink>
             </li>
             {status === "unauthenticated" && (
@@ -63,7 +63,7 @@ const Navbar = () => {
                     <a>Dashboard</a>
                   </ActiveLink>
                 </li>
-                <div className="dropdown-end dropdown">
+                <div className="dropdown dropdown-end">
                   <label
                     tabIndex={0}
                     className="avatar btn btn-ghost gap-4 normal-case"
@@ -76,7 +76,7 @@ const Navbar = () => {
                     className="dropdown-content menu rounded-box menu-compact mt-3 bg-base-100 p-2 shadow"
                   >
                     <li className="z-20">
-                      <a href="/dashboard/settings/user">Settings</a>
+                      <Link href="/dashboard/settings/user">Settings</Link>
                     </li>
                     <li className="z-20">
                       <div onClick={handleLogOut} className="text-error">

@@ -4,7 +4,7 @@ import DashboardAdminLayout from "../../../../components/layout/dashboard/Dashbo
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import { trpc } from "../../../../utils/trpc";
 import { FaTrashAlt } from "react-icons/fa";
-import parseDate from "../../../../utils/parseDate";
+import { parseDate } from "../../../../utils/parseDate";
 import Link from "next/link";
 import { QUESTION_LIST_SORTS } from "../../../../constants/sorts";
 import getSortOrder from "../../../../utils/getSortOrder";

@@ -2,7 +2,7 @@ import React from "react";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
 import KeywordBadges from "./KeywordBadges";
-import parseDate from "../utils/parseDate";
+import { parseDate } from "../utils/parseDate";
 
 type ManuscriptDetailCardReviewerProps = {
   manuscriptDetail: inferProcedureOutput<

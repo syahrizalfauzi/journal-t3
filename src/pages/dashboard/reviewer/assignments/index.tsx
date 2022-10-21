@@ -6,7 +6,7 @@ import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import StatusBadge from "../../../../components/StatusBadge";
 import { MANUSCRIPT_REVIEWER_FILTERS } from "../../../../constants/filters";
 import { manuscriptReviewerQuery } from "../../../../server/queries";
-import parseDate from "../../../../utils/parseDate";
+import { parseDate } from "../../../../utils/parseDate";
 import { trpc } from "../../../../utils/trpc";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
 

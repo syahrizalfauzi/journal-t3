@@ -3,7 +3,7 @@ import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import KeywordBadges from "./KeywordBadges";
-import parseDate from "../utils/parseDate";
+import { parseDate } from "../utils/parseDate";
 import FileInput from "./FileInput";
 
 type ManuscriptDetailCardAuthorProps = {

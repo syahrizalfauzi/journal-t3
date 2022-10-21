@@ -1,11 +1,16 @@
 import moment from "moment";
 
-const parseDate = (date: Date, fallback?: string) => {
+export const parseDate = (date: Date, fallback?: string) => {
   const momentDate = moment(date);
 
   return momentDate.isValid()
     ? momentDate.format("ddd, D MMM YYYY, HH:mm")
     : fallback ?? "Not set";
 };
+export const parseDateDay = (date: Date, fallback?: string) => {
+  const momentDate = moment(date);
 
-export default parseDate;
+  return momentDate.isValid()
+    ? momentDate.format("ddd, D MMM YYYY")
+    : fallback ?? "Not set";
+};

@@ -7,7 +7,7 @@ import { MANUSCRIPT_AUTHOR_SORTS } from "../../../../constants/sorts";
 import { manuscriptAuthorQuery } from "../../../../server/queries";
 import { trpc } from "../../../../utils/trpc";
 import Link from "next/link";
-import parseDate from "../../../../utils/parseDate";
+import { parseDate } from "../../../../utils/parseDate";
 import KeywordBadges from "../../../../components/KeywordBadges";
 import StatusBadge from "../../../../components/StatusBadge";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";

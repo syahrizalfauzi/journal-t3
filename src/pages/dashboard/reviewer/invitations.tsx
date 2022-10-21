@@ -8,7 +8,7 @@ import { INVITATION_STATUS } from "../../../constants/numbers";
 import { INVITATION_LIST_SORTS } from "../../../constants/sorts";
 import { invitationListQuery } from "../../../server/queries";
 import getSortOrder from "../../../utils/getSortOrder";
-import parseDate from "../../../utils/parseDate";
+import { parseDate } from "../../../utils/parseDate";
 import { toastSettleHandler } from "../../../utils/toastSettleHandler";
 import { trpc } from "../../../utils/trpc";
 import { useQueryOptions } from "../../../utils/useQueryOptions";
