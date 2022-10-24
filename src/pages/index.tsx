@@ -74,44 +74,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="bg-slate-400 py-16">
-        <div className="container">
-          <div className="flex flex-row justify-between">
-            <p className="text-3xl font-bold text-white">Latest Articles</p>
-            <Link href="/archive">
-              <a className="btn btn-outline border-white text-white">
-                See More
-              </a>
-            </Link>
-          </div>
-          <div className="mt-8 flex flex-col gap-4">
-            <div className="flex flex-col gap-1 rounded-xl bg-white p-4 shadow-xl">
-              <p className="text-lg font-medium">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt
-                fugiat consequuntur molestias voluptatibus ipsam ut itaque
-                debitis. Facilis, alias repudiandae dolore asperiores tenetur
-                commodi obcaecati debitis doloremque esse consectetur fuga.
-              </p>
-              <p className="italic">Author 1, Author 2</p>
-              <p className="text-gray-400">
-                Available {parseDateDay(new Date())}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1 rounded-xl bg-white p-4 shadow-xl">
-              <p className="text-lg font-medium">
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt
-                fugiat consequuntur molestias voluptatibus ipsam ut itaque
-                debitis. Facilis, alias repudiandae dolore asperiores tenetur
-                commodi obcaecati debitis doloremque esse consectetur fuga.
-              </p>
-              <p className="italic">Author 1, Author 2</p>
-              <p className="text-gray-400">
-                Available {parseDateDay(new Date())}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+
       <footer className="footer footer-center bg-base-300 p-4 text-base-content">
         <div>
           <p>Asal Fakultas, Asal Universitas</p>

@@ -24,7 +24,7 @@ const RootLayout = ({ children }: LayoutProps) => {
       <div className="fixed z-50 w-full">
         <Navbar />
       </div>
-      <div className="mt-[66px] w-screen">{children}</div>
+      <div className="mt-[66px] h-full w-screen flex-1">{children}</div>
     </div>
   );
 };
