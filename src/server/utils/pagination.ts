@@ -24,7 +24,7 @@ export const paginationMetadata = (
   };
 };
 
-export const paginationQuery = ({ page }: { page?: number }) => ({
+export const getPaginationQuery = ({ page }: { page?: number }) => ({
   skip: getSkipPagination(page ?? 1),
   take: ITEM_COUNT_PER_PAGE,
 });

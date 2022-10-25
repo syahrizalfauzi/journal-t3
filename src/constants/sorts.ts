@@ -41,3 +41,5 @@ export const INVITATION_LIST_SORTS = [
   "createdAt",
   "status",
 ] as const;
+
+export const PAGE_LIST_SORTS = ["name", "createdAt", "updatedAt"] as const;

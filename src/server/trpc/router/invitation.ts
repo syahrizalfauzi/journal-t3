@@ -13,7 +13,7 @@ import {
 import mutationError from "../../utils/mutationError";
 import { invitationListQuery } from "../../queries";
 import { Prisma } from "@prisma/client";
-import { paginationMetadata, paginationQuery } from "../../utils/pagination";
+import { paginationMetadata, getPaginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { TRPCError } from "@trpc/server";
 
@@ -89,7 +89,7 @@ export const invitationRouter = t.router({
         where: filter,
       });
       const getInvitations = ctx.prisma.invitation.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         where: filter,
         orderBy: getOrderQuery(input, ["createdAt", "status", "updatedAt"]) ?? {
           createdAt: "desc",

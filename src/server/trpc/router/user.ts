@@ -1,5 +1,5 @@
 import { userListQuery, userReviewerQuery } from "../../queries";
-import { paginationMetadata, paginationQuery } from "../../utils/pagination";
+import { paginationMetadata, getPaginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { t } from "../trpc";
 import { authGuard } from "../middlewares/authGuard";
@@ -74,7 +74,7 @@ export const userRouter = t.router({
       const getCount = ctx.prisma.user.count();
 
       const getUsers = ctx.prisma.user.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         orderBy: profileOrder
           ? {
               profile: { ...profileOrder },
@@ -128,7 +128,7 @@ export const userRouter = t.router({
         where: filter,
       });
       const getUsers = ctx.prisma.user.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         where: filter,
         orderBy: profileOrder
           ? {

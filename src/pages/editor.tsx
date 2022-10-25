@@ -13,7 +13,7 @@ import {
   verticalDividerPlugin,
 } from "../components/editor/divider";
 import { imagePlugin } from "../components/editor/image";
-import { latestArticlesPlugin } from "../components/editor/latestArtciles";
+import { latestArticlesPlugin } from "../components/editor/latestArticles";
 
 const cellPlugins: CellPluginList = [
   slate(),

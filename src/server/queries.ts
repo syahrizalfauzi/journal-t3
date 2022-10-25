@@ -2,6 +2,7 @@ import {
   INVITATION_LIST_SORTS,
   MANUSCRIPT_AUTHOR_SORTS,
   MANUSCRIPT_CHIEF_SORTS,
+  PAGE_LIST_SORTS,
   QUESTION_LIST_SORTS,
   USER_LIST_SORTS,
   USER_REVIEWER_SORTS,
@@ -68,3 +69,6 @@ export const manuscriptChiefQuery = paginationInput
 export const invitationListQuery = paginationInput
   .merge(generateSortInput(INVITATION_LIST_SORTS))
   .merge(generateFilterInput(INVITATION_LIST_FILTERS));
+export const pageListQuery = paginationInput.merge(
+  generateSortInput(PAGE_LIST_SORTS)
+);

@@ -10,7 +10,7 @@ export const Navbar = () => {
   const handleLogOut = () => signOut({ callbackUrl: "/auth/login" });
 
   return (
-    <nav className="navbar z-20 bg-white shadow-md">
+    <nav className="navbar z-20 bg-white">
       <div className="container">
         <div className="flex-1">
           <Link href="/">
@@ -63,7 +63,7 @@ export const Navbar = () => {
                     <a>Dashboard</a>
                   </ActiveLink>
                 </li>
-                <div className="dropdown dropdown-end">
+                <div className="dropdown-end dropdown">
                   <label
                     tabIndex={0}
                     className="avatar btn btn-ghost gap-4 normal-case"

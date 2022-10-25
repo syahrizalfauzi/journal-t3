@@ -164,3 +164,11 @@ model ReviewAnswer {
   assesment        Assesment      @relation(fields: [assesmentId], references: [id], onDelete: Cascade)
   assesmentId      String
 }
+
+model Page {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  data      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

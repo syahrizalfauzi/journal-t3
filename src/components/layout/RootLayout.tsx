@@ -2,7 +2,11 @@ import React from "react";
 import LayoutProps from "../../types/LayoutProps";
 import { Navbar } from "../Navbar";
 
-export const RootLayout = ({ children }: LayoutProps) => {
+type RootLayoutProps = LayoutProps & {
+  subnavbar?: React.ReactNode;
+};
+
+export const RootLayout = ({ children, subnavbar }: RootLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="hidden bg-gray-200 " />
@@ -21,10 +25,12 @@ export const RootLayout = ({ children }: LayoutProps) => {
       <div className="hidden border-accent" />
       <div className="hidden border-secondary" />
       <div className="hidden border-primary" />
-      <div className="fixed z-50 w-full">
+      <div className="fixed z-50 w-full  shadow-md">
         <Navbar />
+        {subnavbar}
       </div>
       <div className="mt-[66px] h-full w-screen flex-1">{children}</div>
+      {/* {footer} */}
     </div>
   );
 };

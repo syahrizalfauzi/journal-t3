@@ -5,7 +5,7 @@ import {
   updateQuestionValidator,
 } from "../../validators/question";
 import { questionListQuery } from "../../queries";
-import { paginationMetadata, paginationQuery } from "../../utils/pagination";
+import { paginationMetadata, getPaginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { QUESTION_LIST_SORTS } from "../../../constants/sorts";
 import mutationError from "../../utils/mutationError";
@@ -56,7 +56,7 @@ export const questionRouter = t.router({
     .query(async ({ ctx, input }) => {
       const getCount = ctx.prisma.reviewQuestion.count();
       const getQuestions = ctx.prisma.reviewQuestion.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         orderBy: getOrderQuery(input, QUESTION_LIST_SORTS) ?? {
           createdAt: "desc",
         },

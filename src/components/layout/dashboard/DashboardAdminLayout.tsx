@@ -25,6 +25,13 @@ export const DashboardAdminLayout = ({ children }: LayoutProps) => {
             >
               <a>Review Questions</a>
             </ActiveLink>
+            <ActiveLink
+              activeClassName="font-bold tab-active"
+              className="tab tab-md"
+              pathName="/dashboard/admin/pages"
+            >
+              <a>Pages</a>
+            </ActiveLink>
           </div>
           {children}
         </div>

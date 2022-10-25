@@ -12,7 +12,7 @@ import {
 } from "../../queries";
 import { Prisma } from "@prisma/client";
 import { getOrderQuery } from "../../utils/sortOrder";
-import { paginationMetadata, paginationQuery } from "../../utils/pagination";
+import { paginationMetadata, getPaginationQuery } from "../../utils/pagination";
 import { z } from "zod";
 import {
   AUTHOR_HISTORY_SELECTION,
@@ -106,7 +106,7 @@ export const manuscriptRouter = t.router({
         where: filter,
       });
       const getManuscripts = ctx.prisma.manuscript.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         where: filter,
         orderBy: historyOrder
           ? { latestHistory: { history: { ...historyOrder } } }
@@ -173,7 +173,7 @@ export const manuscriptRouter = t.router({
       });
 
       const getManuscripts = ctx.prisma.manuscript.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         where: filter,
         orderBy: historyOrder
           ? {
@@ -248,7 +248,7 @@ export const manuscriptRouter = t.router({
       });
 
       const getManuscripts = ctx.prisma.manuscript.findMany({
-        ...paginationQuery(input),
+        ...getPaginationQuery(input),
         where: filter,
         orderBy: historyOrder
           ? {

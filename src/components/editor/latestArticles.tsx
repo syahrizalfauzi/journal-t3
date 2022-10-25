@@ -5,7 +5,7 @@ import { parseDateDay } from "../../utils/parseDate";
 export const latestArticlesPlugin: CellPlugin = {
   Renderer: ({ children }) => (
     <section className="py-16">
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center gap-8">
         <div className="prose max-w-none flex-1">{children}</div>
         <div className="not-prose">
           <Link href="/archive">

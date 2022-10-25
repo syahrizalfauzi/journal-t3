@@ -513,14 +513,6 @@
     "@mui/icons-material" "^5.8.0"
     "@react-page/editor" "^5.1.5"
 
-"@react-page/plugins-image@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@react-page/plugins-image/-/plugins-image-5.1.5.tgz#2ab9ae722b88a790f5a8b72e2804fa497a0d0d4a"
-  integrity sha512-ep5ds5LK1Y3rwtGBpOd4ji66Jk9B07N5sapFWX83IRxhsgjKY5ySsgaxY20Sa/EmRYYZuXkvJ1NeAmWapinpLA==
-  dependencies:
-    "@mui/icons-material" "^5.8.0"
-    "@react-page/editor" "^5.1.5"
-
 "@react-page/plugins-slate@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@react-page/plugins-slate/-/plugins-slate-5.1.5.tgz#539c1f3e335cfd97248d250363f0ac40b8649a9e"
