@@ -4,33 +4,14 @@ import { trpc } from "../../../../utils/trpc";
 import { useRouter } from "next/router";
 import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 // import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import Editor, { CellPluginList, Value } from "@react-page/editor";
-import { containerPlugin } from "../../../../components/editor/container";
-import {
-  verticalDividerPlugin,
-  horizontalDividerPlugin,
-} from "../../../../components/editor/divider";
-import { latestArticlesPlugin } from "../../../../components/editor/latestArticles";
-import slate from "@react-page/plugins-slate";
-import spacer from "@react-page/plugins-spacer";
-import background from "@react-page/plugins-background";
-import { imagePlugin } from "../../../../components/editor/image";
+import { Value } from "@react-page/editor";
 import { RootLayout } from "../../../../components/layout/RootLayout";
 import { parseDate } from "../../../../utils/parseDate";
-
-const cellPlugins: CellPluginList = [
-  slate(),
-  spacer,
-  background({}),
-  containerPlugin,
-  verticalDividerPlugin,
-  horizontalDividerPlugin,
-  imagePlugin,
-  latestArticlesPlugin,
-];
+import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
+import { PageEditor } from "../../../../components/editor/PageEditor";
 
 const DashboardAdminQuestionEditPage: NextPage = () => {
-  const { query } = useRouter();
+  const { query, push } = useRouter();
 
   if (!query.id) return null;
 
@@ -40,17 +21,29 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
     error: queryError,
   } = trpc.page.get.useQuery(query.id as string);
 
-  // const { mutate: mutationUpdate, isLoading: mutationLoading } =
-  //   trpc.page.update.useMutation({
-  //     onSettled: toastSettleHandler,
-  //   });
+  const { mutate: mutationUpdate, isLoading: mutationLoading } =
+    trpc.page.update.useMutation({
+      onSettled: toastSettleHandler,
+    });
 
   const [editorData, setEditorData] = useState<Value | null>(null);
+
+  const handleSave = () => {
+    mutationUpdate(
+      {
+        id: query.id as string,
+        data: JSON.stringify(editorData),
+      },
+      {
+        onSuccess: () => push("/dashboard/admin/pages"),
+      }
+    );
+  };
 
   useEffect(() => {
     if (!page?.data) return;
 
-    // setEditorData(JSON.parse(page.data));
+    setEditorData(JSON.parse(page.data));
   }, [page?.data]);
 
   return (
@@ -72,17 +65,23 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
                   {parseDate(data.updatedAt)}
                 </p>
 
-                <button className="btn">Save</button>
+                <button
+                  onClick={handleSave}
+                  disabled={mutationLoading}
+                  className="btn"
+                >
+                  {mutationLoading ? "Saving" : "Save"}
+                </button>
               </div>
             </div>
           }
         >
           <div className="max-h-none prose mt-[66px] max-w-none flex-1">
-            <Editor
-              cellPlugins={cellPlugins}
+            <PageEditor
               value={editorData}
               onChange={setEditorData}
-            ></Editor>
+              readOnly={mutationLoading}
+            />
           </div>
         </RootLayout>
       )}

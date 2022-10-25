@@ -1,13 +1,34 @@
 /* eslint-disable @next/next/no-img-element */
 import { RootLayout } from "../components/layout/RootLayout";
 import React from "react";
-import { parseDateDay } from "../utils/parseDate";
-import Link from "next/link";
+import { GetServerSideProps, NextPage } from "next";
+import { PageEditor } from "../components/editor/PageEditor";
 
-const Home = () => {
+type PageProps = {
+  pageData: string;
+};
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  const pageData = (
+    await prisma?.page.findUnique({
+      where: { name: "home" },
+      select: { data: true },
+    })
+  )?.data;
+
+  return {
+    notFound: !pageData,
+    props: {
+      pageData: pageData!,
+    },
+  };
+};
+
+const Home: NextPage<PageProps> = ({ pageData }) => {
   return (
     <RootLayout>
-      <section className="py-16">
+      <PageEditor readOnly value={JSON.parse(pageData)} />
+      {/* <section className="py-16">
         <div className="mx-auto w-1/2">
           <div className="mb-4 flex flex-row items-center gap-16">
             <div>
@@ -85,7 +106,7 @@ const Home = () => {
           <br />
           <p>Copyright © 2022 - All right reserved by ACME Industries Ltd</p>
         </div>
-      </footer>
+      </footer> */}
     </RootLayout>
   );
 };
