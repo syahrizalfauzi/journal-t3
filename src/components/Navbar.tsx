@@ -1,10 +1,10 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import ActiveLink from "./ActiveLink";
+import { ActiveLink } from "./ActiveLink";
 import { BsPerson } from "react-icons/bs";
 
-const Navbar = () => {
+export const Navbar = () => {
   const { data, status } = useSession();
 
   const handleLogOut = () => signOut({ callbackUrl: "/auth/login" });
@@ -93,5 +93,3 @@ const Navbar = () => {
     </nav>
   );
 };
-
-export default Navbar;

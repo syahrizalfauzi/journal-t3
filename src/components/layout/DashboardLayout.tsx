@@ -1,12 +1,12 @@
 import { signOut, useSession } from "next-auth/react";
 import React from "react";
 import LayoutProps from "../../types/LayoutProps";
-import ActiveLink from "../ActiveLink";
-import AuthGuard from "../AuthGuard";
-import RootLayout from "./RootLayout";
+import { ActiveLink } from "../ActiveLink";
+import { AuthGuard } from "../AuthGuard";
+import { RootLayout } from "./RootLayout";
 import { ROLE_MAP } from "../../constants/role";
 
-const DashboardLayout = ({ children }: LayoutProps) => {
+export const DashboardLayout = ({ children }: LayoutProps) => {
   const handleLogOut = () => signOut({ callbackUrl: "/auth/login" });
   const { data } = useSession();
 
@@ -97,5 +97,3 @@ const DashboardLayout = ({ children }: LayoutProps) => {
     </AuthGuard>
   );
 };
-
-export default DashboardLayout;

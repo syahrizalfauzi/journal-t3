@@ -11,7 +11,7 @@ type StatusBadgeProps = {
   hasSelfAssessment?: boolean;
 };
 
-const StatusBadge = ({
+export const StatusBadge = ({
   hasSelfAssessment,
   history,
   role,
@@ -35,5 +35,3 @@ const StatusBadge = ({
     </div>
   );
 };
-
-export default StatusBadge;

@@ -6,9 +6,7 @@ import React from "react";
 const Document = () => {
   return (
     <Html data-theme="light">
-      <Head>
-        <title>Journal Submission System</title>
-      </Head>
+      <Head title="Journal Submission System" />
       <body>
         <Main />
         <NextScript />

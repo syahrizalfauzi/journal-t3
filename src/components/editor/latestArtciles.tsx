@@ -1,13 +1,9 @@
 import { CellPlugin } from "@react-page/editor";
 import Link from "next/link";
-import React from "react";
-import LayoutProps from "../types/LayoutProps";
-import { parseDateDay } from "../utils/parseDate";
+import { parseDateDay } from "../../utils/parseDate";
 
-type LatestArticlesProps = LayoutProps;
-
-const LatestArticles = ({ children }: LatestArticlesProps) => {
-  return (
+export const latestArticlesPlugin: CellPlugin = {
+  Renderer: ({ children }) => (
     <section className="py-16">
       <div className="flex flex-row items-center">
         <div className="prose max-w-none flex-1">{children}</div>
@@ -40,14 +36,8 @@ const LatestArticles = ({ children }: LatestArticlesProps) => {
         </div>
       </div>
     </section>
-  );
-};
-
-export const latestArticlesPlugin: CellPlugin<LatestArticlesProps> = {
-  Renderer: ({ children }) => <LatestArticles>{children}</LatestArticles>,
+  ),
   id: "latestArticlesPlugin",
   title: "Latest Articles",
   version: 1,
 };
-
-export default LatestArticles;

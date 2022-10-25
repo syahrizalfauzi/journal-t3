@@ -7,7 +7,7 @@ type HistoryCardActionProps = LayoutProps & {
   outside?: React.ReactNode;
 };
 
-const HistoryCardAction = ({
+export const HistoryCardAction = ({
   withSubmit = true,
   isLoading,
   outside,
@@ -35,5 +35,3 @@ const HistoryCardAction = ({
     </>
   );
 };
-
-export default HistoryCardAction;

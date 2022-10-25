@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import React, { useEffect } from "react";
-import DashboardChiefLayout from "../../../components/layout/dashboard/DashboardChiefLayout";
+import { DashboardChiefLayout } from "../../../components/layout/dashboard/DashboardChiefLayout";
 
 const DashboardChiefPage: NextPage = () => {
   const router = useRouter();

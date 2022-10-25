@@ -20,7 +20,7 @@ type HistoryCardReviewerProps = {
   withAction: boolean;
 };
 
-const HistoryCardReviewer = ({
+export const HistoryCardReviewer = ({
   history,
   manuscript,
   withAction,
@@ -180,5 +180,3 @@ const HistoryCardReviewer = ({
     </div>
   );
 };
-
-export default HistoryCardReviewer;

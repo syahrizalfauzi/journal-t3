@@ -1,8 +1,8 @@
 import React from "react";
 import LayoutProps from "../../types/LayoutProps";
-import Navbar from "../Navbar";
+import { Navbar } from "../Navbar";
 
-const RootLayout = ({ children }: LayoutProps) => {
+export const RootLayout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="hidden bg-gray-200 " />
@@ -28,5 +28,3 @@ const RootLayout = ({ children }: LayoutProps) => {
     </div>
   );
 };
-
-export default RootLayout;

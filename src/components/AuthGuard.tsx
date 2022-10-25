@@ -10,7 +10,11 @@ type AuthGuardProps = LayoutProps & {
   redirectTo?: string;
 };
 
-const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
+export const AuthGuard = ({
+  allowedRole,
+  redirectTo,
+  children,
+}: AuthGuardProps) => {
   const session = useSession();
   const router = useRouter();
 
@@ -58,5 +62,3 @@ const AuthGuard = ({ allowedRole, redirectTo, children }: AuthGuardProps) => {
 
   return <>{children}</>;
 };
-
-export default AuthGuard;

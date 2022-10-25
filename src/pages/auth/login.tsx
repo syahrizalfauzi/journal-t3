@@ -3,9 +3,9 @@ import Link from "next/link";
 import { NextPage } from "next/types";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import ErrorTexts from "../../components/ErrorTexts";
-import InputLabel from "../../components/InputLabel";
-import AuthLayout from "../../components/layout/AuthLayout";
+import { ErrorTexts } from "../../components/ErrorTexts";
+import { InputLabel } from "../../components/InputLabel";
+import { AuthLayout } from "../../components/layout/AuthLayout";
 
 type LoginForm = {
   username: string;

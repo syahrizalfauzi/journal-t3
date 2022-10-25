@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import type { NextPage } from "next/types";
-import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
-import InputLabel from "../../../../components/InputLabel";
-import Checkboxes from "../../../../components/Checkboxes";
-import SelectOptions from "../../../../components/SelectOptions";
+import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { InputLabel } from "../../../../components/InputLabel";
+import { Checkboxes } from "../../../../components/Checkboxes";
+import { SelectOptions } from "../../../../components/SelectOptions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { getRoleMap, getRoleNumber } from "../../../../utils/role";
@@ -11,7 +11,7 @@ import moment from "moment/moment";
 import { z } from "zod";
 import { updateUserValidator } from "../../../../server/validators/user";
 import { useRouter } from "next/router";
-import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
+import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role"> & {

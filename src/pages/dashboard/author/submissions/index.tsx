@@ -1,6 +1,6 @@
 import React from "react";
 import { NextPage } from "next/types";
-import DashboardAuthorLayout from "../../../../components/layout/dashboard/DashboardAuthorLayout";
+import { DashboardAuthorLayout } from "../../../../components/layout/dashboard/DashboardAuthorLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import getSortOrder from "../../../../utils/getSortOrder";
 import { MANUSCRIPT_AUTHOR_SORTS } from "../../../../constants/sorts";
@@ -8,8 +8,8 @@ import { manuscriptAuthorQuery } from "../../../../server/queries";
 import { trpc } from "../../../../utils/trpc";
 import Link from "next/link";
 import { parseDate } from "../../../../utils/parseDate";
-import KeywordBadges from "../../../../components/KeywordBadges";
-import StatusBadge from "../../../../components/StatusBadge";
+import { KeywordBadges } from "../../../../components/KeywordBadges";
+import { StatusBadge } from "../../../../components/StatusBadge";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
 import { MANUSCRIPT_AUTHOR_FILTERS } from "../../../../constants/filters";
 

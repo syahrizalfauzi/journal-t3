@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import React from "react";
-import AuthGuard from "../../../components/AuthGuard";
-import AssessmentLayout from "../../../components/layout/AssessmentLayout";
-import DetailLayout from "../../../components/layout/dashboard/DetailLayout";
+import { AuthGuard } from "../../../components/AuthGuard";
+import { AssessmentLayout } from "../../../components/layout/AssessmentLayout";
+import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
 import { parseDate } from "../../../utils/parseDate";
 import { parseAssessmentDecision } from "../../../utils/parseDecision";
 import { trpc } from "../../../utils/trpc";

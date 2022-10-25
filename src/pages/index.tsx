@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import RootLayout from "../components/layout/RootLayout";
+import { RootLayout } from "../components/layout/RootLayout";
 import React from "react";
 import { parseDateDay } from "../utils/parseDate";
 import Link from "next/link";

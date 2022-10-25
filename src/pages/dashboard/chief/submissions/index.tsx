@@ -7,9 +7,9 @@ import { manuscriptChiefQuery } from "../../../../server/queries";
 import { trpc } from "../../../../utils/trpc";
 import Link from "next/link";
 import { parseDate } from "../../../../utils/parseDate";
-import KeywordBadges from "../../../../components/KeywordBadges";
-import StatusBadge from "../../../../components/StatusBadge";
-import DashboardChiefLayout from "../../../../components/layout/dashboard/DashboardChiefLayout";
+import { KeywordBadges } from "../../../../components/KeywordBadges";
+import { StatusBadge } from "../../../../components/StatusBadge";
+import { DashboardChiefLayout } from "../../../../components/layout/dashboard/DashboardChiefLayout";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
 import { MANUSCRIPT_CHIEF_FILTERS } from "../../../../constants/filters";
 

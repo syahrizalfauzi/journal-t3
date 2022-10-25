@@ -14,7 +14,7 @@ type ActiveLinkProps = LayoutProps & {
   query?: ParsedUrlQueryInput;
 };
 
-const ActiveLink = ({
+export const ActiveLink = ({
   children,
   isSegmented = true,
   pathName: href,
@@ -34,7 +34,7 @@ const ActiveLink = ({
   const targetLength = targetPaths.length;
   const samePath =
     currentLength > 0 && targetLength > 0 && currentLength > targetLength
-      ? (targetPaths as any[]).reduce<boolean>(
+      ? (targetPaths as unknown[]).reduce<boolean>(
           (prev, next, index) => prev && next === currentPaths[index],
           true
         )
@@ -61,5 +61,3 @@ const ActiveLink = ({
     </Link>
   );
 };
-
-export default ActiveLink;

@@ -513,14 +513,6 @@
     "@mui/icons-material" "^5.8.0"
     "@react-page/editor" "^5.1.5"
 
-"@react-page/plugins-divider@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@react-page/plugins-divider/-/plugins-divider-5.1.5.tgz#696536523528ce1b9f3afefccad72d62766da4d2"
-  integrity sha512-6pTUsVZ8JKObYDyHoqo68xJJf5/YTsGMcc02gXktq0DvFb7xOsSZFis+H6J2fM3p/xiYxHydm9crY+A0MWDymA==
-  dependencies:
-    "@mui/icons-material" "^5.8.0"
-    "@react-page/editor" "^5.1.5"
-
 "@react-page/plugins-image@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@react-page/plugins-image/-/plugins-image-5.1.5.tgz#2ab9ae722b88a790f5a8b72e2804fa497a0d0d4a"

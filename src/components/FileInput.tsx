@@ -5,7 +5,7 @@ type FileInput = LayoutProps & {
   label?: string;
 };
 
-const FileInput = ({ children, label }: FileInput) => {
+export const FileInput = ({ children, label }: FileInput) => {
   return (
     <div className="flex flex-col gap-4">
       <p className="font-semibold">{label}</p>
@@ -13,5 +13,3 @@ const FileInput = ({ children, label }: FileInput) => {
     </div>
   );
 };
-
-export default FileInput;

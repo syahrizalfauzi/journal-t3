@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
-import ErrorTexts from "../../ErrorTexts";
+import { ErrorTexts } from "../../ErrorTexts";
 import { Sorts } from "../../../types/SortOrder";
-import Paginator from "../../Paginator";
+import { Paginator } from "../../Paginator";
 import { PaginationMetadata } from "../../../utils/getItemIndex";
 import { UseTRPCQueryResult } from "@trpc/react/shared";
 import getSortOrder from "../../../utils/getSortOrder";
@@ -19,7 +19,11 @@ type ListLayoutProps<I extends QueryType, S extends Sorts, F extends Filter> = {
   create?: React.ReactNode;
 };
 
-const ListLayout = <I extends QueryType, S extends Sorts, F extends Filter>({
+export const ListLayout = <
+  I extends QueryType,
+  S extends Sorts,
+  F extends Filter
+>({
   main,
   queryResult,
   useQueryOptionsReturn,

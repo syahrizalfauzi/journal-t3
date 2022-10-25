@@ -5,7 +5,7 @@ type InputLabelProps = LayoutProps & {
   label: string;
 };
 
-const InputLabel = ({ children, label }: InputLabelProps) => {
+export const InputLabel = ({ children, label }: InputLabelProps) => {
   return (
     <label className="input-group">
       <span className="whitespace-nowrap">{label}</span>
@@ -13,5 +13,3 @@ const InputLabel = ({ children, label }: InputLabelProps) => {
     </label>
   );
 };
-
-export default InputLabel;

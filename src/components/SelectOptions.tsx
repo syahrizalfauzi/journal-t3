@@ -9,7 +9,10 @@ type SelectOptionsProps = {
   }[];
 };
 
-const SelectOptions = ({ selectData, selectedValue }: SelectOptionsProps) => {
+export const SelectOptions = ({
+  selectData,
+  selectedValue,
+}: SelectOptionsProps) => {
   return (
     <>
       {selectData.map((data) => (
@@ -25,5 +28,3 @@ const SelectOptions = ({ selectData, selectedValue }: SelectOptionsProps) => {
     </>
   );
 };
-
-export default SelectOptions;

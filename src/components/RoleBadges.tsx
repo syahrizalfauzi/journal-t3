@@ -5,7 +5,7 @@ type RoleBadgesProps = {
   role: number;
 };
 
-const RoleBadges = ({ role }: RoleBadgesProps) => {
+export const RoleBadges = ({ role }: RoleBadgesProps) => {
   const parsedRole = ROLE_MAP[role];
 
   return (
@@ -31,5 +31,3 @@ const RoleBadges = ({ role }: RoleBadgesProps) => {
     </div>
   );
 };
-
-export default RoleBadges;

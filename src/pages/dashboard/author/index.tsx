@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import React, { useEffect } from "react";
-import DashboardAuthorLayout from "../../../components/layout/dashboard/DashboardAuthorLayout";
+import { DashboardAuthorLayout } from "../../../components/layout/dashboard/DashboardAuthorLayout";
 
 const DashboardAuthorPage: NextPage = () => {
   const router = useRouter();

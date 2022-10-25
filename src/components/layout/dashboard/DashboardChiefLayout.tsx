@@ -1,9 +1,9 @@
 import React from "react";
 import LayoutProps from "../../../types/LayoutProps";
-import AuthGuard from "../../AuthGuard";
-import DashboardLayout from "../DashboardLayout";
+import { AuthGuard } from "../../AuthGuard";
+import { DashboardLayout } from "../DashboardLayout";
 
-const DashboardChiefLayout = ({ children }: LayoutProps) => {
+export const DashboardChiefLayout = ({ children }: LayoutProps) => {
   return (
     <DashboardLayout>
       <AuthGuard redirectTo="/dashboard" allowedRole="chief">
@@ -15,5 +15,3 @@ const DashboardChiefLayout = ({ children }: LayoutProps) => {
     </DashboardLayout>
   );
 };
-
-export default DashboardChiefLayout;

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
-import AssessmentModal from "../../../../components/AssessmentModal";
-import AssessmentLayout from "../../../../components/layout/AssessmentLayout";
+import { AssessmentModal } from "../../../../components/AssessmentModal";
+import { AssessmentLayout } from "../../../../components/layout/AssessmentLayout";
 import { trpc } from "../../../../utils/trpc";
 
 const CreateAssessmentPage = () => {

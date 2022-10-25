@@ -4,8 +4,8 @@ import { changePasswordValidator } from "../../../server/validators/user";
 import { trpc } from "../../../utils/trpc";
 import { toastSettleHandler } from "../../../utils/toastSettleHandler";
 import { SubmitHandler, useForm } from "react-hook-form";
-import DashboardSettingsLayout from "../../../components/layout/dashboard/DashboardSettingsLayout";
-import InputLabel from "../../../components/InputLabel";
+import { DashboardSettingsLayout } from "../../../components/layout/dashboard/DashboardSettingsLayout";
+import { InputLabel } from "../../../components/InputLabel";
 
 type ChangePasswordForm = z.infer<typeof changePasswordValidator>;
 

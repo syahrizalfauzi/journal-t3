@@ -4,7 +4,7 @@ type ErrorTextsProps = {
   message?: string | string[];
 };
 
-const ErrorTexts = ({ message }: ErrorTextsProps) => {
+export const ErrorTexts = ({ message }: ErrorTextsProps) => {
   if (message)
     return (
       <div className="alert alert-error flex-col items-start gap-1 text-white">
@@ -14,5 +14,3 @@ const ErrorTexts = ({ message }: ErrorTextsProps) => {
 
   return null;
 };
-
-export default ErrorTexts;

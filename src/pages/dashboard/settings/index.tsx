@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import DashboardSettingsLayout from "../../../components/layout/dashboard/DashboardSettingsLayout";
+import { DashboardSettingsLayout } from "../../../components/layout/dashboard/DashboardSettingsLayout";
 import { NextPage } from "next/types";
 
 const DashboardSettingsPage: NextPage = () => {

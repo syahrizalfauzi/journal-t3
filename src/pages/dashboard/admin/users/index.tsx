@@ -1,8 +1,8 @@
 import { NextPage } from "next/types";
 import React from "react";
-import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
-import RoleBadges from "../../../../components/RoleBadges";
+import { RoleBadges } from "../../../../components/RoleBadges";
 import { trpc } from "../../../../utils/trpc";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaTrashAlt } from "react-icons/fa";

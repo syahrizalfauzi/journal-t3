@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import type { NextPage } from "next/types";
-import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
-import InputLabel from "../../../../components/InputLabel";
+import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { InputLabel } from "../../../../components/InputLabel";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
+import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { updateQuestionValidator } from "../../../../server/validators/question";
 

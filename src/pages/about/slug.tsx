@@ -1,5 +1,5 @@
 import React from "react";
-import RootLayout from "../../components/layout/RootLayout";
+import { RootLayout } from "../../components/layout/RootLayout";
 
 const AboutSlugPage = () => {
   return (

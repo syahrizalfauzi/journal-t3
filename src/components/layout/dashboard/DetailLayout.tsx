@@ -1,5 +1,5 @@
 import React from "react";
-import ErrorTexts from "../../ErrorTexts";
+import { ErrorTexts } from "../../ErrorTexts";
 
 type DetailLayoutProps<T> = {
   isLoading: boolean;
@@ -8,7 +8,7 @@ type DetailLayoutProps<T> = {
   render: (data: T) => React.ReactNode;
 };
 
-const DetailLayout = <T extends unknown>({
+export const DetailLayout = <T,>({
   isLoading,
   errorMessage,
   data,
@@ -22,5 +22,3 @@ const DetailLayout = <T extends unknown>({
     </>
   );
 };
-
-export default DetailLayout;

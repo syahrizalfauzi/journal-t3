@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-import DashboardReviewerLayout from "../../../components/layout/dashboard/DashboardReviewerLayout";
+import { DashboardReviewerLayout } from "../../../components/layout/dashboard/DashboardReviewerLayout";
 
 const DashboardReviewerPage = () => {
   const router = useRouter();

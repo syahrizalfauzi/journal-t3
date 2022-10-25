@@ -1,7 +1,7 @@
 import React from "react";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
-import KeywordBadges from "./KeywordBadges";
+import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
 
 type ManuscriptDetailCardChiefProps = {
@@ -10,7 +10,7 @@ type ManuscriptDetailCardChiefProps = {
   >;
 };
 
-const ManuscriptDetailCardChief = ({
+export const ManuscriptDetailCardChief = ({
   manuscriptDetail,
 }: ManuscriptDetailCardChiefProps) => {
   return (
@@ -89,5 +89,3 @@ const ManuscriptDetailCardChief = ({
     </div>
   );
 };
-
-export default ManuscriptDetailCardChief;

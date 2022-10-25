@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import { useEffect } from "react";
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import { DashboardLayout } from "../../components/layout/DashboardLayout";
 import { ROLE_MAP } from "../../constants/role";
 
 const DashboardPage: NextPage = () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
-import KeywordBadges from "./KeywordBadges";
+import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
 
 type ManuscriptDetailCardReviewerProps = {
@@ -10,7 +10,7 @@ type ManuscriptDetailCardReviewerProps = {
   >;
 };
 
-const ManuscriptDetailCardReviewer = ({
+export const ManuscriptDetailCardReviewer = ({
   manuscriptDetail,
 }: ManuscriptDetailCardReviewerProps) => {
   return (
@@ -93,5 +93,3 @@ const ManuscriptDetailCardReviewer = ({
     </div>
   );
 };
-
-export default ManuscriptDetailCardReviewer;

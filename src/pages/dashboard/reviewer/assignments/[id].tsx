@@ -1,11 +1,11 @@
 import React from "react";
-import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
+import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
-import ManuscriptSteps from "../../../../components/ManuscriptSteps";
-import DashboardReviewerLayout from "../../../../components/layout/dashboard/DashboardReviewerLayout";
-import ManuscriptDetailCardReviewer from "../../../../components/ManuscriptDetailCardReviewer";
-import HistoryCardReviewer from "../../../../components/HistoryCardReviewer";
+import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
+import { DashboardReviewerLayout } from "../../../../components/layout/dashboard/DashboardReviewerLayout";
+import { ManuscriptDetailCardReviewer } from "../../../../components/ManuscriptDetailCardReviewer";
+import { HistoryCardReviewer } from "../../../../components/HistoryCardReviewer";
 
 const DashboardReviewAssignmentsDetailPage = () => {
   const { query } = useRouter();

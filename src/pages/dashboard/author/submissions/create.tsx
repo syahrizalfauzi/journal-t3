@@ -1,14 +1,14 @@
 import React from "react";
 import type { NextPage } from "next/types";
-import InputLabel from "../../../../components/InputLabel";
+import { InputLabel } from "../../../../components/InputLabel";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { z } from "zod";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { manuscriptValidator } from "../../../../server/validators/manuscript";
 import { useRouter } from "next/router";
-import DashboardAuthorLayout from "../../../../components/layout/dashboard/DashboardAuthorLayout";
-import FileInput from "../../../../components/FileInput";
+import { DashboardAuthorLayout } from "../../../../components/layout/dashboard/DashboardAuthorLayout";
+import { FileInput } from "../../../../components/FileInput";
 import { SAMPLE_FILE_URL } from "../../../../constants/others";
 
 type CreateManuscriptForm = Omit<

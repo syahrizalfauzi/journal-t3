@@ -7,7 +7,7 @@ interface ManuscriptStepsProps {
   status: number | typeof HISTORY_STATUS[keyof typeof HISTORY_STATUS];
 }
 
-const ManuscriptSteps = ({ status }: ManuscriptStepsProps) => {
+export const ManuscriptSteps = ({ status }: ManuscriptStepsProps) => {
   return (
     <ul className="steps -z-10">
       {status === -1 && <li className="step step-primary">Rejected</li>}
@@ -27,5 +27,3 @@ const ManuscriptSteps = ({ status }: ManuscriptStepsProps) => {
     </ul>
   );
 };
-
-export default ManuscriptSteps;

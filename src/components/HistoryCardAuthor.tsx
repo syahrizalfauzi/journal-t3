@@ -8,10 +8,10 @@ import {
   parseReviewDecision,
 } from "../utils/parseDecision";
 import classNames from "classnames";
-import HistoryCardAction from "./HistoryCardAction";
-import SelectOptions from "./SelectOptions";
+import { HistoryCardAction } from "./HistoryCardAction";
+import { SelectOptions } from "./SelectOptions";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import FileInput from "./FileInput";
+import { FileInput } from "./FileInput";
 
 type HistoryCardAuthorProps = {
   history: NonNullable<
@@ -33,7 +33,7 @@ type FinalizeForm = {
   finalizeFile: FileList;
 };
 
-const HistoryCardAuthor = ({
+export const HistoryCardAuthor = ({
   history,
   isLoading,
   onRevise,
@@ -205,5 +205,3 @@ const HistoryCardAuthor = ({
     </div>
   );
 };
-
-export default HistoryCardAuthor;

@@ -12,7 +12,11 @@ type CheckboxesProps = LayoutProps & {
   disabled?: boolean;
 };
 
-const Checkboxes = ({ checkboxData, children, disabled }: CheckboxesProps) => {
+export const Checkboxes = ({
+  checkboxData,
+  children,
+  disabled,
+}: CheckboxesProps) => {
   return (
     <div className="form-control">
       {children}
@@ -37,5 +41,3 @@ const Checkboxes = ({ checkboxData, children, disabled }: CheckboxesProps) => {
     </div>
   );
 };
-
-export default Checkboxes;

@@ -1,9 +1,9 @@
 import React from "react";
 import type { NextPage } from "next/types";
-import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
-import InputLabel from "../../../../components/InputLabel";
-import Checkboxes from "../../../../components/Checkboxes";
-import SelectOptions from "../../../../components/SelectOptions";
+import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { InputLabel } from "../../../../components/InputLabel";
+import { Checkboxes } from "../../../../components/Checkboxes";
+import { SelectOptions } from "../../../../components/SelectOptions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { getRoleNumber } from "../../../../utils/role";

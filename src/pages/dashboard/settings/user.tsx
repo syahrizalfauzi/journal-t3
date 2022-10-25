@@ -5,10 +5,10 @@ import { trpc } from "../../../utils/trpc";
 import { toastSettleHandler } from "../../../utils/toastSettleHandler";
 import { SubmitHandler, useForm } from "react-hook-form";
 import moment from "moment";
-import DashboardSettingsLayout from "../../../components/layout/dashboard/DashboardSettingsLayout";
-import InputLabel from "../../../components/InputLabel";
-import SelectOptions from "../../../components/SelectOptions";
-import DetailLayout from "../../../components/layout/dashboard/DetailLayout";
+import { DashboardSettingsLayout } from "../../../components/layout/dashboard/DashboardSettingsLayout";
+import { InputLabel } from "../../../components/InputLabel";
+import { SelectOptions } from "../../../components/SelectOptions";
+import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role">;
 

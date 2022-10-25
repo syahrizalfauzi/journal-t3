@@ -1,10 +1,10 @@
 import React from "react";
 import LayoutProps from "../../../types/LayoutProps";
-import ActiveLink from "../../ActiveLink";
-import AuthGuard from "../../AuthGuard";
-import DashboardLayout from "../DashboardLayout";
+import { ActiveLink } from "../../ActiveLink";
+import { AuthGuard } from "../../AuthGuard";
+import { DashboardLayout } from "../DashboardLayout";
 
-const DashboardReviewerLayout = ({ children }: LayoutProps) => {
+export const DashboardReviewerLayout = ({ children }: LayoutProps) => {
   return (
     <DashboardLayout>
       <AuthGuard redirectTo="/dashboard" allowedRole="reviewer">
@@ -32,5 +32,3 @@ const DashboardReviewerLayout = ({ children }: LayoutProps) => {
     </DashboardLayout>
   );
 };
-
-export default DashboardReviewerLayout;

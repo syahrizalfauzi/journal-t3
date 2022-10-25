@@ -1,11 +1,11 @@
 import React from "react";
-import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
-import DashboardAuthorLayout from "../../../../components/layout/dashboard/DashboardAuthorLayout";
+import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
+import { DashboardAuthorLayout } from "../../../../components/layout/dashboard/DashboardAuthorLayout";
 import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
-import ManuscriptSteps from "../../../../components/ManuscriptSteps";
-import ManuscriptDetailCardAuthor from "../../../../components/ManuscriptDetailCardAuthor";
-import HistoryCardAuthor from "../../../../components/HistoryCardAuthor";
+import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
+import { ManuscriptDetailCardAuthor } from "../../../../components/ManuscriptDetailCardAuthor";
+import { HistoryCardAuthor } from "../../../../components/HistoryCardAuthor";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { SAMPLE_FILE_URL } from "../../../../constants/others";
 

@@ -1,9 +1,9 @@
 import React from "react";
 import LayoutProps from "../../../types/LayoutProps";
-import ActiveLink from "../../ActiveLink";
-import DashboardLayout from "../DashboardLayout";
+import { ActiveLink } from "../../ActiveLink";
+import { DashboardLayout } from "../DashboardLayout";
 
-const DashboardSettingsLayout = ({ children }: LayoutProps) => {
+export const DashboardSettingsLayout = ({ children }: LayoutProps) => {
   return (
     <DashboardLayout>
       <div className="flex flex-col items-stretch gap-4">
@@ -29,5 +29,3 @@ const DashboardSettingsLayout = ({ children }: LayoutProps) => {
     </DashboardLayout>
   );
 };
-
-export default DashboardSettingsLayout;

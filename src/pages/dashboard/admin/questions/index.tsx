@@ -1,6 +1,6 @@
 import { NextPage } from "next/types";
 import React from "react";
-import DashboardAdminLayout from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import { trpc } from "../../../../utils/trpc";
 import { FaTrashAlt } from "react-icons/fa";

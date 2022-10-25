@@ -2,9 +2,9 @@ import React from "react";
 import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import KeywordBadges from "./KeywordBadges";
+import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
-import FileInput from "./FileInput";
+import { FileInput } from "./FileInput";
 
 type ManuscriptDetailCardAuthorProps = {
   manuscriptDetail: inferProcedureOutput<
@@ -18,7 +18,7 @@ type OptionalFileForm = {
   optionalFile: FileList;
 };
 
-const ManuscriptDetailCardAuthor = ({
+export const ManuscriptDetailCardAuthor = ({
   manuscriptDetail,
   isLoading,
   onUpdateOptionalFile,
@@ -124,5 +124,3 @@ const ManuscriptDetailCardAuthor = ({
     </form>
   );
 };
-
-export default ManuscriptDetailCardAuthor;

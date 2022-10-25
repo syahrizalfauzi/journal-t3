@@ -1,13 +1,13 @@
 import React from "react";
-import DetailLayout from "../../../../components/layout/dashboard/DetailLayout";
+import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
-import ManuscriptSteps from "../../../../components/ManuscriptSteps";
+import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { SAMPLE_FILE_URL } from "../../../../constants/others";
-import DashboardChiefLayout from "../../../../components/layout/dashboard/DashboardChiefLayout";
-import ManuscriptDetailCardChief from "../../../../components/ManuscriptDetailCardChief";
-import HistoryCardChief from "../../../../components/HistoryCardChief";
+import { DashboardChiefLayout } from "../../../../components/layout/dashboard/DashboardChiefLayout";
+import { ManuscriptDetailCardChief } from "../../../../components/ManuscriptDetailCardChief";
+import { HistoryCardChief } from "../../../../components/HistoryCardChief";
 import { REVIEW_DECISION } from "../../../../constants/numbers";
 
 const DashboardChiefSubmissionsDetailPage = () => {

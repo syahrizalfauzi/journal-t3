@@ -6,7 +6,7 @@ type KeywordBadgesProps = {
   }[];
 };
 
-const KeywordBadges = ({ keywords }: KeywordBadgesProps) => {
+export const KeywordBadges = ({ keywords }: KeywordBadgesProps) => {
   return (
     <div className="flex flex-wrap gap-1">
       {keywords.map(({ keyword }) => (
@@ -17,5 +17,3 @@ const KeywordBadges = ({ keywords }: KeywordBadgesProps) => {
     </div>
   );
 };
-
-export default KeywordBadges;

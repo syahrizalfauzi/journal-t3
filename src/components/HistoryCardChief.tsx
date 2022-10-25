@@ -8,11 +8,11 @@ import {
   parseReviewDecision,
 } from "../utils/parseDecision";
 import classNames from "classnames";
-import HistoryCardAction from "./HistoryCardAction";
-import SelectOptions from "./SelectOptions";
+import { HistoryCardAction } from "./HistoryCardAction";
+import { SelectOptions } from "./SelectOptions";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
-import FileInput from "./FileInput";
-import InputLabel from "./InputLabel";
+import { FileInput } from "./FileInput";
+import { InputLabel } from "./InputLabel";
 import { MAX_TEAM_USERS } from "../constants/numbers";
 import moment from "moment";
 
@@ -49,7 +49,7 @@ type UpdateDecisionForm = {
   reviewDecision: string;
 };
 
-const HistoryCardChief = ({
+export const HistoryCardChief = ({
   history,
   isLoading,
   manuscript,
@@ -482,5 +482,3 @@ const HistoryCardChief = ({
     </div>
   );
 };
-
-export default HistoryCardChief;

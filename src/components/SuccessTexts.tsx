@@ -4,7 +4,7 @@ type SuccessTextsProps = {
   message?: string;
 };
 
-const SuccessTexts = ({ message }: SuccessTextsProps) => {
+export const SuccessTexts = ({ message }: SuccessTextsProps) => {
   if (message)
     return (
       <div className="alert alert-success flex-col items-start gap-1 text-white">
@@ -14,5 +14,3 @@ const SuccessTexts = ({ message }: SuccessTextsProps) => {
 
   return null;
 };
-
-export default SuccessTexts;

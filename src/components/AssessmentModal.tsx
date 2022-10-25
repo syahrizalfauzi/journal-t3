@@ -11,10 +11,10 @@ import { Sorts } from "../types/SortOrder";
 import { toastSettleHandler } from "../utils/toastSettleHandler";
 import { trpc } from "../utils/trpc";
 import { useQueryOptions } from "../utils/useQueryOptions";
-import FileInput from "./FileInput";
-import InputLabel from "./InputLabel";
+import { FileInput } from "./FileInput";
+import { InputLabel } from "./InputLabel";
 import ListLayout from "./layout/dashboard/ListLayout";
-import SelectOptions from "./SelectOptions";
+import { SelectOptions } from "./SelectOptions";
 
 type AssessmentModalProps = {
   review: NonNullable<
@@ -41,7 +41,7 @@ type ReviewAnswer = {
   [key: string]: string;
 };
 
-const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
+export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<CreateAssessmentForm>();
   const createAssessment = trpc.assessment.create.useMutation({
@@ -274,5 +274,3 @@ const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
     />
   );
 };
-
-export default AssessmentModal;

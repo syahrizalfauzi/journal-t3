@@ -3,10 +3,10 @@ import { PaginationMetadata } from "../utils/getItemIndex";
 
 type PaginatorProps = {
   metadata: PaginationMetadata;
-  onChangePage: (newPage: number) => any;
+  onChangePage: (newPage: number) => unknown;
 };
 
-const Paginator = ({ metadata, onChangePage }: PaginatorProps) => {
+export const Paginator = ({ metadata, onChangePage }: PaginatorProps) => {
   const handleFirstPage = () => onChangePage(1);
   const handlePreviousPage = () => onChangePage(metadata.page - 1);
   const handleNextPage = () => onChangePage(metadata.page + 1);
@@ -54,5 +54,3 @@ const Paginator = ({ metadata, onChangePage }: PaginatorProps) => {
     </div>
   );
 };
-
-export default Paginator;
