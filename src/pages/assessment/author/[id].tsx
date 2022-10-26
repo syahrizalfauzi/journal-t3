@@ -10,8 +10,6 @@ import { trpc } from "../../../utils/trpc";
 const AssessmentAuthorPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: assessment,
     isLoading: queryLoading,

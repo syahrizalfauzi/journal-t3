@@ -10,8 +10,6 @@ import { HistoryCardReviewer } from "../../../../components/HistoryCardReviewer"
 const DashboardReviewAssignmentsDetailPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: manuscript,
     isLoading: queryLoading,

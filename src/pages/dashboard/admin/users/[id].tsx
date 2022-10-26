@@ -24,8 +24,6 @@ type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role"> & {
 const DashboardAdminUserEditPage: NextPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: user,
     isLoading: queryLoading,

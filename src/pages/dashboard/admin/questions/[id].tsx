@@ -15,8 +15,6 @@ type EditQuestionForm = z.infer<typeof updateQuestionValidator>;
 const DashboardAdminQuestionEditPage: NextPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: question,
     isLoading: queryLoading,

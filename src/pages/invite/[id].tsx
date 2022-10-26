@@ -28,8 +28,6 @@ type UserInviteStatus = {
 const InvitePage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const { queryOptions, ...rest } = useQueryOptions<QueryOptions, Sorts, never>(
     {
       sort: sortOrders[0]!.sort,

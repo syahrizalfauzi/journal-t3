@@ -26,5 +26,9 @@ const cellPlugins: CellPluginList = [
 ];
 
 export const PageEditor = (props: PageEditorProps) => {
-  return <Editor cellPlugins={cellPlugins} {...props} />;
+  return (
+    <div className="prose max-w-none">
+      <Editor cellPlugins={cellPlugins} {...props} />
+    </div>
+  );
 };

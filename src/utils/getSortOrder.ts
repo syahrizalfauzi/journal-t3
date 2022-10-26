@@ -1,20 +1,5 @@
+import { SORT_LABEL } from "../constants/sorts";
 import { SortOrder, Sorts } from "../types/SortOrder";
-
-const parseSortLabel = (sort: Sorts) =>
-  ({
-    createdAt: "Date Created",
-    updatedAt: "Last Updated",
-    username: "Username",
-    role: "Role",
-    isActivated: "Activated",
-    email: "Email",
-    name: "Name",
-    country: "Country",
-    maxScale: "Max Scale",
-    question: "Question",
-    title: "Title",
-    status: "Status",
-  }[sort]);
 
 const getSortOrder = <T extends readonly Sorts[]>(
   allowedSorts: T,
@@ -26,12 +11,12 @@ const getSortOrder = <T extends readonly Sorts[]>(
         {
           sort: allowedSort as T[number],
           order: "desc",
-          label: `${parseSortLabel(allowedSort)} (DESC)`,
+          label: `${SORT_LABEL[allowedSort]} (DESC)`,
         },
         {
           sort: allowedSort as T[number],
           order: "asc",
-          label: `${parseSortLabel(allowedSort)} (ASC)`,
+          label: `${SORT_LABEL[allowedSort]} (ASC)`,
         },
       ];
 

@@ -5,7 +5,7 @@ import { pageListQuery } from "../../queries";
 import mutationError from "../../utils/mutationError";
 import { getPaginationQuery, paginationMetadata } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
-import { updatePageValidator } from "../../validators/page";
+import { pageValidator, updatePageValidator } from "../../validators/page";
 import { authGuard } from "../middlewares/authGuard";
 import { t } from "../trpc";
 
@@ -23,6 +23,7 @@ export const pageRouter = t.router({
           name: true,
           data: true,
           updatedAt: true,
+          url: true,
         },
       });
 
@@ -44,6 +45,7 @@ export const pageRouter = t.router({
           name: true,
           createdAt: true,
           updatedAt: true,
+          url: true,
         },
       });
 
@@ -57,10 +59,59 @@ export const pageRouter = t.router({
         pages,
       };
     }),
+  create: t.procedure
+    .use(authGuard(["admin"]))
+    .input(pageValidator)
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { name } = await ctx.prisma.page.create({
+          data: {
+            name: input.name,
+            url: input.url.startsWith("/") ? input.url : `/${input.url}`,
+            data: input.data,
+          },
+          select: { name: true },
+        });
+
+        return `Page ${name} created`;
+      } catch (e) {
+        throw mutationError(e);
+      }
+    }),
   update: t.procedure
     .use(authGuard(["admin"]))
     .input(updatePageValidator)
     .mutation(async ({ ctx, input }) => {
+      const inputUrlArray = input.url
+        .split("/")
+        .filter((segment) => segment !== "");
+
+      const pagesWithInputUrl = (
+        await ctx.prisma.page.findMany({
+          where: {
+            AND: [
+              { OR: inputUrlArray.map((url) => ({ url: { contains: url } })) },
+              { id: { not: input.id } },
+            ],
+          },
+          select: { url: true },
+        })
+      ).map((page) => page.url.split("/").filter((segment) => segment !== ""));
+
+      const isUrlUsed = pagesWithInputUrl.some((pageUrlArray) => {
+        if (pageUrlArray.length !== inputUrlArray.length) {
+          return false;
+        }
+        return pageUrlArray.every((url, index) => url === inputUrlArray[index]);
+      });
+
+      if (isUrlUsed) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Url is already used",
+        });
+      }
+
       try {
         const { name } = await ctx.prisma.page.update({
           where: {
@@ -68,15 +119,34 @@ export const pageRouter = t.router({
           },
           data: {
             data: input.data,
+            name: input.name,
+            url: input.url.startsWith("/") ? input.url : `/${input.url}`,
           },
           select: {
             name: true,
           },
         });
-
         return `Page '${name}' has been updated`;
       } catch (e) {
         throw mutationError(e, notFoundMessage);
       }
     }),
+  delete: t.procedure
+    .use(authGuard(["admin"]))
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { name } = await ctx.prisma.page.delete({
+          where: { id: input },
+          select: {
+            name: true,
+          },
+        });
+        return `Page '${name}' has been deleted`;
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
+      }
+    }),
 });
+
+export default pageRouter;

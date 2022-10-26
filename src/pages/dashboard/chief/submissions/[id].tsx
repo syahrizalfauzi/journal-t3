@@ -13,8 +13,6 @@ import { REVIEW_DECISION } from "../../../../constants/numbers";
 const DashboardChiefSubmissionsDetailPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: manuscript,
     isLoading: queryLoading,

@@ -12,8 +12,6 @@ import { SAMPLE_FILE_URL } from "../../../../constants/others";
 const DashboardAuthorSubmissionsDetailPage = () => {
   const { query } = useRouter();
 
-  if (!query.id) return null;
-
   const {
     data: manuscript,
     isLoading: queryLoading,

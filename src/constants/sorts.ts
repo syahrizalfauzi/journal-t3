@@ -1,5 +1,21 @@
 //Removed Sorts[] so that it's a literal type
 
+export const SORT_LABEL = {
+  createdAt: "Date Created",
+  updatedAt: "Last Updated",
+  username: "Username",
+  role: "Role",
+  isActivated: "Activated",
+  email: "Email",
+  name: "Name",
+  country: "Country",
+  maxScale: "Max Scale",
+  question: "Question",
+  title: "Title",
+  status: "Status",
+  url: "URL",
+} as const;
+
 export const USER_LIST_SORTS = [
   "createdAt",
   "username",
@@ -42,4 +58,9 @@ export const INVITATION_LIST_SORTS = [
   "status",
 ] as const;
 
-export const PAGE_LIST_SORTS = ["name", "createdAt", "updatedAt"] as const;
+export const PAGE_LIST_SORTS = [
+  "name",
+  "createdAt",
+  "updatedAt",
+  "url",
+] as const;

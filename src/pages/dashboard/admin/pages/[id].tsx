@@ -9,11 +9,16 @@ import { RootLayout } from "../../../../components/layout/RootLayout";
 import { parseDate } from "../../../../utils/parseDate";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { PageEditor } from "../../../../components/editor/PageEditor";
+import { z } from "zod";
+import { updatePageValidator } from "../../../../server/validators/page";
+import { SubmitHandler, useForm } from "react-hook-form";
 
-const DashboardAdminQuestionEditPage: NextPage = () => {
+type EditPageForm = z.infer<typeof updatePageValidator>;
+
+const DashboardAdminPagesEditPage: NextPage = () => {
   const { query, push } = useRouter();
 
-  if (!query.id) return null;
+  const { register, reset, handleSubmit } = useForm<EditPageForm>();
 
   const {
     data: page,
@@ -28,11 +33,15 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
 
   const [editorData, setEditorData] = useState<Value | null>(null);
 
-  const handleSave = () => {
+  const onSubmit: SubmitHandler<EditPageForm> = ({ name, url }) => {
+    if (!editorData || !page) return;
+
     mutationUpdate(
       {
         id: query.id as string,
         data: JSON.stringify(editorData),
+        name,
+        url,
       },
       {
         onSuccess: () => push("/dashboard/admin/pages"),
@@ -44,7 +53,8 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
     if (!page?.data) return;
 
     setEditorData(JSON.parse(page.data));
-  }, [page?.data]);
+    reset(page);
+  }, [page, reset]);
 
   return (
     <DetailLayout
@@ -54,11 +64,28 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
       render={(data) => (
         <RootLayout
           subnavbar={
-            <div className="z-50 w-full border-t bg-white py-2">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="z-50 w-full border-t bg-white py-2"
+            >
               <div className="container flex w-full flex-row items-center gap-4">
+                <p>
+                  <span className="font-bold">Page Name : </span>
+                  <input
+                    {...register("name")}
+                    disabled={mutationLoading}
+                    required
+                    className="rounded-xl border p-2"
+                  />
+                </p>
                 <p className="flex-1">
-                  <span className="font-bold">Editing Page : </span>
-                  {data.name}
+                  <span className="font-bold">URL : </span>
+                  <input
+                    {...register("url")}
+                    disabled={mutationLoading}
+                    required
+                    className="rounded-xl border p-2"
+                  />
                 </p>
                 <p>
                   <span className="font-bold">Last Edit : </span>
@@ -66,14 +93,14 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
                 </p>
 
                 <button
-                  onClick={handleSave}
+                  type="submit"
                   disabled={mutationLoading}
                   className="btn"
                 >
                   {mutationLoading ? "Saving" : "Save"}
                 </button>
               </div>
-            </div>
+            </form>
           }
         >
           <div className="max-h-none prose mt-[66px] max-w-none flex-1">
@@ -89,4 +116,4 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
   );
 };
 
-export default DashboardAdminQuestionEditPage;
+export default DashboardAdminPagesEditPage;

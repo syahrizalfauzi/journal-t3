@@ -1,10 +1,31 @@
+import { GetServerSideProps, NextPage } from "next";
 import React from "react";
+import { PageEditor } from "../components/editor/PageEditor";
 import { RootLayout } from "../components/layout/RootLayout";
+import { prisma } from "../server/db/client";
+import { PageProps } from "../types/PageProps";
 
-const AnnouncementsPage = () => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  const pageData = (
+    await prisma.page.findUnique({
+      where: { url: "/about" },
+      select: { data: true },
+    })
+  )?.data;
+
+  return {
+    notFound: !pageData,
+    props: {
+      pageData: pageData!,
+    },
+  };
+};
+
+const AboutPage: NextPage<PageProps> = ({ pageData }) => {
   return (
     <RootLayout>
-      <div className="container my-8">
+      <PageEditor readOnly value={JSON.parse(pageData)} />
+      {/* <div className="container my-8">
         <h1 className="text-3xl font-bold">About</h1>
         <p className="my-8">
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla velit
@@ -46,9 +67,9 @@ const AnnouncementsPage = () => {
             </ul>
           </div>
         </div>
-      </div>
+      </div> */}
     </RootLayout>
   );
 };
 
-export default AnnouncementsPage;
+export default AboutPage;

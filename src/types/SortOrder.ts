@@ -10,10 +10,13 @@ export type Sorts =
   | "maxScale"
   | "question"
   | "title"
-  | "status";
+  | "status"
+  | "url";
+
+export type SortOrders = "asc" | "desc";
 
 export interface SortOrder<T extends Sorts> {
   sort: T;
-  order: "asc" | "desc";
+  order: SortOrders;
   label: string;
 }
