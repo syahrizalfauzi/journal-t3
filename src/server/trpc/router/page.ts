@@ -63,11 +63,29 @@ export const pageRouter = t.router({
     .use(authGuard(["admin"]))
     .input(pageValidator)
     .mutation(async ({ ctx, input }) => {
+      const trimmedInputUrl = input.url
+        .split("/")
+        .filter((i) => i !== "")
+        .join("/");
+
+      const samePage = await ctx.prisma.page.findUnique({
+        where: {
+          url: trimmedInputUrl,
+        },
+      });
+
+      if (!!samePage) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Url is already used",
+        });
+      }
+
       try {
         const { name } = await ctx.prisma.page.create({
           data: {
             name: input.name,
-            url: input.url.startsWith("/") ? input.url : `/${input.url}`,
+            url: trimmedInputUrl,
             data: input.data,
           },
           select: { name: true },
@@ -82,30 +100,18 @@ export const pageRouter = t.router({
     .use(authGuard(["admin"]))
     .input(updatePageValidator)
     .mutation(async ({ ctx, input }) => {
-      const inputUrlArray = input.url
+      const trimmedInputUrl = input.url
         .split("/")
-        .filter((segment) => segment !== "");
+        .filter((i) => i !== "")
+        .join("/");
 
-      const pagesWithInputUrl = (
-        await ctx.prisma.page.findMany({
-          where: {
-            AND: [
-              { OR: inputUrlArray.map((url) => ({ url: { contains: url } })) },
-              { id: { not: input.id } },
-            ],
-          },
-          select: { url: true },
-        })
-      ).map((page) => page.url.split("/").filter((segment) => segment !== ""));
-
-      const isUrlUsed = pagesWithInputUrl.some((pageUrlArray) => {
-        if (pageUrlArray.length !== inputUrlArray.length) {
-          return false;
-        }
-        return pageUrlArray.every((url, index) => url === inputUrlArray[index]);
+      const samePage = await ctx.prisma.page.findUnique({
+        where: {
+          url: trimmedInputUrl,
+        },
       });
 
-      if (isUrlUsed) {
+      if (!!samePage) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Url is already used",
@@ -120,7 +126,7 @@ export const pageRouter = t.router({
           data: {
             data: input.data,
             name: input.name,
-            url: input.url.startsWith("/") ? input.url : `/${input.url}`,
+            url: trimmedInputUrl,
           },
           select: {
             name: true,
