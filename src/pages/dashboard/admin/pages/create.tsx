@@ -44,7 +44,7 @@ const DashboardAdminPagesCreatePage = () => {
             disabled={isLoading}
             required
             type="text"
-            placeholder="/about/guideline"
+            placeholder="about/guideline"
             className="input input-bordered w-full"
           />
         </InputLabel>

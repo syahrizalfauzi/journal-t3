@@ -15,7 +15,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   }
   const pageData = (
     await prisma.page.findUnique({
-      where: { url: "/" + (query.slug as string[]).join("/") },
+      where: { url: (query.slug as string[]).join("/") },
       select: { data: true },
     })
   )?.data;

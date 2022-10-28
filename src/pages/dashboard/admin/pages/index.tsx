@@ -10,6 +10,8 @@ import getItemIndex from "../../../../utils/getItemIndex";
 import { pageListQuery } from "../../../../server/queries";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
 import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
+import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
+import { FaTrashAlt } from "react-icons/fa";
 
 const sortOrders = getSortOrder(PAGE_LIST_SORTS);
 type QueryOptions = typeof pageListQuery;
@@ -24,6 +26,15 @@ const DashboardAdminPagesPage: NextPage = () => {
     PAGE_LIST_SORTS
   );
   const pageListQuery = trpc.page.list.useQuery(queryOptions);
+
+  const { mutate: deleteMutate } = trpc.page.delete.useMutation({
+    onSettled: toastSettleHandler,
+  });
+
+  const handleDelete = (id: string, page: string) => {
+    if (confirm(`Delete page '${page}'?\n\nID : ${id}`))
+      deleteMutate(id, { onSuccess: () => pageListQuery.refetch() });
+  };
 
   return (
     <DashboardAdminLayout>
@@ -45,6 +56,7 @@ const DashboardAdminPagesPage: NextPage = () => {
                   <th>URL</th>
                   <th>Date Updated</th>
                   <th>Date Created</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -62,12 +74,23 @@ const DashboardAdminPagesPage: NextPage = () => {
                         </Link>
                       </td>
                       <td>
-                        <Link href={page.url}>
-                          <a className="link">{page.url}</a>
+                        <Link href={`/${page.url}`}>
+                          <a className="link">/{page.url}</a>
                         </Link>
                       </td>
                       <td>{parseDate(page.updatedAt)}</td>
                       <td>{parseDate(page.createdAt)}</td>
+                      {page.url !== "" && page.url !== "about" && (
+                        <td>
+                          <div onClick={() => handleDelete(page.id, page.name)}>
+                            <FaTrashAlt
+                              className="cursor-pointer"
+                              color="red"
+                              size="18px"
+                            />
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}

@@ -8,7 +8,7 @@ import { PageProps } from "../types/PageProps";
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   const pageData = (
     await prisma.page.findUnique({
-      where: { url: "/about" },
+      where: { url: "about" },
       select: { data: true },
     })
   )?.data;

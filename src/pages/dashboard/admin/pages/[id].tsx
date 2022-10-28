@@ -79,11 +79,10 @@ const DashboardAdminPagesEditPage: NextPage = () => {
                   />
                 </p>
                 <p className="flex-1">
-                  <span className="font-bold">URL : </span>
+                  <span className="font-bold">URL : /</span>
                   <input
                     {...register("url")}
                     disabled={mutationLoading}
-                    required
                     className="rounded-xl border p-2"
                   />
                 </p>

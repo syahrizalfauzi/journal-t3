@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { PAGE_LIST_SORTS } from "../../../constants/sorts";
+import { parseUrlString } from "../../../utils/parseUrlString";
 import { pageListQuery } from "../../queries";
 import mutationError from "../../utils/mutationError";
 import { getPaginationQuery, paginationMetadata } from "../../utils/pagination";
@@ -63,10 +64,7 @@ export const pageRouter = t.router({
     .use(authGuard(["admin"]))
     .input(pageValidator)
     .mutation(async ({ ctx, input }) => {
-      const trimmedInputUrl = input.url
-        .split("/")
-        .filter((i) => i !== "")
-        .join("/");
+      const trimmedInputUrl = parseUrlString(input.url);
 
       const samePage = await ctx.prisma.page.findUnique({
         where: {
@@ -100,23 +98,7 @@ export const pageRouter = t.router({
     .use(authGuard(["admin"]))
     .input(updatePageValidator)
     .mutation(async ({ ctx, input }) => {
-      const trimmedInputUrl = input.url
-        .split("/")
-        .filter((i) => i !== "")
-        .join("/");
-
-      const samePage = await ctx.prisma.page.findUnique({
-        where: {
-          url: trimmedInputUrl,
-        },
-      });
-
-      if (!!samePage) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Url is already used",
-        });
-      }
+      const trimmedInputUrl = parseUrlString(input.url);
 
       try {
         const { name } = await ctx.prisma.page.update({
