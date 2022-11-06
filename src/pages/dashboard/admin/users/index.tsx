@@ -1,5 +1,5 @@
 import { NextPage } from "next/types";
-import React from "react";
+import React, { useEffect } from "react";
 import { DashboardAdminLayout } from "../../../../components/layout/dashboard/DashboardAdminLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
 import { RoleBadges } from "../../../../components/RoleBadges";
@@ -15,10 +15,17 @@ import { userListQuery } from "../../../../server/queries";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { useSession } from "next-auth/react";
 import { useQueryOptions } from "../../../../utils/useQueryOptions";
+import { inferProcedureOutput } from "@trpc/server";
+import { userRouter } from "../../../../server/trpc/router/user";
 
 const sortOrders = getSortOrder(USER_LIST_SORTS);
 type QueryOptions = typeof userListQuery;
 type Sorts = typeof USER_LIST_SORTS[number];
+type UserLoadingStatus = inferProcedureOutput<
+  typeof userRouter["list"]
+>["users"][number] & {
+  isLoading: boolean;
+};
 
 const DashboardAdminUsersPage: NextPage = () => {
   const session = useSession();
@@ -31,6 +38,7 @@ const DashboardAdminUsersPage: NextPage = () => {
     USER_LIST_SORTS
   );
   const userListQuery = trpc.user.list.useQuery(queryOptions);
+  const [users, setUsers] = React.useState<UserLoadingStatus[]>([]);
   const { mutate: activationMutate } = trpc.user.activate.useMutation({
     onSettled: toastSettleHandler,
   });
@@ -38,16 +46,44 @@ const DashboardAdminUsersPage: NextPage = () => {
     onSettled: toastSettleHandler,
   });
 
-  const handleActivate = (id: string, isActivated: boolean) =>
+  const setUserLoading = (id: string, isLoading: boolean) => {
+    setUsers((prevState) => {
+      const index = prevState.findIndex((e) => e.id === id);
+      const newState = prevState;
+      newState[index] = {
+        ...newState[index],
+        isLoading,
+      } as UserLoadingStatus;
+      return [...newState];
+    });
+  };
+
+  const handleActivate = (id: string, isActivated: boolean) => {
+    setUserLoading(id, true);
+
     activationMutate(
       { id, isActivated },
       { onSuccess: () => userListQuery.refetch() }
     );
+  };
 
   const handleDelete = (id: string, username: string) => {
-    if (confirm(`Delete user '${username}'?\n\nID : ${id}`))
-      deleteMutate(id, { onSuccess: () => userListQuery.refetch() });
+    if (!confirm(`Delete user '${username}'?\n\nID : ${id}`)) return;
+
+    setUserLoading(id, true);
+    deleteMutate(id, { onSuccess: () => userListQuery.refetch() });
   };
+
+  useEffect(() => {
+    if (!userListQuery.data) {
+      return;
+    }
+    const users = userListQuery.data.users.map((user) => ({
+      ...user,
+      isLoading: false,
+    }));
+    setUsers(users);
+  }, [userListQuery.data]);
 
   return (
     <DashboardAdminLayout>
@@ -80,7 +116,8 @@ const DashboardAdminUsersPage: NextPage = () => {
                 {(userListQuery.data?.users.length ?? 0) <= 0 ? (
                   <p>No users</p>
                 ) : (
-                  userListQuery.data?.users.map((user, index) => (
+                  !!userListQuery.data &&
+                  users.map((user, index) => (
                     <tr key={user.id} className="hover">
                       <th>
                         {getItemIndex(userListQuery.data._metadata, index)}
@@ -101,18 +138,21 @@ const DashboardAdminUsersPage: NextPage = () => {
                       </td>
                       <td>
                         <div
-                          onClick={() =>
-                            handleActivate(user.id, !user.isActivated)
-                          }
+                          onClick={() => {
+                            if (user.isLoading) return;
+                            handleActivate(user.id, !user.isActivated);
+                          }}
                         >
                           {user.isActivated ? (
                             <ImCheckboxChecked
                               className="cursor-pointer"
+                              color={user.isLoading ? "gray" : "black"}
                               size="18px"
                             />
                           ) : (
                             <ImCheckboxUnchecked
                               className="cursor-pointer"
+                              color={user.isLoading ? "gray" : "black"}
                               size="18px"
                             />
                           )}
@@ -124,11 +164,14 @@ const DashboardAdminUsersPage: NextPage = () => {
                       <td>{parseDate(user.createdAt)}</td>
                       <td>
                         <div
-                          onClick={() => handleDelete(user.id, user.username)}
+                          onClick={() => {
+                            if (user.isLoading) return;
+                            handleDelete(user.id, user.username);
+                          }}
                         >
                           <FaTrashAlt
                             className="cursor-pointer"
-                            color="red"
+                            color={user.isLoading ? "gray" : "red"}
                             size="18px"
                           />
                         </div>
@@ -144,5 +187,4 @@ const DashboardAdminUsersPage: NextPage = () => {
     </DashboardAdminLayout>
   );
 };
-
 export default DashboardAdminUsersPage;
