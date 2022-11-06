@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { AssessmentModal } from "../../../../components/AssessmentModal";
+import { AuthGuard } from "../../../../components/AuthGuard";
 import { AssessmentLayout } from "../../../../components/layout/AssessmentLayout";
 import { trpc } from "../../../../utils/trpc";
 
@@ -15,15 +16,16 @@ const CreateAssessmentPage = () => {
 
   return (
     <AssessmentLayout>
-      {data && (
-        <AssessmentModal
-          review={data}
-          onSubmit={() => {
-            console.log("refetching question list");
-            refetchAssignment();
-          }}
-        />
-      )}
+      <AuthGuard redirectTo="/dashboard" allowedRole="reviewer">
+        {data && (
+          <AssessmentModal
+            review={data}
+            onSubmit={() => {
+              refetchAssignment();
+            }}
+          />
+        )}
+      </AuthGuard>
     </AssessmentLayout>
   );
 };

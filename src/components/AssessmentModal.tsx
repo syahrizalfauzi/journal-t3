@@ -32,13 +32,17 @@ type CreateAssessmentForm = Pick<
   decision: string;
   file: FileList;
   chiefFile: FileList;
-  // reviewAnswers: ReviewAnswer;
 };
 
 type QueryOptions = typeof questionListQuery;
 
 type ReviewAnswer = {
   [key: string]: string;
+};
+
+type AssessmentFiles = {
+  chiefFileUrl?: string | null;
+  fileUrl?: string | null;
 };
 
 export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
@@ -59,6 +63,8 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
   const selfAssessmentQuery = trpc.assessment.getForSelfReviewer.useQuery(
     review.id
   );
+  const [selfAssessmentFiles, setSelfAssessmentFiles] =
+    useState<AssessmentFiles>({});
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
 
   const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswer>({});
@@ -111,8 +117,12 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
               })
             ),
             isDone,
-            fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
-            chiefFileUrl: chiefFile.item(0) ? SAMPLE_FILE_URL : undefined,
+            fileUrl: file.item(0)
+              ? SAMPLE_FILE_URL
+              : selfAssessmentFiles.fileUrl,
+            chiefFileUrl: chiefFile.item(0)
+              ? SAMPLE_FILE_URL
+              : selfAssessmentFiles.chiefFileUrl,
             id: selfAssessmentQuery.data.id,
           },
           {
@@ -124,6 +134,28 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
           }
         );
     })();
+  };
+
+  const handleDeleteFileUrl = () => {
+    if (!confirm("Are you sure you want to delete this file?")) {
+      return;
+    }
+
+    setSelfAssessmentFiles((prevState) => ({
+      ...prevState,
+      fileUrl: null,
+    }));
+  };
+
+  const handleDeleteChiefFileUrl = () => {
+    if (!confirm("Are you sure you want to delete this file?")) {
+      return;
+    }
+
+    setSelfAssessmentFiles((prevState) => ({
+      ...prevState,
+      chiefFileUrl: null,
+    }));
   };
 
   useEffect(() => {
@@ -148,6 +180,13 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
       authorComment: selfAssessment?.authorComment,
       editorComment: selfAssessment?.editorComment,
       decision: (selfAssessment?.decision ?? 0).toString(),
+      file: undefined,
+      chiefFile: undefined,
+    });
+
+    setSelfAssessmentFiles({
+      chiefFileUrl: selfAssessment?.chiefFileUrl,
+      fileUrl: selfAssessment?.fileUrl,
     });
   }, [reset, selfAssessmentQuery.data]);
 
@@ -159,7 +198,7 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
       main={
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col items-stretch gap-4"
+          className="flex w-full flex-col items-stretch gap-4"
         >
           <p className="text-lg font-semibold">
             Submit Assessment {!!selfAssessmentQuery.data && "(Draft Loaded)"}
@@ -212,26 +251,42 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
               className="textarea textarea-bordered w-full"
             />
           </InputLabel>
-          {!!selfAssessmentQuery.data?.fileUrl && (
-            <p>
-              File to author :{" "}
-              <a className="link" href={selfAssessmentQuery.data?.fileUrl}>
-                {selfAssessmentQuery.data?.fileUrl}
-              </a>
-            </p>
-          )}
-          {!!selfAssessmentQuery.data?.chiefFileUrl && (
-            <p>
-              File to chief editor :{" "}
-              <a className="link" href={selfAssessmentQuery.data?.chiefFileUrl}>
-                {selfAssessmentQuery.data?.chiefFileUrl}
-              </a>
-            </p>
-          )}
           <FileInput label="Optional File (to author)">
+            {!!selfAssessmentFiles.fileUrl && (
+              <div className="flex flex-row gap-4">
+                <button
+                  onClick={handleDeleteFileUrl}
+                  className="btn btn-error btn-sm self-start text-white"
+                >
+                  Delete
+                </button>
+                <a
+                  className="link overflow-clip"
+                  href={selfAssessmentFiles.fileUrl}
+                >
+                  {selfAssessmentFiles.fileUrl}
+                </a>
+              </div>
+            )}
             <input {...register("file")} disabled={isLoading} type="file" />
           </FileInput>
           <FileInput label="Optional File (to chief editor)">
+            {!!selfAssessmentFiles.chiefFileUrl && (
+              <div className="flex flex-row gap-4">
+                <button
+                  onClick={handleDeleteChiefFileUrl}
+                  className="btn btn-error btn-sm self-start text-white"
+                >
+                  Delete
+                </button>
+                <a
+                  className="link overflow-clip"
+                  href={selfAssessmentFiles.chiefFileUrl}
+                >
+                  {selfAssessmentFiles.chiefFileUrl}
+                </a>
+              </div>
+            )}
             <input
               {...register("chiefFile")}
               disabled={isLoading}

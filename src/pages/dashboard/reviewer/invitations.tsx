@@ -114,72 +114,78 @@ const DashboardReviewerInvitationsPage = () => {
       <ListLayout
         queryResult={invitationListQuery}
         useQueryOptionsReturn={{ queryOptions, ...rest }}
-        main={invitations.map((invitation) => (
-          <div
-            key={invitation.id}
-            className="card card-side bg-base-100 shadow-lg"
-          >
-            <figure
-              className={classNames({
-                "w-4": true,
-                "bg-error": invitation.status === 1,
-                "bg-success": invitation.status === 2,
-                "bg-gray-200": invitation.status === 0,
-              })}
-            />
-            <div className="card-body gap-0 rounded-l-none rounded-r-2xl rounded-b-2xl border p-4">
-              <h2 className="card-title justify-between">
-                <p>{invitation.team.manuscript.title}</p>
-                <p className="text-right">
-                  Current Reviewers : {invitation.team._count.users}
-                </p>
-              </h2>
-              {!invitation.team.manuscript.isBlind && (
-                <p>{invitation.team.manuscript.authors}</p>
-              )}
-              <p className="text-gray-400">Abstract</p>
-              <p>{invitation.team.manuscript.abstract}</p>
-              <div className="card-actions items-end">
-                <p className="text-gray-400">
-                  Invited at : {parseDate(invitation.createdAt)}
-                </p>
-                {invitation.status === 0 ? (
-                  invitation.isLoading ? (
-                    <button
-                      disabled
-                      className="btn btn-success btn-sm text-white"
-                    >
-                      Loading...
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() =>
-                          handleAnswerInvitation(invitation.id, true)
-                        }
-                        className="btn btn-success btn-sm text-white"
-                      >
-                        Accept
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleAnswerInvitation(invitation.id, false)
-                        }
-                        className="btn btn-error btn-sm text-white"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )
-                ) : (
-                  <p className="text-right text-gray-400">
-                    Answered at {parseDate(invitation.updatedAt)}
-                  </p>
-                )}
+        main={
+          invitations.length <= 0 ? (
+            <p>You have no invitations</p>
+          ) : (
+            invitations.map((invitation) => (
+              <div
+                key={invitation.id}
+                className="card card-side bg-base-100 shadow-lg"
+              >
+                <figure
+                  className={classNames({
+                    "w-4": true,
+                    "bg-error": invitation.status === 1,
+                    "bg-success": invitation.status === 2,
+                    "bg-gray-200": invitation.status === 0,
+                  })}
+                />
+                <div className="card-body gap-0 rounded-l-none rounded-r-2xl rounded-b-2xl border p-4">
+                  <h2 className="card-title justify-between">
+                    <p>{invitation.team.manuscript.title}</p>
+                    <p className="text-right">
+                      Current Reviewers : {invitation.team._count.users}
+                    </p>
+                  </h2>
+                  {!invitation.team.manuscript.isBlind && (
+                    <p>{invitation.team.manuscript.authors}</p>
+                  )}
+                  <p className="text-gray-400">Abstract</p>
+                  <p>{invitation.team.manuscript.abstract}</p>
+                  <div className="card-actions items-end">
+                    <p className="text-gray-400">
+                      Invited at : {parseDate(invitation.createdAt)}
+                    </p>
+                    {invitation.status === 0 ? (
+                      invitation.isLoading ? (
+                        <button
+                          disabled
+                          className="btn btn-success btn-sm text-white"
+                        >
+                          Loading...
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() =>
+                              handleAnswerInvitation(invitation.id, true)
+                            }
+                            className="btn btn-success btn-sm text-white"
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleAnswerInvitation(invitation.id, false)
+                            }
+                            className="btn btn-error btn-sm text-white"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )
+                    ) : (
+                      <p className="text-right text-gray-400">
+                        Answered at {parseDate(invitation.updatedAt)}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            ))
+          )
+        }
       />
     </DashboardReviewerLayout>
   );

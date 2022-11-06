@@ -77,7 +77,7 @@ export const HistoryCardChief = ({
     window.open(
       `/invite/${manuscript.id}`,
       "newwindow",
-      "width=800,height=1000"
+      "width=1030,height=1000"
     );
   const handleOpenAssessment = (id: string) =>
     window.open(

@@ -50,9 +50,11 @@ const generateFilterInput = <T extends readonly Filter[]>(filters: T) => {
 export const userListQuery = paginationInput.merge(
   generateSortInput(USER_LIST_SORTS)
 );
-export const userReviewerQuery = paginationInput.merge(
-  generateSortInput(USER_REVIEWER_SORTS)
-);
+export const userReviewerQuery = z
+  .object({
+    manuscriptId: z.string(),
+  })
+  .merge(paginationInput.merge(generateSortInput(USER_REVIEWER_SORTS)));
 export const questionListQuery = paginationInput.merge(
   generateSortInput(QUESTION_LIST_SORTS)
 );

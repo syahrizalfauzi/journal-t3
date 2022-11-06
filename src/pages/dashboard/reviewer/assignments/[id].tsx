@@ -25,7 +25,7 @@ const DashboardReviewAssignmentsDetailPage = () => {
           data={manuscript}
           render={(data) => (
             <div className="flex flex-col items-stretch gap-8">
-              <ManuscriptSteps status={data.history[0]!.status} />
+              <ManuscriptSteps short status={data.history[0]!.status} />
               <ManuscriptDetailCardReviewer manuscriptDetail={data} />
               {data.history.map((history, index) => (
                 <HistoryCardReviewer

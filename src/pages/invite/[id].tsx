@@ -1,9 +1,13 @@
+import { inferProcedureOutput } from "@trpc/server";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { AuthGuard } from "../../components/AuthGuard";
+import { ensureRouterQuery } from "../../components/hoc/ensureRouterQuery";
 import ListLayout from "../../components/layout/dashboard/ListLayout";
+import { INVITATION_STATUS } from "../../constants/numbers";
 import { USER_REVIEWER_SORTS } from "../../constants/sorts";
 import { userReviewerQuery } from "../../server/queries";
+import { userRouter } from "../../server/trpc/router/user";
 import getItemIndex from "../../utils/getItemIndex";
 import getSortOrder from "../../utils/getSortOrder";
 import { toastSettleHandler } from "../../utils/toastSettleHandler";
@@ -14,15 +18,10 @@ const sortOrders = getSortOrder(USER_REVIEWER_SORTS);
 type QueryOptions = typeof userReviewerQuery;
 type Sorts = typeof USER_REVIEWER_SORTS[number];
 
-type UserInviteStatus = {
-  isInvited: "loading" | "false" | "true";
-  username: string;
-  id: string;
-  profile: {
-    email: string;
-    name: string;
-    country: string;
-  } | null;
+type UserInviteStatus = inferProcedureOutput<
+  typeof userRouter["reviewer"]
+>["users"][number] & {
+  isInvited: "loading" | "true" | "false";
 };
 
 const InvitePage = () => {
@@ -32,10 +31,14 @@ const InvitePage = () => {
     {
       sort: sortOrders[0]!.sort,
       order: sortOrders[0]!.order,
+      manuscriptId: query.id as string,
     },
     USER_REVIEWER_SORTS
   );
-  const userReviewerQuery = trpc.user.reviewer.useQuery(queryOptions);
+  const userReviewerQuery = trpc.user.reviewer.useQuery({
+    ...queryOptions,
+    manuscriptId: query.id as string,
+  });
   const [users, setUsers] = useState<UserInviteStatus[]>([]);
   const createInvitation = trpc.invitation.create.useMutation({
     onSettled: toastSettleHandler,
@@ -78,7 +81,7 @@ const InvitePage = () => {
     setUsers(
       userReviewerQuery.data.users.map<UserInviteStatus>((user) => ({
         ...user,
-        isInvited: "false",
+        isInvited: !user.invitations[0] ? "false" : "true",
       }))
     );
   }, [userReviewerQuery.data]);
@@ -104,10 +107,10 @@ const InvitePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.length <= 0 ? (
+                  {(userReviewerQuery.data?.users.length ?? 0) <= 0 ? (
                     <p>No reviewers available</p>
                   ) : (
-                    !!userReviewerQuery.data &&
+                    userReviewerQuery.data &&
                     users.map((user, index) => (
                       <tr key={user.id} className="hover">
                         <th>
@@ -124,16 +127,21 @@ const InvitePage = () => {
                         <td>
                           <button
                             disabled={user.isInvited !== "false"}
+                            // disabled={!!user.invitations[0]}
                             onClick={handleInvite(user.id)}
                             className="btn btn-info btn-sm text-white"
                           >
-                            {
-                              {
-                                true: "Invited",
-                                false: "Invite",
-                                loading: "Inviting",
-                              }[user.isInvited]
-                            }
+                            {!!user.invitations[0]
+                              ? {
+                                  [INVITATION_STATUS.accepted]: "Accepted",
+                                  [INVITATION_STATUS.unanswered]: "Pending",
+                                  [INVITATION_STATUS.rejected]: "Rejected",
+                                }[user.invitations[0].status]
+                              : {
+                                  loading: "Inviting...",
+                                  true: "Pending",
+                                  false: "Invite",
+                                }[user.isInvited]}
                           </button>
                         </td>
                       </tr>
@@ -149,4 +157,5 @@ const InvitePage = () => {
   );
 };
 
-export default InvitePage;
+// export default InvitePage;
+export default ensureRouterQuery("id", InvitePage);
