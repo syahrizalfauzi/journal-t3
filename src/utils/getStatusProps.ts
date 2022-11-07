@@ -190,7 +190,7 @@ const getStatusProps = (
       };
     case 6:
       return {
-        color: "info",
+        color: role === "chief" ? "primary" : "info",
         message: {
           author:
             "Your article has been finalized, please await for publishing.",
@@ -199,7 +199,7 @@ const getStatusProps = (
             "The author has proofread the article, please publish the article to the journal",
           unknown: "",
         }[role ?? "unknown"],
-        label: "Finalized",
+        label: role === "chief" ? "Need Publishing" : "Finalized",
       };
     case 7:
       return {

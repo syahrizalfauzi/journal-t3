@@ -10,6 +10,7 @@ import { assessmentRouter } from "./assessment";
 import { invitationRouter } from "./invitation";
 import { reviewRouter } from "./review";
 import { pageRouter } from "./page";
+import { editionRouter } from "./edition";
 
 export const appRouter = t.router({
   auth: authRouter,
@@ -21,6 +22,7 @@ export const appRouter = t.router({
   invitation: invitationRouter,
   review: reviewRouter,
   page: pageRouter,
+  edition: editionRouter,
 });
 
 // export type definition of API

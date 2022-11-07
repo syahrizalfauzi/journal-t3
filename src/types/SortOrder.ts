@@ -11,7 +11,9 @@ export type Sorts =
   | "question"
   | "title"
   | "status"
-  | "url";
+  | "url"
+  | "doi"
+  | "isAvailable";
 
 export type SortOrders = "asc" | "desc";
 

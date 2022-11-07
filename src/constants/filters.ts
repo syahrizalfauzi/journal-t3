@@ -1,5 +1,7 @@
 //Removed Filter[] so that it's a literal type
 
+import { Filter } from "../types/Filter";
+
 export const MANUSCRIPT_AUTHOR_FILTERS = [
   {
     key: "status",
@@ -113,6 +115,16 @@ export const INVITATION_LIST_FILTERS = [
       { value: "0", label: "Unanswered" },
       { value: "1", label: "Rejected" },
       { value: "2", label: "Accepted" },
+    ],
+  },
+] as const;
+export const EDITION_LIST_FILTERS = [
+  {
+    key: "isAvailable",
+    label: "Available To Public",
+    availableValues: [
+      { value: "true", label: "Available To Public" },
+      { value: "false", label: "Unavailable To Public" },
     ],
   },
 ] as const;

@@ -4,9 +4,10 @@ import { containerPlugin } from "./container";
 import { verticalDividerPlugin, horizontalDividerPlugin } from "./divider";
 import { imagePlugin } from "./image";
 import { latestArticlesPlugin } from "./latestArticles";
-import slate from "@react-page/plugins-slate";
 import spacer from "@react-page/plugins-spacer";
 import background from "@react-page/plugins-background";
+import { buttonLinkPlugin } from "./buttonLink";
+import { textEditorPlugin } from "./textEditor";
 
 type PageEditorProps = {
   value: Value | null;
@@ -15,10 +16,11 @@ type PageEditorProps = {
 };
 
 const cellPlugins: CellPluginList = [
-  slate((s) => ({ ...s, allowInlineNeighbours: true })),
+  textEditorPlugin,
   spacer,
   background({}),
   containerPlugin,
+  buttonLinkPlugin,
   verticalDividerPlugin,
   horizontalDividerPlugin,
   imagePlugin,

@@ -6,6 +6,7 @@ import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
 import { DashboardReviewerLayout } from "../../../../components/layout/dashboard/DashboardReviewerLayout";
 import { ManuscriptDetailCardReviewer } from "../../../../components/ManuscriptDetailCardReviewer";
 import { HistoryCardReviewer } from "../../../../components/HistoryCardReviewer";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 
 const DashboardReviewAssignmentsDetailPage = () => {
   const { query } = useRouter();
@@ -43,4 +44,4 @@ const DashboardReviewAssignmentsDetailPage = () => {
   );
 };
 
-export default DashboardReviewAssignmentsDetailPage;
+export default ensureRouterQuery("id", DashboardReviewAssignmentsDetailPage);

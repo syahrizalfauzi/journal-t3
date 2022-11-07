@@ -13,7 +13,9 @@ export const ManuscriptSteps = ({ status, short }: ManuscriptStepsProps) => {
     <ul className="steps -z-10">
       {status === -1 && <li className="step step-primary">Rejected</li>}
       {(short
-        ? MANUSCRIPT_STEPS_LABEL.slice(0, 5)
+        ? status >= HISTORY_STATUS.revision
+          ? MANUSCRIPT_STEPS_LABEL.slice(0, 5)
+          : MANUSCRIPT_STEPS_LABEL.slice(0, 4)
         : MANUSCRIPT_STEPS_LABEL
       ).map((step, index) => (
         <li

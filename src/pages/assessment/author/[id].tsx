@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { AuthGuard } from "../../../components/AuthGuard";
+import { ensureRouterQuery } from "../../../components/hoc/ensureRouterQuery";
 import { AssessmentLayout } from "../../../components/layout/AssessmentLayout";
 import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
 import { parseDate } from "../../../utils/parseDate";
@@ -60,4 +61,4 @@ const AssessmentAuthorPage = () => {
   );
 };
 
-export default AssessmentAuthorPage;
+export default ensureRouterQuery("id", AssessmentAuthorPage);

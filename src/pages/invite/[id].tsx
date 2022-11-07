@@ -157,5 +157,4 @@ const InvitePage = () => {
   );
 };
 
-// export default InvitePage;
 export default ensureRouterQuery("id", InvitePage);

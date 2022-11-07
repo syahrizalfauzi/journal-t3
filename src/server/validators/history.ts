@@ -21,3 +21,7 @@ export const finalizeHistoryValidator = z.object({
   manuscriptId: z.string(),
   fileUrl: z.string().optional(),
 });
+export const publishHistoryValidator = z.object({
+  manuscriptId: z.string(),
+  editionId: z.string(),
+});

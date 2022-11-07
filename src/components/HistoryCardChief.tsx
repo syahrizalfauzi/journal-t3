@@ -15,6 +15,7 @@ import { FileInput } from "./FileInput";
 import { InputLabel } from "./InputLabel";
 import { MAX_TEAM_USERS } from "../constants/numbers";
 import moment from "moment";
+import { HistoryCardChiefPublish } from "./history_card/chief/publish";
 
 type HistoryCardChiefProps = {
   history: inferProcedureOutput<
@@ -32,6 +33,7 @@ type HistoryCardChiefProps = {
   onReviewReject: (reviewId: string, comment: string) => unknown;
   onReviewRevise: (reviewId: string, comment: string) => unknown;
   onReviewAccept: (reviewId: string, proofreadFile: File) => unknown;
+  onPublish: (editionId: string) => unknown;
 };
 
 type InitialReviewForm = {
@@ -421,61 +423,57 @@ export const HistoryCardChief = ({
                     }
                   >
                     <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-                      <tr>
-                        <th>Review Decision</th>
-                        <td>
-                          <select
-                            {...updateDecisionForm.register("reviewDecision")}
-                            className="select select-bordered select-sm flex-1"
-                          >
-                            <SelectOptions
-                              selectData={[
-                                {
-                                  label: "Unanswered",
-                                  value: "0",
-                                  disabled: true,
-                                },
-                                { label: "Reject", value: "-1" },
-                                { label: "Revision", value: "1" },
-                                { label: "Accept", value: "2" },
-                              ]}
-                            />
-                          </select>
-                        </td>
-                      </tr>
-                      {reviewDecision === "2" && (
-                        <tr className="align-bottom">
-                          <th>Upload Proofread Article</th>
+                      <tbody>
+                        <tr>
+                          <th>Review Decision</th>
                           <td>
-                            <FileInput>
-                              <input
-                                {...updateDecisionForm.register(
-                                  "proofreadFile"
-                                )}
-                                required
-                                disabled={isLoading}
-                                type="file"
+                            <select
+                              {...updateDecisionForm.register("reviewDecision")}
+                              className="select select-bordered select-sm flex-1"
+                            >
+                              <SelectOptions
+                                selectData={[
+                                  {
+                                    label: "Unanswered",
+                                    value: "0",
+                                    disabled: true,
+                                  },
+                                  { label: "Reject", value: "-1" },
+                                  { label: "Revision", value: "1" },
+                                  { label: "Accept", value: "2" },
+                                ]}
                               />
-                            </FileInput>
+                            </select>
                           </td>
                         </tr>
-                      )}
+                        {reviewDecision === "2" && (
+                          <tr className="align-bottom">
+                            <th>Upload Proofread Article</th>
+                            <td>
+                              <FileInput>
+                                <input
+                                  {...updateDecisionForm.register(
+                                    "proofreadFile"
+                                  )}
+                                  required
+                                  disabled={isLoading}
+                                  type="file"
+                                />
+                              </FileInput>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
                     </table>
                   </HistoryCardAction>
                 </form>
               );
             case 6:
               return (
-                <HistoryCardAction isLoading={isLoading}>
-                  <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-                    <tr>
-                      <th>Publish</th>
-                      <td>
-                        <p>Belum tau ini gimana</p>
-                      </td>
-                    </tr>
-                  </table>
-                </HistoryCardAction>
+                <HistoryCardChiefPublish
+                  isLoading={isLoading}
+                  onPublish={callbacks.onPublish}
+                />
               );
           }
         })()}

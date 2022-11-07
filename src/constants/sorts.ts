@@ -64,3 +64,11 @@ export const PAGE_LIST_SORTS = [
   "updatedAt",
   "url",
 ] as const;
+
+export const EDITION_LIST_SORTS = [
+  "updatedAt",
+  "name",
+  "doi",
+  "isAvailable",
+  "createdAt",
+] as const;
