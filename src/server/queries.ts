@@ -1,4 +1,5 @@
 import {
+  EDITION_LIST_SORTS,
   INVITATION_LIST_SORTS,
   MANUSCRIPT_AUTHOR_SORTS,
   MANUSCRIPT_CHIEF_SORTS,
@@ -11,6 +12,7 @@ import { z } from "zod";
 import { Sorts } from "../types/SortOrder";
 import { Filter } from "../types/Filter";
 import {
+  EDITION_LIST_FILTERS,
   INVITATION_LIST_FILTERS,
   MANUSCRIPT_AUTHOR_FILTERS,
   MANUSCRIPT_CHIEF_FILTERS,
@@ -50,9 +52,11 @@ const generateFilterInput = <T extends readonly Filter[]>(filters: T) => {
 export const userListQuery = paginationInput.merge(
   generateSortInput(USER_LIST_SORTS)
 );
-export const userReviewerQuery = paginationInput.merge(
-  generateSortInput(USER_REVIEWER_SORTS)
-);
+export const userReviewerQuery = z
+  .object({
+    manuscriptId: z.string(),
+  })
+  .merge(paginationInput.merge(generateSortInput(USER_REVIEWER_SORTS)));
 export const questionListQuery = paginationInput.merge(
   generateSortInput(QUESTION_LIST_SORTS)
 );
@@ -72,3 +76,6 @@ export const invitationListQuery = paginationInput
 export const pageListQuery = paginationInput.merge(
   generateSortInput(PAGE_LIST_SORTS)
 );
+export const editionListQuery = paginationInput
+  .merge(generateSortInput(EDITION_LIST_SORTS))
+  .merge(generateFilterInput(EDITION_LIST_FILTERS));

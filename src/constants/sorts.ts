@@ -14,6 +14,8 @@ export const SORT_LABEL = {
   title: "Title",
   status: "Status",
   url: "URL",
+  doi: "DOI",
+  isAvailable: "Available",
 } as const;
 
 export const USER_LIST_SORTS = [
@@ -63,4 +65,12 @@ export const PAGE_LIST_SORTS = [
   "createdAt",
   "updatedAt",
   "url",
+] as const;
+
+export const EDITION_LIST_SORTS = [
+  "updatedAt",
+  "name",
+  "doi",
+  "isAvailable",
+  "createdAt",
 ] as const;

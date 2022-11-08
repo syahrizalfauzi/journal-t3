@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { REVIEW_DECISION } from "../../constants/numbers";
 
 const reviewUpdateValidator = z.object({
   id: z.string(),
@@ -16,7 +17,10 @@ export const reviewUpdateDueValidator = z
 // accepted: 2,
 export const reviewUpdateDecisionValidator = z
   .object({
-    decision: z.number().gte(-1).lte(2),
+    decision: z
+      .number()
+      .gte(REVIEW_DECISION.rejected)
+      .lte(REVIEW_DECISION.accepted),
     comment: z.string().nullish(),
   })
   .merge(reviewUpdateValidator);

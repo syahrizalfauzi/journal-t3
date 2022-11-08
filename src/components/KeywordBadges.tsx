@@ -1,12 +1,12 @@
 import React from "react";
 
-type KeywordBadgesProps = {
+type Props = {
   keywords: {
     keyword: string;
   }[];
 };
 
-export const KeywordBadges = ({ keywords }: KeywordBadgesProps) => {
+export const KeywordBadges = ({ keywords }: Props) => {
   return (
     <div className="flex flex-wrap gap-1">
       {keywords.map(({ keyword }) => (

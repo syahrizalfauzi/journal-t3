@@ -6,10 +6,11 @@ import { toastSettleHandler } from "../../../utils/toastSettleHandler";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { DashboardSettingsLayout } from "../../../components/layout/dashboard/DashboardSettingsLayout";
 import { InputLabel } from "../../../components/InputLabel";
+import { NextPage } from "next/types";
 
 type ChangePasswordForm = z.infer<typeof changePasswordValidator>;
 
-const DashboardSettingsPasswordPage = () => {
+const DashboardSettingsPasswordPage: NextPage = () => {
   const { mutate: mutationUpdate, isLoading: mutationLoading } =
     trpc.auth.changePassword.useMutation({
       onSettled: toastSettleHandler,

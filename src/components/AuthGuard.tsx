@@ -5,16 +5,12 @@ import { useRouter } from "next/router";
 import { getHasRole, getRoleSelector } from "../utils/role";
 import { AvailableRoles } from "../types/Role";
 
-type AuthGuardProps = LayoutProps & {
+type Props = LayoutProps & {
   allowedRole: AvailableRoles | "loggedIn" | "loggedOut";
   redirectTo?: string;
 };
 
-export const AuthGuard = ({
-  allowedRole,
-  redirectTo,
-  children,
-}: AuthGuardProps) => {
+export const AuthGuard = ({ allowedRole, redirectTo, children }: Props) => {
   const session = useSession();
   const router = useRouter();
 

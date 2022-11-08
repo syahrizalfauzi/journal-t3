@@ -9,8 +9,10 @@ import { DashboardChiefLayout } from "../../../../components/layout/dashboard/Da
 import { ManuscriptDetailCardChief } from "../../../../components/ManuscriptDetailCardChief";
 import { HistoryCardChief } from "../../../../components/HistoryCardChief";
 import { REVIEW_DECISION } from "../../../../constants/numbers";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
+import { NextPage } from "next/types";
 
-const DashboardChiefSubmissionsDetailPage = () => {
+const DashboardChiefSubmissionsDetailPage: NextPage = () => {
   const { query } = useRouter();
 
   const {
@@ -33,6 +35,9 @@ const DashboardChiefSubmissionsDetailPage = () => {
     onSettled: toastSettleHandler,
   });
   const proofread = trpc.history.proofread.useMutation({
+    onSettled: toastSettleHandler,
+  });
+  const publish = trpc.history.publish.useMutation({
     onSettled: toastSettleHandler,
   });
 
@@ -112,6 +117,15 @@ const DashboardChiefSubmissionsDetailPage = () => {
       }
     );
   };
+  const handlePublish = (editionId: string) => {
+    publish.mutate(
+      {
+        manuscriptId: query.id as string,
+        editionId,
+      },
+      { onSuccess: () => refetch() }
+    );
+  };
 
   return (
     <DashboardChiefLayout>
@@ -136,6 +150,7 @@ const DashboardChiefSubmissionsDetailPage = () => {
                 onReviewReject={handleReviewReject}
                 onReviewRevise={handleReviewRevise}
                 onReviewAccept={handleReviewAccept}
+                onPublish={handlePublish}
               />
             ))}
           </div>
@@ -145,4 +160,4 @@ const DashboardChiefSubmissionsDetailPage = () => {
   );
 };
 
-export default DashboardChiefSubmissionsDetailPage;
+export default ensureRouterQuery("id", DashboardChiefSubmissionsDetailPage);

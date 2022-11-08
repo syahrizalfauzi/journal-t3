@@ -48,6 +48,16 @@ model Keyword {
   manuscript Manuscript[]
 }
 
+model Edition {
+  id          String       @id @default(uuid())
+  name        String
+  doi         String
+  manuscripts Manuscript[]
+  isAvailable Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
 model Manuscript {
   id              String         @id @default(uuid())
   title           String
@@ -63,6 +73,8 @@ model Manuscript {
   latestHistory   LatestHistory?
   team            Team?
   keywords        Keyword[]
+  edition         Edition?       @relation(fields: [editionId], references: [id], onDelete: SetNull)
+  editionId       String?
 }
 
 model Team {
@@ -162,4 +174,10 @@ model Page {
   data      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  id                          String @id @default("settings")
+  reviewersCount              Int    @default(4)
+  maxArticlesPerLatestEdition Int    @default(5)
 }

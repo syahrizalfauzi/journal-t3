@@ -8,8 +8,10 @@ import { ManuscriptDetailCardAuthor } from "../../../../components/ManuscriptDet
 import { HistoryCardAuthor } from "../../../../components/HistoryCardAuthor";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { SAMPLE_FILE_URL } from "../../../../constants/others";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
+import { NextPage } from "next/types";
 
-const DashboardAuthorSubmissionsDetailPage = () => {
+const DashboardAuthorSubmissionsDetailPage: NextPage = () => {
   const { query } = useRouter();
 
   const {
@@ -92,4 +94,4 @@ const DashboardAuthorSubmissionsDetailPage = () => {
   );
 };
 
-export default DashboardAuthorSubmissionsDetailPage;
+export default ensureRouterQuery("id", DashboardAuthorSubmissionsDetailPage);

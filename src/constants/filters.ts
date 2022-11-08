@@ -116,3 +116,13 @@ export const INVITATION_LIST_FILTERS = [
     ],
   },
 ] as const;
+export const EDITION_LIST_FILTERS = [
+  {
+    key: "isAvailable",
+    label: "Available To Public",
+    availableValues: [
+      { value: "true", label: "Available To Public" },
+      { value: "false", label: "Unavailable To Public" },
+    ],
+  },
+] as const;

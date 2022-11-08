@@ -22,7 +22,7 @@ const LoginPage: NextPage = () => {
     setIsLoading(true);
     const result = await signIn("credentials", {
       ...data,
-      redirect: false,
+      callbackUrl: "/",
     });
     setIsLoading(false);
 

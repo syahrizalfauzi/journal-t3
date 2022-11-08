@@ -1,3 +1,4 @@
+import { HISTORY_STATUS, REVIEW_DECISION } from "../constants/numbers";
 import { AvailableRoles } from "../types/Role";
 
 const getStatusProps = (
@@ -17,7 +18,7 @@ const getStatusProps = (
   message: string;
 } => {
   switch (history.status) {
-    case -1:
+    case HISTORY_STATUS.rejected:
       return {
         color: "error",
         message:
@@ -26,7 +27,7 @@ const getStatusProps = (
             : "",
         label: "Rejected",
       };
-    case 0:
+    case HISTORY_STATUS.submitted:
       return {
         color: role === "chief" ? "primary" : "gray-200",
         message: {
@@ -38,7 +39,7 @@ const getStatusProps = (
         }[role ?? "unknown"],
         label: role === "author" ? "Waiting For Review" : "Need Review",
       };
-    case 1:
+    case HISTORY_STATUS.inviting:
       return {
         color: role === "chief" ? "primary" : "gray-200",
         message: {
@@ -57,7 +58,7 @@ const getStatusProps = (
           unknown: "",
         }[role ?? "unknown"],
       };
-    case 2:
+    case HISTORY_STATUS.reviewing:
       return {
         color: {
           author: "gray-200",
@@ -95,20 +96,20 @@ const getStatusProps = (
           unknown: "",
         }[role ?? "unknown"],
       };
-    case 3:
+    case HISTORY_STATUS.reviewed:
       if (!history.review)
         return { color: "secondary", message: "", label: "Reviewed" };
 
       switch (history.review.decision) {
-        case -1:
+        case REVIEW_DECISION.rejected:
           return { color: "error", message: "", label: "Reviewed (Rejected)" };
-        case 1:
+        case REVIEW_DECISION.revision:
           return {
             color: "warning",
             message: "",
             label: "Reviewed (Revision)",
           };
-        case 2:
+        case REVIEW_DECISION.accepted:
           return {
             color: "success",
             message: {
@@ -141,7 +142,7 @@ const getStatusProps = (
             label: "Under Peer Review",
           };
       }
-    case 4:
+    case HISTORY_STATUS.revision:
       return {
         color:
           role === "reviewer"
@@ -175,7 +176,7 @@ const getStatusProps = (
           unknown: "",
         }[role ?? "unknown"],
       };
-    case 5:
+    case HISTORY_STATUS.proofread:
       return {
         color: role === "author" ? "primary" : "accent",
         message: {
@@ -188,9 +189,9 @@ const getStatusProps = (
         }[role ?? "unknown"],
         label: role === "author" ? "Need Proofread" : "Under Proofread",
       };
-    case 6:
+    case HISTORY_STATUS.finalized:
       return {
-        color: "info",
+        color: role === "chief" ? "primary" : "info",
         message: {
           author:
             "Your article has been finalized, please await for publishing.",
@@ -199,9 +200,9 @@ const getStatusProps = (
             "The author has proofread the article, please publish the article to the journal",
           unknown: "",
         }[role ?? "unknown"],
-        label: "Finalized",
+        label: role === "chief" ? "Need Publishing" : "Finalized",
       };
-    case 7:
+    case HISTORY_STATUS.published:
       return {
         color: "info",
         message: {

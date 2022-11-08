@@ -13,6 +13,7 @@ import { updateUserValidator } from "../../../../server/validators/user";
 import { useRouter } from "next/router";
 import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role"> & {
   isReviewer: boolean;
@@ -290,4 +291,4 @@ const DashboardAdminUserEditPage: NextPage = () => {
   );
 };
 
-export default DashboardAdminUserEditPage;
+export default ensureRouterQuery("id", DashboardAdminUserEditPage);

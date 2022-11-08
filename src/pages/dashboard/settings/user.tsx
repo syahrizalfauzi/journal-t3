@@ -9,10 +9,11 @@ import { DashboardSettingsLayout } from "../../../components/layout/dashboard/Da
 import { InputLabel } from "../../../components/InputLabel";
 import { SelectOptions } from "../../../components/SelectOptions";
 import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
+import { NextPage } from "next/types";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role">;
 
-const DashboardSettingsUserPage = () => {
+const DashboardSettingsUserPage: NextPage = () => {
   const {
     data: user,
     isLoading: queryLoading,
@@ -51,7 +52,7 @@ const DashboardSettingsUserPage = () => {
         keywords: user.profile?.keywords.join(", "),
       },
     });
-  }, [user]);
+  }, [reset, user]);
 
   return (
     <DashboardSettingsLayout>
@@ -59,7 +60,7 @@ const DashboardSettingsUserPage = () => {
         isLoading={queryLoading}
         data={user}
         errorMessage={queryError?.message}
-        render={(_) => (
+        render={() => (
           <>
             <p className="text-xl font-medium">Edit User</p>
             <form

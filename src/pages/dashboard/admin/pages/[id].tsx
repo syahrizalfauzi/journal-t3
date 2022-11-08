@@ -12,11 +12,12 @@ import { PageEditor } from "../../../../components/editor/PageEditor";
 import { z } from "zod";
 import { updatePageValidator } from "../../../../server/validators/page";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 
 type EditPageForm = z.infer<typeof updatePageValidator>;
 
 const DashboardAdminPagesEditPage: NextPage = () => {
-  const { query, push } = useRouter();
+  const { query } = useRouter();
 
   const { register, reset, handleSubmit } = useForm<EditPageForm>();
 
@@ -24,7 +25,9 @@ const DashboardAdminPagesEditPage: NextPage = () => {
     data: page,
     isLoading: queryLoading,
     error: queryError,
-  } = trpc.page.get.useQuery(query.id as string);
+  } = trpc.page.get.useQuery(query.id as string, {
+    refetchOnWindowFocus: false,
+  });
 
   const { mutate: mutationUpdate, isLoading: mutationLoading } =
     trpc.page.update.useMutation({
@@ -36,17 +39,12 @@ const DashboardAdminPagesEditPage: NextPage = () => {
   const onSubmit: SubmitHandler<EditPageForm> = ({ name, url }) => {
     if (!editorData || !page) return;
 
-    mutationUpdate(
-      {
-        id: query.id as string,
-        data: JSON.stringify(editorData),
-        name,
-        url,
-      },
-      {
-        onSuccess: () => push("/dashboard/admin/pages"),
-      }
-    );
+    mutationUpdate({
+      id: query.id as string,
+      data: JSON.stringify(editorData),
+      name,
+      url,
+    });
   };
 
   useEffect(() => {
@@ -115,4 +113,4 @@ const DashboardAdminPagesEditPage: NextPage = () => {
   );
 };
 
-export default DashboardAdminPagesEditPage;
+export default ensureRouterQuery("id", DashboardAdminPagesEditPage);

@@ -1,13 +1,15 @@
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React from "react";
 import { AuthGuard } from "../../../components/AuthGuard";
+import { ensureRouterQuery } from "../../../components/hoc/ensureRouterQuery";
 import { AssessmentLayout } from "../../../components/layout/AssessmentLayout";
 import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
 import { parseDate } from "../../../utils/parseDate";
 import { parseAssessmentDecision } from "../../../utils/parseDecision";
 import { trpc } from "../../../utils/trpc";
 
-const AssessmentChiefPage = () => {
+const AssessmentChiefPage: NextPage = () => {
   const { query } = useRouter();
 
   const {
@@ -98,4 +100,4 @@ const AssessmentChiefPage = () => {
   );
 };
 
-export default AssessmentChiefPage;
+export default ensureRouterQuery("id", AssessmentChiefPage);

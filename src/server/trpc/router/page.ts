@@ -13,53 +13,6 @@ import { t } from "../trpc";
 const notFoundMessage = "Page not found";
 
 export const pageRouter = t.router({
-  get: t.procedure
-    .use(authGuard(["admin"]))
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const page = await ctx.prisma.page.findUnique({
-        where: { id: input },
-        select: {
-          id: true,
-          name: true,
-          data: true,
-          updatedAt: true,
-          url: true,
-        },
-      });
-
-      if (!page)
-        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
-
-      return page;
-    }),
-  list: t.procedure
-    .use(authGuard(["admin"]))
-    .input(pageListQuery)
-    .query(async ({ ctx, input }) => {
-      const getCount = ctx.prisma.page.count();
-      const getPages = ctx.prisma.page.findMany({
-        ...getPaginationQuery(input),
-        orderBy: getOrderQuery(input, PAGE_LIST_SORTS),
-        select: {
-          id: true,
-          name: true,
-          createdAt: true,
-          updatedAt: true,
-          url: true,
-        },
-      });
-
-      const [totalCount, pages] = await ctx.prisma.$transaction([
-        getCount,
-        getPages,
-      ]);
-
-      return {
-        ...paginationMetadata(totalCount, input),
-        pages,
-      };
-    }),
   create: t.procedure
     .use(authGuard(["admin"]))
     .input(pageValidator)
@@ -93,6 +46,53 @@ export const pageRouter = t.router({
       } catch (e) {
         throw mutationError(e);
       }
+    }),
+  list: t.procedure
+    .use(authGuard(["admin"]))
+    .input(pageListQuery)
+    .query(async ({ ctx, input }) => {
+      const getCount = ctx.prisma.page.count();
+      const getPages = ctx.prisma.page.findMany({
+        ...getPaginationQuery(input),
+        orderBy: getOrderQuery(input, PAGE_LIST_SORTS),
+        select: {
+          id: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+          url: true,
+        },
+      });
+
+      const [totalCount, pages] = await ctx.prisma.$transaction([
+        getCount,
+        getPages,
+      ]);
+
+      return {
+        ...paginationMetadata(totalCount, input),
+        pages,
+      };
+    }),
+  get: t.procedure
+    .use(authGuard(["admin"]))
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const page = await ctx.prisma.page.findUnique({
+        where: { id: input },
+        select: {
+          id: true,
+          name: true,
+          data: true,
+          updatedAt: true,
+          url: true,
+        },
+      });
+
+      if (!page)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      return page;
     }),
   update: t.procedure
     .use(authGuard(["admin"]))

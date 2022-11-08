@@ -6,8 +6,10 @@ import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
 import { DashboardReviewerLayout } from "../../../../components/layout/dashboard/DashboardReviewerLayout";
 import { ManuscriptDetailCardReviewer } from "../../../../components/ManuscriptDetailCardReviewer";
 import { HistoryCardReviewer } from "../../../../components/HistoryCardReviewer";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
+import { NextPage } from "next/types";
 
-const DashboardReviewAssignmentsDetailPage = () => {
+const DashboardReviewAssignmentsDetailPage: NextPage = () => {
   const { query } = useRouter();
 
   const {
@@ -25,7 +27,7 @@ const DashboardReviewAssignmentsDetailPage = () => {
           data={manuscript}
           render={(data) => (
             <div className="flex flex-col items-stretch gap-8">
-              <ManuscriptSteps status={data.history[0]!.status} />
+              <ManuscriptSteps short status={data.history[0]!.status} />
               <ManuscriptDetailCardReviewer manuscriptDetail={data} />
               {data.history.map((history, index) => (
                 <HistoryCardReviewer
@@ -43,4 +45,4 @@ const DashboardReviewAssignmentsDetailPage = () => {
   );
 };
 
-export default DashboardReviewAssignmentsDetailPage;
+export default ensureRouterQuery("id", DashboardReviewAssignmentsDetailPage);

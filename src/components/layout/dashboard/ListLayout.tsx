@@ -14,9 +14,11 @@ import {
 type ListLayoutProps<I extends QueryType, S extends Sorts, F extends Filter> = {
   main: React.ReactNode;
   useQueryOptionsReturn: UseQueryOptionsReturn<I, S, F>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queryResult: UseTRPCQueryResult<{ _metadata: PaginationMetadata }, any>;
   paginated?: boolean;
   create?: React.ReactNode;
+  showSort?: boolean;
 };
 
 export const ListLayout = <
@@ -29,6 +31,7 @@ export const ListLayout = <
   useQueryOptionsReturn,
   paginated = true,
   create,
+  showSort = true,
 }: ListLayoutProps<I, S, F>) => {
   const {
     allowedSorts,
@@ -64,7 +67,7 @@ export const ListLayout = <
     <div className="flex flex-col items-stretch gap-4">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-2">
-          {sortOrders.length > 0 && (
+          {showSort && sortOrders.length > 0 && (
             <select
               className="select select-bordered max-w-xs"
               onChange={onChangeSortOrder}

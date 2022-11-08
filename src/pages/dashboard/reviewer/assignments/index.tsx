@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import Link from "next/link";
+import { NextPage } from "next/types";
 import React from "react";
 import { DashboardReviewerLayout } from "../../../../components/layout/dashboard/DashboardReviewerLayout";
 import ListLayout from "../../../../components/layout/dashboard/ListLayout";
@@ -13,7 +14,7 @@ import { useQueryOptions } from "../../../../utils/useQueryOptions";
 type QueryOptions = typeof manuscriptReviewerQuery;
 type Filters = typeof MANUSCRIPT_REVIEWER_FILTERS[number];
 
-const DashboardReviewerAssignmentsPage = () => {
+const DashboardReviewerAssignmentsPage: NextPage = () => {
   const { queryOptions, ...rest } = useQueryOptions<
     QueryOptions,
     never,

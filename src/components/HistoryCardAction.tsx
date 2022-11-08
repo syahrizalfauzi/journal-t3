@@ -1,7 +1,7 @@
 import React from "react";
 import LayoutProps from "../types/LayoutProps";
 
-type HistoryCardActionProps = LayoutProps & {
+type Props = LayoutProps & {
   isLoading: boolean;
   withSubmit?: boolean;
   outside?: React.ReactNode;
@@ -12,7 +12,7 @@ export const HistoryCardAction = ({
   isLoading,
   outside,
   children,
-}: HistoryCardActionProps) => {
+}: Props) => {
   return (
     <>
       <div className="divider divider-vertical m-0" />

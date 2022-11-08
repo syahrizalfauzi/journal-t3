@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ASSESSMENT_DECISION } from "../constants/numbers";
 import { SAMPLE_FILE_URL } from "../constants/others";
 import { questionListQuery } from "../server/queries";
 import { AppRouter } from "../server/trpc/router";
 import { createAssessmentValidator } from "../server/validators/assessment";
 import { Sorts } from "../types/SortOrder";
+import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
 import { toastSettleHandler } from "../utils/toastSettleHandler";
 import { trpc } from "../utils/trpc";
 import { useQueryOptions } from "../utils/useQueryOptions";
@@ -16,7 +18,7 @@ import { InputLabel } from "./InputLabel";
 import ListLayout from "./layout/dashboard/ListLayout";
 import { SelectOptions } from "./SelectOptions";
 
-type AssessmentModalProps = {
+type Props = {
   review: NonNullable<
     inferProcedureOutput<
       AppRouter["manuscript"]["getForReviewer"]
@@ -32,7 +34,6 @@ type CreateAssessmentForm = Pick<
   decision: string;
   file: FileList;
   chiefFile: FileList;
-  // reviewAnswers: ReviewAnswer;
 };
 
 type QueryOptions = typeof questionListQuery;
@@ -41,7 +42,12 @@ type ReviewAnswer = {
   [key: string]: string;
 };
 
-export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
+type AssessmentFiles = {
+  chiefFileUrl?: string | null;
+  fileUrl?: string | null;
+};
+
+export const AssessmentModal = ({ review, onSubmit }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<CreateAssessmentForm>();
   const createAssessment = trpc.assessment.create.useMutation({
@@ -59,6 +65,8 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
   const selfAssessmentQuery = trpc.assessment.getForSelfReviewer.useQuery(
     review.id
   );
+  const [selfAssessmentFiles, setSelfAssessmentFiles] =
+    useState<AssessmentFiles>({});
   const questionListQuery = trpc.question.list.useQuery(queryOptions);
 
   const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswer>({});
@@ -111,8 +119,12 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
               })
             ),
             isDone,
-            fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
-            chiefFileUrl: chiefFile.item(0) ? SAMPLE_FILE_URL : undefined,
+            fileUrl: file.item(0)
+              ? SAMPLE_FILE_URL
+              : selfAssessmentFiles.fileUrl,
+            chiefFileUrl: chiefFile.item(0)
+              ? SAMPLE_FILE_URL
+              : selfAssessmentFiles.chiefFileUrl,
             id: selfAssessmentQuery.data.id,
           },
           {
@@ -124,6 +136,28 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
           }
         );
     })();
+  };
+
+  const handleDeleteFileUrl = () => {
+    if (!confirm("Are you sure you want to delete this file?")) {
+      return;
+    }
+
+    setSelfAssessmentFiles((prevState) => ({
+      ...prevState,
+      fileUrl: null,
+    }));
+  };
+
+  const handleDeleteChiefFileUrl = () => {
+    if (!confirm("Are you sure you want to delete this file?")) {
+      return;
+    }
+
+    setSelfAssessmentFiles((prevState) => ({
+      ...prevState,
+      chiefFileUrl: null,
+    }));
   };
 
   useEffect(() => {
@@ -148,6 +182,13 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
       authorComment: selfAssessment?.authorComment,
       editorComment: selfAssessment?.editorComment,
       decision: (selfAssessment?.decision ?? 0).toString(),
+      file: undefined,
+      chiefFile: undefined,
+    });
+
+    setSelfAssessmentFiles({
+      chiefFileUrl: selfAssessment?.chiefFileUrl,
+      fileUrl: selfAssessment?.fileUrl,
     });
   }, [reset, selfAssessmentQuery.data]);
 
@@ -159,7 +200,7 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
       main={
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="flex flex-col items-stretch gap-4"
+          className="flex w-full flex-col items-stretch gap-4"
         >
           <p className="text-lg font-semibold">
             Submit Assessment {!!selfAssessmentQuery.data && "(Draft Loaded)"}
@@ -212,26 +253,42 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
               className="textarea textarea-bordered w-full"
             />
           </InputLabel>
-          {!!selfAssessmentQuery.data?.fileUrl && (
-            <p>
-              File to author :{" "}
-              <a className="link" href={selfAssessmentQuery.data?.fileUrl}>
-                {selfAssessmentQuery.data?.fileUrl}
-              </a>
-            </p>
-          )}
-          {!!selfAssessmentQuery.data?.chiefFileUrl && (
-            <p>
-              File to chief editor :{" "}
-              <a className="link" href={selfAssessmentQuery.data?.chiefFileUrl}>
-                {selfAssessmentQuery.data?.chiefFileUrl}
-              </a>
-            </p>
-          )}
           <FileInput label="Optional File (to author)">
+            {!!selfAssessmentFiles.fileUrl && (
+              <div className="flex flex-row gap-4">
+                <button
+                  onClick={handleDeleteFileUrl}
+                  className="btn btn-error btn-sm self-start text-white"
+                >
+                  Delete
+                </button>
+                <a
+                  className="link overflow-clip"
+                  href={selfAssessmentFiles.fileUrl}
+                >
+                  {selfAssessmentFiles.fileUrl}
+                </a>
+              </div>
+            )}
             <input {...register("file")} disabled={isLoading} type="file" />
           </FileInput>
           <FileInput label="Optional File (to chief editor)">
+            {!!selfAssessmentFiles.chiefFileUrl && (
+              <div className="flex flex-row gap-4">
+                <button
+                  onClick={handleDeleteChiefFileUrl}
+                  className="btn btn-error btn-sm self-start text-white"
+                >
+                  Delete
+                </button>
+                <a
+                  className="link overflow-clip"
+                  href={selfAssessmentFiles.chiefFileUrl}
+                >
+                  {selfAssessmentFiles.chiefFileUrl}
+                </a>
+              </div>
+            )}
             <input
               {...register("chiefFile")}
               disabled={isLoading}
@@ -246,13 +303,13 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
             className="select select-bordered flex-1"
           >
             <SelectOptions
-              selectData={[
-                { label: "Unanswered", value: "0", disabled: true },
-                { label: "Reject", value: "-1" },
-                { label: "Major Revision", value: "1" },
-                { label: "Minor Revision", value: "2" },
-                { label: "Accept", value: "3" },
-              ]}
+              selectData={Object.entries(ASSESSMENT_DECISION).map(
+                ([key, value], index) => ({
+                  label: capitalizeCamelCase(key),
+                  value: value.toString(),
+                  disabled: index === 0,
+                })
+              )}
             />
           </select>
           <div className="flex flex-row justify-end gap-4">

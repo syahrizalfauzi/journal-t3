@@ -2,10 +2,13 @@
   "name": "template",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && prisma db seed",
     "lint": "next lint",
     "start": "next start"
   },
@@ -40,7 +43,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "@types/node": "18.0.0",
+    "@types/node": "^18.11.9",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@types/react-modal": "^3.13.1",

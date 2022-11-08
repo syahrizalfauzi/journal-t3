@@ -5,9 +5,9 @@ import {
   updateInvitationValidator,
 } from "../../validators/invitation";
 import {
+  DEFAULT_REVIEWERS_COUNT,
   HISTORY_STATUS,
   INVITATION_STATUS,
-  MAX_TEAM_USERS,
   REVIEW_DECISION,
 } from "../../../constants/numbers";
 import mutationError from "../../utils/mutationError";
@@ -180,7 +180,7 @@ export const invitationRouter = t.router({
 
       //TRIGGER ZONE
       //Check if the team has less than 4 members
-      const team = await ctx.prisma.team.findFirst({
+      const teamGet = ctx.prisma.team.findFirst({
         where: {
           id: invitation.teamId,
         },
@@ -190,12 +190,22 @@ export const invitationRouter = t.router({
         },
       });
 
+      const settingsGet = ctx.prisma.settings.findFirst();
+
+      const [team, settings] = await ctx.prisma.$transaction([
+        teamGet,
+        settingsGet,
+      ]);
+
+      const reviewersCount =
+        settings?.reviewersCount ?? DEFAULT_REVIEWERS_COUNT;
+
       if (!team)
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Review team not found",
         });
-      if (team._count.users >= MAX_TEAM_USERS)
+      if (team._count.users >= reviewersCount)
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Team is already full",
@@ -234,7 +244,7 @@ export const invitationRouter = t.router({
       });
 
       //If the team is full upon appending the new reviewer, create a history and review
-      if (teamUpdate._count.users < MAX_TEAM_USERS)
+      if (teamUpdate._count.users < reviewersCount)
         return {
           message: `Accepted invitation to '${teamUpdate.manuscript.title}'`,
           reviewerCount: teamUpdate._count.users,

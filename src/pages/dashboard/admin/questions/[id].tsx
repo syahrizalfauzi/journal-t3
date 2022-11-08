@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
 import { updateQuestionValidator } from "../../../../server/validators/question";
+import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 
 type EditQuestionForm = z.infer<typeof updateQuestionValidator>;
 
@@ -78,7 +79,7 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
               <input
                 disabled={mutationLoading}
                 type="submit"
-                value="Create Review Question"
+                value="Update Review Question"
                 className="btn"
               />
             </form>
@@ -89,4 +90,4 @@ const DashboardAdminQuestionEditPage: NextPage = () => {
   );
 };
 
-export default DashboardAdminQuestionEditPage;
+export default ensureRouterQuery("id", DashboardAdminQuestionEditPage);

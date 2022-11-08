@@ -1,20 +1,20 @@
 import { SORT_LABEL } from "../constants/sorts";
 import { SortOrder, Sorts } from "../types/SortOrder";
 
-const getSortOrder = <T extends readonly Sorts[]>(
-  allowedSorts: T,
+const getSortOrder = <T extends Sorts>(
+  allowedSorts: readonly T[],
   descFirst = true
-): SortOrder<T[number]>[] => {
+): SortOrder<T>[] => {
   return allowedSorts
-    .map<SortOrder<T[number]>[]>((allowedSort) => {
-      const sorts: SortOrder<T[number]>[] = [
+    .map<SortOrder<T>[]>((allowedSort) => {
+      const sorts: SortOrder<T>[] = [
         {
-          sort: allowedSort as T[number],
+          sort: allowedSort,
           order: "desc",
           label: `${SORT_LABEL[allowedSort]} (DESC)`,
         },
         {
-          sort: allowedSort as T[number],
+          sort: allowedSort,
           order: "asc",
           label: `${SORT_LABEL[allowedSort]} (ASC)`,
         },

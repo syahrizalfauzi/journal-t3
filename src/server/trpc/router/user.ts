@@ -141,6 +141,12 @@ export const userRouter = t.router({
           id: true,
           username: true,
           profile: { select: { email: true, name: true, country: true } },
+          invitations: {
+            where: { team: { manuscript: { id: input.manuscriptId } } },
+            orderBy: { updatedAt: "desc" },
+            take: 1,
+            select: { status: true },
+          },
         },
       });
 

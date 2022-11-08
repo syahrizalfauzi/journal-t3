@@ -3,6 +3,7 @@ import {
   acceptHistoryValidator,
   finalizeHistoryValidator,
   proofreadHistoryValidator,
+  publishHistoryValidator,
   rejectHistoryValidator,
   reviseHistoryValidator,
 } from "../../validators/history";
@@ -182,13 +183,21 @@ export const historyRouter = t.router({
     .input(finalizeHistoryValidator)
     .use(previousHistoryGuard(finalizeHistoryValidator, "proofread"))
     .mutation(async ({ ctx, input }) => {
+      const { submission } = ctx.previousHistory;
+
+      if (!input.fileUrl && !submission)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No file to finalize & previous file not found",
+        });
+
       const history = await ctx.prisma.history.create({
         data: {
           status: HISTORY_STATUS.finalized,
           manuscript: { connect: { id: input.manuscriptId } },
           submission: input.fileUrl
             ? { create: { fileUrl: input.fileUrl } }
-            : { connect: { id: ctx.previousHistory.submission!.id } },
+            : { connect: { id: submission?.id } },
         },
         select: { id: true },
       });
@@ -196,7 +205,6 @@ export const historyRouter = t.router({
       const latestHistoryUpdate = ctx.prisma.latestHistory.update({
         where: { manuscriptId: input.manuscriptId },
         data: { history: { connect: { id: history.id } } },
-        select: { manuscript: { select: { id: true, title: true } } },
       });
 
       // const chiefEmailFetch = ctx.prisma.user.findMany({
@@ -214,5 +222,61 @@ export const historyRouter = t.router({
       return input.fileUrl
         ? "Revised article successfully submitted"
         : "Proofread is successfully answered with no revision";
+    }),
+  publish: t.procedure
+    .use(authGuard(["chief"]))
+    .input(publishHistoryValidator)
+    .use(previousHistoryGuard(publishHistoryValidator, "finalized"))
+    .mutation(async ({ ctx, input }) => {
+      const { submission } = ctx.previousHistory;
+
+      if (!submission)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Previous file not found",
+        });
+
+      const history = await ctx.prisma.history.create({
+        data: {
+          status: HISTORY_STATUS.published,
+          manuscript: { connect: { id: input.manuscriptId } },
+          submission: { connect: { id: submission.id } },
+        },
+        select: { id: true },
+      });
+
+      const latestHistoryUpdate = ctx.prisma.latestHistory.update({
+        where: { manuscriptId: input.manuscriptId },
+        data: { history: { connect: { id: history.id } } },
+      });
+
+      const manuscriptUpdate = ctx.prisma.manuscript.update({
+        where: { id: input.manuscriptId },
+        data: { edition: { connect: { id: input.editionId } } },
+        select: {
+          id: true,
+          title: true,
+          edition: { select: { name: true, doi: true } },
+        },
+      });
+
+      // const chiefEmailFetch = ctx.prisma.user.findMany({
+      //   where: {
+      //     OR: getRoleNumbers("chief").map((e) => ({
+      //       role: e,
+      //     })),
+      //   },
+      //   select: { profile: { select: { email: true } } },
+      // });
+
+      const [{ edition, title }] = await ctx.prisma.$transaction([
+        manuscriptUpdate,
+        latestHistoryUpdate,
+      ]);
+      // chiefEmailFetch,
+
+      return `Article ${title} successfully published in ${
+        edition!.name
+      } edition`;
     }),
 });

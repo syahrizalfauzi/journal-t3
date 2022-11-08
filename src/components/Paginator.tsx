@@ -12,6 +12,8 @@ export const Paginator = ({ metadata, onChangePage }: PaginatorProps) => {
   const handleNextPage = () => onChangePage(metadata.page + 1);
   const handleLastPage = () => onChangePage(metadata.pageCount);
 
+  if (metadata.pageCount <= 1) return null;
+
   return (
     <div className="flex flex-col items-end gap-4 self-end">
       <p>
