@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { ASSESSMENT_DECISION } from "../constants/numbers";
 import { SAMPLE_FILE_URL } from "../constants/others";
 import { questionListQuery } from "../server/queries";
 import { AppRouter } from "../server/trpc/router";
 import { createAssessmentValidator } from "../server/validators/assessment";
 import { Sorts } from "../types/SortOrder";
+import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
 import { toastSettleHandler } from "../utils/toastSettleHandler";
 import { trpc } from "../utils/trpc";
 import { useQueryOptions } from "../utils/useQueryOptions";
@@ -16,7 +18,7 @@ import { InputLabel } from "./InputLabel";
 import ListLayout from "./layout/dashboard/ListLayout";
 import { SelectOptions } from "./SelectOptions";
 
-type AssessmentModalProps = {
+type Props = {
   review: NonNullable<
     inferProcedureOutput<
       AppRouter["manuscript"]["getForReviewer"]
@@ -45,7 +47,7 @@ type AssessmentFiles = {
   fileUrl?: string | null;
 };
 
-export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
+export const AssessmentModal = ({ review, onSubmit }: Props) => {
   const router = useRouter();
   const { register, handleSubmit, reset } = useForm<CreateAssessmentForm>();
   const createAssessment = trpc.assessment.create.useMutation({
@@ -301,13 +303,13 @@ export const AssessmentModal = ({ review, onSubmit }: AssessmentModalProps) => {
             className="select select-bordered flex-1"
           >
             <SelectOptions
-              selectData={[
-                { label: "Unanswered", value: "0", disabled: true },
-                { label: "Reject", value: "-1" },
-                { label: "Major Revision", value: "1" },
-                { label: "Minor Revision", value: "2" },
-                { label: "Accept", value: "3" },
-              ]}
+              selectData={Object.entries(ASSESSMENT_DECISION).map(
+                ([key, value], index) => ({
+                  label: capitalizeCamelCase(key),
+                  value: value.toString(),
+                  disabled: index === 0,
+                })
+              )}
             />
           </select>
           <div className="flex flex-row justify-end gap-4">

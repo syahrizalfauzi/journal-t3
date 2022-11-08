@@ -14,6 +14,8 @@ export const SORT_LABEL = {
   title: "Title",
   status: "Status",
   url: "URL",
+  doi: "DOI",
+  isAvailable: "Available",
 } as const;
 
 export const USER_LIST_SORTS = [

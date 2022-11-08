@@ -9,12 +9,13 @@ import {
 } from "../utils/parseDecision";
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
+import { HISTORY_STATUS, REVIEW_DECISION } from "../constants/numbers";
 
 type Manuscript = inferProcedureOutput<
   AppRouter["manuscript"]["getForReviewer"]
 >;
 
-type HistoryCardReviewerProps = {
+type Props = {
   history: Manuscript["history"][number];
   manuscript: Pick<Manuscript, "id" | "team">;
   withAction: boolean;
@@ -24,7 +25,7 @@ export const HistoryCardReviewer = ({
   history,
   manuscript,
   withAction,
-}: HistoryCardReviewerProps) => {
+}: Props) => {
   const { data: currentUser } = useSession();
   const selfAssessment = history.review?.assesment.find(
     ({ user }) => user.id === currentUser?.user.id
@@ -65,7 +66,11 @@ export const HistoryCardReviewer = ({
     <div
       className={classNames(
         `flex flex-col items-start gap-2 rounded-xl border p-4 shadow-xl border-${color}`,
-        { "border-success": !!selfAssessment?.isDone && history.status === 2 }
+        {
+          "border-success":
+            !!selfAssessment?.isDone &&
+            history.status === HISTORY_STATUS.reviewing,
+        }
       )}
     >
       <p className="text-xl font-bold"> Status : {label}</p>
@@ -95,7 +100,7 @@ export const HistoryCardReviewer = ({
         )}
       </table>
 
-      {history.status === 3 &&
+      {history.status === HISTORY_STATUS.reviewed &&
         !!history.review &&
         !!manuscript.team &&
         !!currentUser && (
@@ -127,9 +132,12 @@ export const HistoryCardReviewer = ({
                 <th>Decision</th>
                 <td
                   className={classNames({
-                    "text-success": history.review.decision === 2,
-                    "text-warning": history.review.decision === 1,
-                    "text-error": history.review.decision === -1,
+                    "text-success":
+                      history.review.decision === REVIEW_DECISION.accepted,
+                    "text-warning":
+                      history.review.decision === REVIEW_DECISION.revision,
+                    "text-error":
+                      history.review.decision === REVIEW_DECISION.rejected,
                   })}
                 >
                   {parseReviewDecision(history.review.decision)}
@@ -148,7 +156,8 @@ export const HistoryCardReviewer = ({
       {withAction && message.length > 0 && <p>{message}</p>}
 
       {withAction &&
-        (history.status === 2 || history.status === 4) &&
+        (history.status === HISTORY_STATUS.reviewing ||
+          history.status === HISTORY_STATUS.revision) &&
         !!history.review?.dueDate && (
           <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
             {!!selfAssessment?.isDone ? (

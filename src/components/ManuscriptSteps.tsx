@@ -11,7 +11,9 @@ interface ManuscriptStepsProps {
 export const ManuscriptSteps = ({ status, short }: ManuscriptStepsProps) => {
   return (
     <ul className="steps -z-10">
-      {status === -1 && <li className="step step-primary">Rejected</li>}
+      {status === HISTORY_STATUS.rejected && (
+        <li className="step step-primary">Rejected</li>
+      )}
       {(short
         ? status >= HISTORY_STATUS.revision
           ? MANUSCRIPT_STEPS_LABEL.slice(0, 5)

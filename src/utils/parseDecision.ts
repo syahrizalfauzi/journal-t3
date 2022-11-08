@@ -1,14 +1,16 @@
+import { ASSESSMENT_DECISION, REVIEW_DECISION } from "../constants/numbers";
+
 export const parseAssessmentDecision = (decision?: number) => {
   switch (decision) {
-    case -1:
+    case ASSESSMENT_DECISION.rejected:
       return { label: "Rejected", className: "text-error" };
-    case 0:
+    case ASSESSMENT_DECISION.unanswered:
       return { label: "Unanswered", className: "text-gray-400" };
-    case 1:
+    case ASSESSMENT_DECISION.majorRevision:
       return { label: "Major Revision", className: "text-orange-400" };
-    case 2:
+    case ASSESSMENT_DECISION.minorRevision:
       return { label: "Minor Revision", className: "text-warning" };
-    case 3:
+    case ASSESSMENT_DECISION.accepted:
       return { label: "Accepted", className: "text-success" };
     default:
       return { label: "Unanswered", className: "text-gray-400" };
@@ -16,13 +18,13 @@ export const parseAssessmentDecision = (decision?: number) => {
 };
 export const parseReviewDecision = (decision: number) => {
   switch (decision) {
-    case -1:
+    case REVIEW_DECISION.rejected:
       return "Rejected";
-    case 0:
+    case REVIEW_DECISION.unanswered:
       return "Unanswered";
-    case 1:
+    case REVIEW_DECISION.revision:
       return "Revision";
-    case 2:
+    case REVIEW_DECISION.accepted:
       return "Accepted";
     default:
       return "Unknown";

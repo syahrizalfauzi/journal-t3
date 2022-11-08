@@ -7,8 +7,9 @@ import { DashboardReviewerLayout } from "../../../../components/layout/dashboard
 import { ManuscriptDetailCardReviewer } from "../../../../components/ManuscriptDetailCardReviewer";
 import { HistoryCardReviewer } from "../../../../components/HistoryCardReviewer";
 import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
+import { NextPage } from "next/types";
 
-const DashboardReviewAssignmentsDetailPage = () => {
+const DashboardReviewAssignmentsDetailPage: NextPage = () => {
   const { query } = useRouter();
 
   const {

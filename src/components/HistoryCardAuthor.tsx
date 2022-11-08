@@ -12,8 +12,15 @@ import { HistoryCardAction } from "./HistoryCardAction";
 import { SelectOptions } from "./SelectOptions";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { FileInput } from "./FileInput";
+import {
+  ASSESSMENT_DECISION,
+  HISTORY_STATUS,
+  PROOFREAD_DECISION,
+  REVIEW_DECISION,
+} from "../constants/numbers";
+import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
 
-type HistoryCardAuthorProps = {
+type Props = {
   history: NonNullable<
     inferProcedureOutput<
       AppRouter["manuscript"]["getForAuthor"]
@@ -38,7 +45,7 @@ export const HistoryCardAuthor = ({
   isLoading,
   onRevise,
   onFinalize,
-}: HistoryCardAuthorProps) => {
+}: Props) => {
   const { label, color, message } = getStatusProps(history, "author");
   const reviseForm = useForm<ReviseForm>();
   const finalizeForm = useForm<FinalizeForm>();
@@ -85,12 +92,14 @@ export const HistoryCardAuthor = ({
           </td>
         </tr>
 
-        {history.status === 3 &&
+        {history.status === HISTORY_STATUS.reviewed &&
           !!history.review &&
-          history.review.decision !== 0 && (
+          history.review.decision !== REVIEW_DECISION.unanswered && (
             <>
               {history.review.assesment
-                .filter(({ decision }) => decision !== 0)
+                .filter(
+                  ({ decision }) => decision !== ASSESSMENT_DECISION.unanswered
+                )
                 .map(({ id, decision }, index) => {
                   const { label, className } =
                     parseAssessmentDecision(decision);
@@ -111,9 +120,12 @@ export const HistoryCardAuthor = ({
                 <th>Decision</th>
                 <td
                   className={classNames({
-                    "text-success": history.review.decision === 2,
-                    "text-warning": history.review.decision === 1,
-                    "text-error": history.review.decision === -1,
+                    "text-success":
+                      history.review.decision === REVIEW_DECISION.accepted,
+                    "text-warning":
+                      history.review.decision === REVIEW_DECISION.revision,
+                    "text-error":
+                      history.review.decision === REVIEW_DECISION.rejected,
                   })}
                 >
                   {parseReviewDecision(history.review.decision)}
@@ -127,7 +139,7 @@ export const HistoryCardAuthor = ({
               )}
             </>
           )}
-        {history.status === -1 && (
+        {history.status === HISTORY_STATUS.rejected && (
           <tr>
             <th>Comment</th>
             <td>{history.submission?.message}</td>
@@ -137,28 +149,29 @@ export const HistoryCardAuthor = ({
 
       {message.length > 0 && <p>{message}</p>}
 
-      {history.status === 3 && (history.review?.decision ?? 0) === 1 && (
-        <form onSubmit={reviseForm.handleSubmit(onSubmitRevise)}>
-          <HistoryCardAction isLoading={isLoading}>
-            <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-              <tr className="align-bottom">
-                <th>Upload Revision</th>
-                <td>
-                  <FileInput>
-                    <input
-                      {...reviseForm.register("revisionFile")}
-                      required
-                      disabled={isLoading}
-                      type="file"
-                    />
-                  </FileInput>
-                </td>
-              </tr>
-            </table>
-          </HistoryCardAction>
-        </form>
-      )}
-      {history.status === 5 && (
+      {history.status === HISTORY_STATUS.reviewed &&
+        (history.review?.decision ?? 0) === REVIEW_DECISION.revision && (
+          <form onSubmit={reviseForm.handleSubmit(onSubmitRevise)}>
+            <HistoryCardAction isLoading={isLoading}>
+              <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
+                <tr className="align-bottom">
+                  <th>Upload Revision</th>
+                  <td>
+                    <FileInput>
+                      <input
+                        {...reviseForm.register("revisionFile")}
+                        required
+                        disabled={isLoading}
+                        type="file"
+                      />
+                    </FileInput>
+                  </td>
+                </tr>
+              </table>
+            </HistoryCardAction>
+          </form>
+        )}
+      {history.status === HISTORY_STATUS.proofread && (
         <form onSubmit={finalizeForm.handleSubmit(onSubmitFinalize)}>
           <HistoryCardAction
             isLoading={isLoading}
@@ -174,11 +187,13 @@ export const HistoryCardAuthor = ({
                     className="select select-bordered select-sm flex-1"
                   >
                     <SelectOptions
-                      selectData={[
-                        { label: "Unanswered", value: "0", disabled: true },
-                        { label: "No Revision", value: "-1" },
-                        { label: "Revision", value: "1" },
-                      ]}
+                      selectData={Object.entries(PROOFREAD_DECISION).map(
+                        ([key, value]) => ({
+                          disabled: value === 0,
+                          value: value.toString(),
+                          label: capitalizeCamelCase(key),
+                        })
+                      )}
                     />
                   </select>
                 </td>

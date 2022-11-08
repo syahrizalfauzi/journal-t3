@@ -1,22 +1,21 @@
 import React from "react";
 import LayoutProps from "../types/LayoutProps";
 
-type CheckboxesProps = LayoutProps & {
+type Props = LayoutProps & {
   checkboxData: {
     id: string;
     label: string;
     checked?: boolean;
     disabled?: boolean;
-    rest?: any;
+    rest?: React.DetailedHTMLProps<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      HTMLInputElement
+    >;
   }[];
   disabled?: boolean;
 };
 
-export const Checkboxes = ({
-  checkboxData,
-  children,
-  disabled,
-}: CheckboxesProps) => {
+export const Checkboxes = ({ checkboxData, children, disabled }: Props) => {
   return (
     <div className="form-control">
       {children}

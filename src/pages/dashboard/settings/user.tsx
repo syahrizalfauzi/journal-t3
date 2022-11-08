@@ -9,10 +9,11 @@ import { DashboardSettingsLayout } from "../../../components/layout/dashboard/Da
 import { InputLabel } from "../../../components/InputLabel";
 import { SelectOptions } from "../../../components/SelectOptions";
 import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
+import { NextPage } from "next/types";
 
 type EditUserForm = Omit<z.infer<typeof updateUserValidator>, "role">;
 
-const DashboardSettingsUserPage = () => {
+const DashboardSettingsUserPage: NextPage = () => {
   const {
     data: user,
     isLoading: queryLoading,

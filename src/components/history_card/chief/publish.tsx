@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../utils/trpc";
 import { HistoryCardAction } from "../../HistoryCardAction";

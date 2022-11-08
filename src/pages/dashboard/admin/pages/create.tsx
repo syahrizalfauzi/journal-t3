@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,7 +11,7 @@ import { trpc } from "../../../../utils/trpc";
 
 type CreatePageForm = z.infer<typeof pageValidator>;
 
-const DashboardAdminPagesCreatePage = () => {
+const DashboardAdminPagesCreatePage: NextPage = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<CreatePageForm>();
   const { mutate, isLoading } = trpc.page.create.useMutation({

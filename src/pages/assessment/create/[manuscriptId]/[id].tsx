@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React from "react";
 import { AssessmentModal } from "../../../../components/AssessmentModal";
 import { AuthGuard } from "../../../../components/AuthGuard";
@@ -6,7 +7,7 @@ import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery"
 import { AssessmentLayout } from "../../../../components/layout/AssessmentLayout";
 import { trpc } from "../../../../utils/trpc";
 
-const CreateAssessmentPage = () => {
+const CreateAssessmentPage: NextPage = () => {
   const { query } = useRouter();
 
   const { refetch: refetchAssignment } =

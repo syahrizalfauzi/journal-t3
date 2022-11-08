@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ParsedUrlQueryInput } from "querystring";
-import React, { Children } from "react";
+import React, { Children, ReactElement } from "react";
 import LayoutProps from "../types/LayoutProps";
 
-type ActiveLinkProps = LayoutProps & {
+type Props = LayoutProps & {
   pathName: string;
   isSegmented?: boolean;
   className?: string;
@@ -24,7 +24,7 @@ export const ActiveLink = ({
   scroll,
   query,
   ...props
-}: ActiveLinkProps) => {
+}: Props) => {
   const pathname = useRouter().asPath.split("?")[0] ?? "";
   const child = Children.only(children);
 
@@ -55,7 +55,7 @@ export const ActiveLink = ({
       {...props}
       passHref
     >
-      {React.cloneElement(child as any, {
+      {React.cloneElement(child as ReactElement, {
         className: className || null,
       })}
     </Link>

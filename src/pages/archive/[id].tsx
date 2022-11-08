@@ -1,15 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import type { NextPage } from "next/types";
 import { RootLayout } from "../../components/layout/RootLayout";
 import { DetailLayout } from "../../components/layout/dashboard/DetailLayout";
 import { useRouter } from "next/router";
-import { Checkboxes } from "../../components/Checkboxes";
 import { ensureRouterQuery } from "../../components/hoc/ensureRouterQuery";
-import { InputLabel } from "../../components/InputLabel";
 import { KeywordBadges } from "../../components/KeywordBadges";
 import { parseDateDay } from "../../utils/parseDate";
 import { trpc } from "../../utils/trpc";
-import register from "../auth/register";
 
 const ArchiveDetailPage: NextPage = () => {
   const { query } = useRouter();

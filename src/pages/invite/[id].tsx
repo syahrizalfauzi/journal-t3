@@ -1,5 +1,6 @@
 import { inferProcedureOutput } from "@trpc/server";
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React, { useEffect, useState } from "react";
 import { AuthGuard } from "../../components/AuthGuard";
 import { ensureRouterQuery } from "../../components/hoc/ensureRouterQuery";
@@ -24,7 +25,7 @@ type UserInviteStatus = inferProcedureOutput<
   isInvited: "loading" | "true" | "false";
 };
 
-const InvitePage = () => {
+const InvitePage: NextPage = () => {
   const { query } = useRouter();
 
   const { queryOptions, ...rest } = useQueryOptions<QueryOptions, Sorts, never>(

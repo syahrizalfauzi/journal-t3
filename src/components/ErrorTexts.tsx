@@ -1,10 +1,10 @@
 import React from "react";
 
-type ErrorTextsProps = {
+type Props = {
   message?: string | string[];
 };
 
-export const ErrorTexts = ({ message }: ErrorTextsProps) => {
+export const ErrorTexts = ({ message }: Props) => {
   if (message)
     return (
       <div className="alert alert-error flex-col items-start gap-1 text-white">

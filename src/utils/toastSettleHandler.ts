@@ -3,6 +3,7 @@ import { TRPCClientErrorLike } from "@trpc/client";
 
 export const toastSettleHandler = (
   data: string | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: TRPCClientErrorLike<any> | null
 ) => {
   if (data) {

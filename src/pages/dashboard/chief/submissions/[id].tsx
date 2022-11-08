@@ -10,8 +10,9 @@ import { ManuscriptDetailCardChief } from "../../../../components/ManuscriptDeta
 import { HistoryCardChief } from "../../../../components/HistoryCardChief";
 import { REVIEW_DECISION } from "../../../../constants/numbers";
 import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
+import { NextPage } from "next/types";
 
-const DashboardChiefSubmissionsDetailPage = () => {
+const DashboardChiefSubmissionsDetailPage: NextPage = () => {
   const { query } = useRouter();
 
   const {

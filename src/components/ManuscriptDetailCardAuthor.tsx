@@ -6,7 +6,7 @@ import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
 import { FileInput } from "./FileInput";
 
-type ManuscriptDetailCardAuthorProps = {
+type Props = {
   manuscriptDetail: inferProcedureOutput<
     AppRouter["manuscript"]["getForAuthor"]
   >;
@@ -22,7 +22,7 @@ export const ManuscriptDetailCardAuthor = ({
   manuscriptDetail,
   isLoading,
   onUpdateOptionalFile,
-}: ManuscriptDetailCardAuthorProps) => {
+}: Props) => {
   const { register, handleSubmit, control } = useForm<OptionalFileForm>();
   const { optionalFile } = useWatch({
     control,

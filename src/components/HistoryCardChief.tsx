@@ -13,11 +13,16 @@ import { SelectOptions } from "./SelectOptions";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { FileInput } from "./FileInput";
 import { InputLabel } from "./InputLabel";
-import { MAX_TEAM_USERS } from "../constants/numbers";
+import {
+  HISTORY_STATUS,
+  MAX_TEAM_USERS,
+  REVIEW_DECISION,
+} from "../constants/numbers";
 import moment from "moment";
 import { HistoryCardChiefPublish } from "./history_card/chief/publish";
+import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
 
-type HistoryCardChiefProps = {
+type Props = {
   history: inferProcedureOutput<
     AppRouter["manuscript"]["getForChief"]
   >["history"][number];
@@ -48,7 +53,7 @@ type UpdateDueDateForm = {
 type UpdateDecisionForm = {
   comment: string;
   proofreadFile: FileList;
-  reviewDecision: string;
+  reviewDecision: "-1" | "0" | "1" | "2";
 };
 
 export const HistoryCardChief = ({
@@ -57,7 +62,7 @@ export const HistoryCardChief = ({
   manuscript,
   withAction,
   ...callbacks
-}: HistoryCardChiefProps) => {
+}: Props) => {
   const { label, color, message } = getStatusProps(history, "chief");
   const initialReviewForm = useForm<InitialReviewForm>({
     defaultValues: {
@@ -68,7 +73,11 @@ export const HistoryCardChief = ({
   const updateDecisionForm = useForm<UpdateDecisionForm>({
     defaultValues: {
       comment: history.review?.comment ?? "",
-      reviewDecision: (history.review?.decision ?? 0).toString(),
+      reviewDecision: (history.review?.decision ?? 0).toString() as
+        | "-1"
+        | "0"
+        | "1"
+        | "2",
     },
   });
 
@@ -114,14 +123,14 @@ export const HistoryCardChief = ({
     reviewDecision,
   }) => {
     if (!history.review) return;
-    switch (reviewDecision) {
-      case "-1":
+    switch (Number(reviewDecision)) {
+      case REVIEW_DECISION.rejected:
         callbacks.onReviewReject(history.review.id, comment);
         break;
-      case "1":
+      case REVIEW_DECISION.revision:
         callbacks.onReviewRevise(history.review.id, comment);
         break;
-      case "2":
+      case REVIEW_DECISION.accepted:
         if (proofreadFile.length <= 0) return;
         const file = proofreadFile.item(0);
         if (file) callbacks.onReviewAccept(history.review.id, file);
@@ -155,14 +164,15 @@ export const HistoryCardChief = ({
           </td>
         </tr>
 
-        {history.status === -1 && (
+        {history.status === HISTORY_STATUS.rejected && (
           <tr>
             <th>Comment</th>
             <td>{history.submission?.message}</td>
           </tr>
         )}
 
-        {(history.status >= 2 || history.status <= 4) &&
+        {(history.status >= HISTORY_STATUS.reviewing ||
+          history.status <= HISTORY_STATUS.revision) &&
           !!history.review?.dueDate && (
             <tr>
               <th>Due Date</th>
@@ -171,13 +181,15 @@ export const HistoryCardChief = ({
           )}
       </table>
 
-      {(history.status >= 2 || history.status <= 4) &&
+      {(history.status >= HISTORY_STATUS.reviewing ||
+        history.status <= HISTORY_STATUS.revision) &&
         history.review &&
         history.review.dueDate && (
           <>
             <p className="text-xl font-bold">Reviewers</p>
             <table className="border-separate border-spacing-y-2 border-spacing-x-4 self-start text-left align-top">
-              {(history.status === 2 || history.status === 4) &&
+              {(history.status === HISTORY_STATUS.reviewing ||
+                history.status === HISTORY_STATUS.revision) &&
                 manuscript.team?.users.map(({ id, profile }) => {
                   const userAssessment = history.review?.assesment.find(
                     ({ user }) => user.id === id
@@ -206,7 +218,7 @@ export const HistoryCardChief = ({
                   );
                 })}
 
-              {history.status === 3 && (
+              {history.status === HISTORY_STATUS.reviewed && (
                 <>
                   {!!manuscript.team && (
                     <>
@@ -239,9 +251,12 @@ export const HistoryCardChief = ({
                     <th>Decision</th>
                     <td
                       className={classNames({
-                        "text-success": history.review.decision === 2,
-                        "text-warning": history.review.decision === 1,
-                        "text-error": history.review.decision === -1,
+                        "text-success":
+                          history.review.decision === REVIEW_DECISION.accepted,
+                        "text-warning":
+                          history.review.decision === REVIEW_DECISION.revision,
+                        "text-error":
+                          history.review.decision === REVIEW_DECISION.rejected,
                       })}
                     >
                       {parseReviewDecision(history.review.decision)}
@@ -257,7 +272,7 @@ export const HistoryCardChief = ({
       {withAction &&
         (() => {
           switch (history.status) {
-            case 0:
+            case HISTORY_STATUS.submitted:
               return (
                 <form
                   onSubmit={initialReviewForm.handleSubmit(
@@ -345,7 +360,7 @@ export const HistoryCardChief = ({
                   </HistoryCardAction>
                 </form>
               );
-            case 1:
+            case HISTORY_STATUS.inviting:
               if (!!manuscript.team)
                 return (
                   <HistoryCardAction isLoading={isLoading} withSubmit={false}>
@@ -369,8 +384,8 @@ export const HistoryCardChief = ({
                     </table>
                   </HistoryCardAction>
                 );
-            case 2:
-            case 4:
+            case HISTORY_STATUS.reviewing:
+            case HISTORY_STATUS.revision:
               if (!!history.review && !history.review.dueDate)
                 return (
                   <form
@@ -395,7 +410,7 @@ export const HistoryCardChief = ({
                     </HistoryCardAction>
                   </form>
                 );
-            case 3:
+            case HISTORY_STATUS.reviewed:
               if (
                 !history.review ||
                 history.review.assesment.length < MAX_TEAM_USERS
@@ -432,21 +447,19 @@ export const HistoryCardChief = ({
                               className="select select-bordered select-sm flex-1"
                             >
                               <SelectOptions
-                                selectData={[
-                                  {
-                                    label: "Unanswered",
-                                    value: "0",
-                                    disabled: true,
-                                  },
-                                  { label: "Reject", value: "-1" },
-                                  { label: "Revision", value: "1" },
-                                  { label: "Accept", value: "2" },
-                                ]}
+                                selectData={Object.entries(REVIEW_DECISION).map(
+                                  ([key, value]) => ({
+                                    disabled: value === 0,
+                                    label: capitalizeCamelCase(key),
+                                    value: value.toString(),
+                                  })
+                                )}
                               />
                             </select>
                           </td>
                         </tr>
-                        {reviewDecision === "2" && (
+                        {reviewDecision ===
+                          REVIEW_DECISION.accepted.toString() && (
                           <tr className="align-bottom">
                             <th>Upload Proofread Article</th>
                             <td>

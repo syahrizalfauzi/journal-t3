@@ -1,24 +1,10 @@
-export type Sorts =
-  | "createdAt"
-  | "updatedAt"
-  | "username"
-  | "role"
-  | "isActivated"
-  | "email"
-  | "name"
-  | "country"
-  | "maxScale"
-  | "question"
-  | "title"
-  | "status"
-  | "url"
-  | "doi"
-  | "isAvailable";
+import { SORT_LABEL } from "../constants/sorts";
 
 export type SortOrders = "asc" | "desc";
+export type Sorts = keyof typeof SORT_LABEL;
 
-export interface SortOrder<T extends Sorts> {
+export type SortOrder<T extends Sorts> = {
   sort: T;
   order: SortOrders;
   label: string;
-}
+};

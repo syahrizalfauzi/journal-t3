@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React, { useEffect, useState } from "react";
 import { DashboardReviewerLayout } from "../../../components/layout/dashboard/DashboardReviewerLayout";
 import ListLayout from "../../../components/layout/dashboard/ListLayout";
@@ -38,7 +39,7 @@ type InvitationStatus = {
   };
 };
 
-const DashboardReviewerInvitationsPage = () => {
+const DashboardReviewerInvitationsPage: NextPage = () => {
   const router = useRouter();
   const { queryOptions, ...rest } = useQueryOptions<
     QueryOptions,

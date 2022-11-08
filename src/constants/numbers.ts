@@ -31,6 +31,12 @@ export const ASSESSMENT_DECISION = {
   accepted: 3,
 } as const;
 
+export const PROOFREAD_DECISION = {
+  noRevision: -1,
+  unanswered: 0,
+  revision: 1,
+};
+
 export const MAX_TEAM_USERS = 4;
 export const ITEM_COUNT_PER_PAGE = 20;
 export const MAX_ARTICLES_PER_LATEST_EDITION = 5;

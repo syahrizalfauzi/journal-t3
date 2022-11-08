@@ -1,12 +1,11 @@
 import { t } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { HistoryStatus } from "../../../types/History";
 import { HISTORY_STATUS } from "../../../constants/numbers";
 import { manuscriptIdValidator } from "../../validators/manuscript";
 
 export const previousHistoryGuard = (
   inputValidator: typeof manuscriptIdValidator,
-  historyStatus: HistoryStatus
+  historyStatus: keyof typeof HISTORY_STATUS
 ) =>
   t.middleware(async ({ ctx, input, next }) => {
     const { manuscriptId } = inputValidator.parse(input);

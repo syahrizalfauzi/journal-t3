@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
+import { NextPage } from "next/types";
 import React, { useEffect } from "react";
 import { DashboardReviewerLayout } from "../../../components/layout/dashboard/DashboardReviewerLayout";
 
-const DashboardReviewerPage = () => {
+const DashboardReviewerPage: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
