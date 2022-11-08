@@ -1,5 +1,5 @@
 import LayoutProps from "../types/LayoutProps";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { getHasRole, getRoleSelector } from "../utils/role";
@@ -13,6 +13,7 @@ type Props = LayoutProps & {
 export const AuthGuard = ({ allowedRole, redirectTo, children }: Props) => {
   const session = useSession();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -51,10 +52,12 @@ export const AuthGuard = ({ allowedRole, redirectTo, children }: Props) => {
             return;
           }
       }
+
+      setIsLoading(false);
     })();
   }, [allowedRole, redirectTo, router, session]);
 
-  if (session.status === "loading") return null;
+  if (session.status === "loading" || isLoading) return null;
 
   return <>{children}</>;
 };

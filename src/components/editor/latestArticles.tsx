@@ -19,12 +19,12 @@ export const latestArticlesPlugin: CellPlugin = {
           </div>
         </div>
         <div className="not-prose mt-8 flex flex-col gap-4">
-          {isLoading || !data ? (
+          {isLoading ? (
             <div className="animate-pulse">
               <div className="h-12 rounded bg-gray-200"></div>
-              <div className="h-12 rounded bg-gray-200"></div>
-              <div className="h-12 rounded bg-gray-200"></div>
             </div>
+          ) : !data ? (
+            <p>No latest articles available</p>
           ) : (
             <>
               <p className="text-3xl font-bold">{data.name}</p>

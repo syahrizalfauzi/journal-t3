@@ -39,7 +39,7 @@ export const imagePlugin: CellPlugin<ImageState> = {
     height: 256,
     width: 256,
     position: "center",
-    src: "http://localhost:3000/sample.jpeg",
+    src: "https://picsum.photos/256",
     alt: "Sample image",
   }),
   controls: {
