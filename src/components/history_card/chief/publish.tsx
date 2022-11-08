@@ -14,7 +14,7 @@ type Props = {
 
 export const HistoryCardChiefPublish = ({ isLoading, onPublish }: Props) => {
   const { handleSubmit, register } = useForm<PublishForm>();
-  const { data, isLoading: dataLoading } = trpc.edition.listShort.useQuery();
+  const { data } = trpc.edition.listShort.useQuery();
 
   const onSubmit: SubmitHandler<PublishForm> = ({ editionId }: PublishForm) => {
     const edition = data?.find((edition) => edition.id === editionId);
@@ -38,15 +38,17 @@ export const HistoryCardChiefPublish = ({ isLoading, onPublish }: Props) => {
             <tr>
               <th>Select Edition</th>
               <td>
-                {dataLoading ? (
+                {!data ? (
                   "Loading..."
+                ) : data.length <= 0 ? (
+                  "No edition available, please make a new edition first"
                 ) : (
                   <select
                     {...register("editionId")}
                     className="select select-bordered select-sm flex-1"
                   >
                     <SelectOptions
-                      selectData={(data ?? []).map((edition) => ({
+                      selectData={data.map((edition) => ({
                         value: edition.id,
                         label: edition.name,
                       }))}
