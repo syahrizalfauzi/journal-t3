@@ -31,21 +31,27 @@ const ArchivePage: NextPage = () => {
           showSort={false}
           queryResult={editionListQuery}
           useQueryOptionsReturn={{ queryOptions, ...rest }}
-          main={editionListQuery.data?.editions.map((edition) => (
-            <Link href={`/archive/${edition.id}`} key={edition.id}>
-              <a className="flex flex-col items-center justify-between border-b border-gray-200 p-4 transition-all duration-300 hover:bg-gray-300 md:flex-row">
-                <div className="flex flex-col items-center md:flex-row">
-                  <div className="flex flex-col">
-                    <p className="text-xl font-bold">{edition.name}</p>
-                    <p className="text-gray-500">{edition.doi}</p>
-                  </div>
-                </div>
-                <p className="text-gray-500">
-                  Article count : {edition._count.manuscripts}
-                </p>
-              </a>
-            </Link>
-          ))}
+          main={
+            (editionListQuery.data?.editions.length ?? 0) <= 0 ? (
+              <p>No edition available</p>
+            ) : (
+              editionListQuery.data?.editions.map((edition) => (
+                <Link href={`/archive/${edition.id}`} key={edition.id}>
+                  <a className="flex flex-col items-center justify-between border-b border-gray-200 p-4 transition-all duration-300 hover:bg-gray-300 md:flex-row">
+                    <div className="flex flex-col items-center md:flex-row">
+                      <div className="flex flex-col">
+                        <p className="text-xl font-bold">{edition.name}</p>
+                        <p className="text-gray-500">{edition.doi}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-500">
+                      Article count : {edition._count.manuscripts}
+                    </p>
+                  </a>
+                </Link>
+              ))
+            )
+          }
         />
       </div>
     </RootLayout>

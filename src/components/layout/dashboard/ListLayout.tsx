@@ -14,6 +14,7 @@ import {
 type ListLayoutProps<I extends QueryType, S extends Sorts, F extends Filter> = {
   main: React.ReactNode;
   useQueryOptionsReturn: UseQueryOptionsReturn<I, S, F>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queryResult: UseTRPCQueryResult<{ _metadata: PaginationMetadata }, any>;
   paginated?: boolean;
   create?: React.ReactNode;

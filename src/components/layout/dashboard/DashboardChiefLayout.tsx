@@ -25,6 +25,13 @@ export const DashboardChiefLayout = ({ children }: LayoutProps) => {
             >
               <a>Journal Editions</a>
             </ActiveLink>
+            <ActiveLink
+              activeClassName="font-bold tab-active"
+              className="tab tab-md"
+              pathName="/dashboard/chief/settings"
+            >
+              <a>Submission Settings</a>
+            </ActiveLink>
           </div>
           {children}
         </div>

@@ -12,7 +12,6 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import mutationError from "../../utils/mutationError";
 import { Prisma } from "@prisma/client";
-import { MAX_ARTICLES_PER_LATEST_EDITION } from "../../../constants/numbers";
 
 const notFoundMessage = "Edition not found";
 
@@ -109,6 +108,7 @@ export const editionRouter = t.router({
     return editions;
   }),
   getLatest: t.procedure.query(async ({ ctx }) => {
+    const settings = await ctx.prisma.settings.findFirst();
     const edition = await ctx.prisma.edition.findFirst({
       where: { isAvailable: true },
       orderBy: {
@@ -124,7 +124,7 @@ export const editionRouter = t.router({
               },
             },
           },
-          take: MAX_ARTICLES_PER_LATEST_EDITION,
+          take: settings?.maxArticlesPerLatestEdition ?? 5,
           select: {
             id: true,
             title: true,

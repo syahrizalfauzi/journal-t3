@@ -52,7 +52,7 @@ const DashboardSettingsUserPage: NextPage = () => {
         keywords: user.profile?.keywords.join(", "),
       },
     });
-  }, [user]);
+  }, [reset, user]);
 
   return (
     <DashboardSettingsLayout>
@@ -60,7 +60,7 @@ const DashboardSettingsUserPage: NextPage = () => {
         isLoading={queryLoading}
         data={user}
         errorMessage={queryError?.message}
-        render={(_) => (
+        render={() => (
           <>
             <p className="text-xl font-medium">Edit User</p>
             <form

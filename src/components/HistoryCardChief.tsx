@@ -13,14 +13,10 @@ import { SelectOptions } from "./SelectOptions";
 import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { FileInput } from "./FileInput";
 import { InputLabel } from "./InputLabel";
-import {
-  HISTORY_STATUS,
-  MAX_TEAM_USERS,
-  REVIEW_DECISION,
-} from "../constants/numbers";
+import { HISTORY_STATUS, REVIEW_DECISION } from "../constants/numbers";
 import moment from "moment";
 import { HistoryCardChiefPublish } from "./history_card/chief/publish";
-import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
+import { HistoryCardChiefDecideReview } from "./history_card/chief/decideReview";
 
 type Props = {
   history: inferProcedureOutput<
@@ -50,11 +46,6 @@ type InitialReviewForm = {
 type UpdateDueDateForm = {
   dueDate: Date;
 };
-type UpdateDecisionForm = {
-  comment: string;
-  proofreadFile: FileList;
-  reviewDecision: "-1" | "0" | "1" | "2";
-};
 
 export const HistoryCardChief = ({
   history,
@@ -70,19 +61,8 @@ export const HistoryCardChief = ({
     },
   });
   const updateDueDateForm = useForm<UpdateDueDateForm>();
-  const updateDecisionForm = useForm<UpdateDecisionForm>({
-    defaultValues: {
-      comment: history.review?.comment ?? "",
-      reviewDecision: (history.review?.decision ?? 0).toString() as
-        | "-1"
-        | "0"
-        | "1"
-        | "2",
-    },
-  });
 
   const { initialDecision } = useWatch({ control: initialReviewForm.control });
-  const { reviewDecision } = useWatch({ control: updateDecisionForm.control });
 
   const handleInviteReviewers = () =>
     window.open(
@@ -116,26 +96,6 @@ export const HistoryCardChief = ({
   }) => {
     if (history.review)
       callbacks.onUpdateDueDate(history.review?.id, moment(dueDate).toDate());
-  };
-  const onSubmitReview: SubmitHandler<UpdateDecisionForm> = ({
-    comment,
-    proofreadFile,
-    reviewDecision,
-  }) => {
-    if (!history.review) return;
-    switch (Number(reviewDecision)) {
-      case REVIEW_DECISION.rejected:
-        callbacks.onReviewReject(history.review.id, comment);
-        break;
-      case REVIEW_DECISION.revision:
-        callbacks.onReviewRevise(history.review.id, comment);
-        break;
-      case REVIEW_DECISION.accepted:
-        if (proofreadFile.length <= 0) return;
-        const file = proofreadFile.item(0);
-        if (file) callbacks.onReviewAccept(history.review.id, file);
-        break;
-    }
   };
 
   return (
@@ -365,18 +325,16 @@ export const HistoryCardChief = ({
                 return (
                   <HistoryCardAction isLoading={isLoading} withSubmit={false}>
                     <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-                      {manuscript.team.users.length < MAX_TEAM_USERS && (
-                        <tr>
-                          <td colSpan={2}>
-                            <button
-                              onClick={handleInviteReviewers}
-                              className="btn btn-sm"
-                            >
-                              Invite Reviewers
-                            </button>
-                          </td>
-                        </tr>
-                      )}
+                      <tr>
+                        <td colSpan={2}>
+                          <button
+                            onClick={handleInviteReviewers}
+                            className="btn btn-sm"
+                          >
+                            Invite Reviewers
+                          </button>
+                        </td>
+                      </tr>
                       <tr>
                         <th> Number of Reviewers </th>
                         <td>{manuscript.team.users.length}</td>
@@ -411,75 +369,14 @@ export const HistoryCardChief = ({
                   </form>
                 );
             case HISTORY_STATUS.reviewed:
-              if (
-                !history.review ||
-                history.review.assesment.length < MAX_TEAM_USERS
-              )
-                return;
               return (
-                <form
-                  onSubmit={updateDecisionForm.handleSubmit(onSubmitReview)}
-                >
-                  <HistoryCardAction
-                    isLoading={isLoading}
-                    withSubmit={reviewDecision !== "0"}
-                    outside={
-                      (reviewDecision === "-1" || reviewDecision === "1") && (
-                        <InputLabel label="Comment">
-                          <textarea
-                            {...updateDecisionForm.register("comment")}
-                            disabled={isLoading}
-                            required
-                            placeholder="Review comment"
-                            className="textarea textarea-bordered w-full"
-                          />
-                        </InputLabel>
-                      )
-                    }
-                  >
-                    <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
-                      <tbody>
-                        <tr>
-                          <th>Review Decision</th>
-                          <td>
-                            <select
-                              {...updateDecisionForm.register("reviewDecision")}
-                              className="select select-bordered select-sm flex-1"
-                            >
-                              <SelectOptions
-                                selectData={Object.entries(REVIEW_DECISION).map(
-                                  ([key, value]) => ({
-                                    disabled: value === 0,
-                                    label: capitalizeCamelCase(key),
-                                    value: value.toString(),
-                                  })
-                                )}
-                              />
-                            </select>
-                          </td>
-                        </tr>
-                        {reviewDecision ===
-                          REVIEW_DECISION.accepted.toString() && (
-                          <tr className="align-bottom">
-                            <th>Upload Proofread Article</th>
-                            <td>
-                              <FileInput>
-                                <input
-                                  {...updateDecisionForm.register(
-                                    "proofreadFile"
-                                  )}
-                                  required
-                                  disabled={isLoading}
-                                  type="file"
-                                />
-                              </FileInput>
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </HistoryCardAction>
-                </form>
+                <HistoryCardChiefDecideReview
+                  history={history}
+                  isLoading={isLoading}
+                  onReviewAccept={callbacks.onReviewAccept}
+                  onReviewReject={callbacks.onReviewReject}
+                  onReviewRevise={callbacks.onReviewRevise}
+                />
               );
             case 6:
               return (

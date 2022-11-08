@@ -37,6 +37,6 @@ export const PROOFREAD_DECISION = {
   revision: 1,
 };
 
-export const MAX_TEAM_USERS = 4;
 export const ITEM_COUNT_PER_PAGE = 20;
-export const MAX_ARTICLES_PER_LATEST_EDITION = 5;
+export const DEFAULT_REVIEWERS_COUNT = 4;
+export const DEFAULT_MAX_ARTICLES_PER_LATEST_EDITION = 5;

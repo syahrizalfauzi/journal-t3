@@ -15,6 +15,7 @@ import Modal from "react-modal";
 
 Modal.setAppElement("#__next");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MyApp: AppType = ({ Component, pageProps }: any) => {
   return (
     <SessionProvider session={pageProps.session as Session | null | undefined}>

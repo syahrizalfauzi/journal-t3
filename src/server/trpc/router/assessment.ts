@@ -6,8 +6,8 @@ import {
 } from "../../validators/assessment";
 import { TRPCError } from "@trpc/server";
 import {
+  DEFAULT_REVIEWERS_COUNT,
   HISTORY_STATUS,
-  MAX_TEAM_USERS,
   REVIEW_DECISION,
 } from "../../../constants/numbers";
 import mutationError from "../../utils/mutationError";
@@ -39,7 +39,7 @@ export const assessmentRouter = t.router({
         });
 
       try {
-        const assesment = await ctx.prisma.assesment.create({
+        const assesmentCreate = ctx.prisma.assesment.create({
           data: {
             ...input,
             reviewAnswers: {
@@ -75,9 +75,19 @@ export const assessmentRouter = t.router({
           },
         });
 
+        const settingsGet = ctx.prisma.settings.findFirst();
+
+        const [assesment, settings] = await ctx.prisma.$transaction([
+          assesmentCreate,
+          settingsGet,
+        ]);
+
+        const reviewersCount =
+          settings?.reviewersCount ?? DEFAULT_REVIEWERS_COUNT;
+
         //TRIGGER ZONE
         //If the reviewers are done reviewing, change history status to reviewed
-        if (assesment.review.assesment.length >= MAX_TEAM_USERS) {
+        if (assesment.review.assesment.length >= reviewersCount) {
           const historyUpdate = ctx.prisma.history.update({
             where: { id: assesment.review.history.id },
             data: { status: HISTORY_STATUS.reviewed },
@@ -305,7 +315,7 @@ export const assessmentRouter = t.router({
           },
         });
 
-        const assessment = await ctx.prisma.assesment.update({
+        const assessmentUpdate = ctx.prisma.assesment.update({
           where: { id: input.id },
           data: {
             ...input,
@@ -338,9 +348,19 @@ export const assessmentRouter = t.router({
           },
         });
 
+        const settingsGet = ctx.prisma.settings.findFirst();
+
+        const [assessment, settings] = await ctx.prisma.$transaction([
+          assessmentUpdate,
+          settingsGet,
+        ]);
+
+        const reviewersCount =
+          settings?.reviewersCount ?? DEFAULT_REVIEWERS_COUNT;
+
         //TRIGGER ZONE
         //If the reviewers are done reviewing, change history status to reviewed
-        if (assessment.review.assesment.length >= MAX_TEAM_USERS) {
+        if (assessment.review.assesment.length >= reviewersCount) {
           const historyUpdate = ctx.prisma.history.update({
             where: { id: assessment.review.history.id },
             data: { status: HISTORY_STATUS.reviewed },

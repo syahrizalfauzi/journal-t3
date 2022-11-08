@@ -1,7 +1,5 @@
 //Removed Filter[] so that it's a literal type
 
-import { Filter } from "../types/Filter";
-
 export const MANUSCRIPT_AUTHOR_FILTERS = [
   {
     key: "status",
