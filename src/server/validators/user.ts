@@ -58,7 +58,6 @@ export const createUserValidator = z.object({
       .string()
       .email()
       .refine(async (email) => {
-        console.log("profile email validator", email);
         const profileExists =
           (await prisma.profile.count({
             where: {

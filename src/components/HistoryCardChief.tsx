@@ -17,6 +17,8 @@ import { HISTORY_STATUS, REVIEW_DECISION } from "../constants/numbers";
 import moment from "moment";
 import { HistoryCardChiefPublish } from "./history_card/chief/publish";
 import { HistoryCardChiefDecideReview } from "./history_card/chief/decideReview";
+import { ellipsifyText } from "../utils/ellipsifyText";
+import { FILE_ACCEPTS } from "../constants/others";
 
 type Props = {
   history: inferProcedureOutput<
@@ -119,7 +121,7 @@ export const HistoryCardChief = ({
               target="_blank"
               rel="noreferrer"
             >
-              {history.submission?.fileUrl}
+              {ellipsifyText(history.submission?.fileUrl)}
             </a>
           </td>
         </tr>
@@ -310,6 +312,7 @@ export const HistoryCardChief = ({
                                   required
                                   disabled={isLoading}
                                   type="file"
+                                  accept={FILE_ACCEPTS}
                                 />
                               </FileInput>
                             </td>

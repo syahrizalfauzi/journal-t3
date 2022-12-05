@@ -25,8 +25,14 @@ const DashboardChiefEditionsEditPage: NextPage = () => {
 
   const { register, handleSubmit, reset } = useForm<EditSettingsForm>();
 
-  const onSubmit: SubmitHandler<EditSettingsForm> = (data) => {
-    mutationUpdate(data);
+  const onSubmit: SubmitHandler<EditSettingsForm> = ({
+    maxArticlesPerLatestEdition,
+    reviewersCount,
+  }) => {
+    mutationUpdate({
+      maxArticlesPerLatestEdition: Number(maxArticlesPerLatestEdition),
+      reviewersCount: Number(reviewersCount),
+    });
   };
 
   useEffect(() => {

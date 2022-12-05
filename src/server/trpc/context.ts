@@ -4,12 +4,15 @@ import * as trpcNext from "@trpc/server/adapters/next";
 import { Session, unstable_getServerSession } from "next-auth";
 import { authOptions } from "../../pages/api/auth/[...nextauth]";
 import { prisma } from "../db/client";
+// import { initializeApp, credential, app } from "firebase-admin";
+// import { env } from "../../env/server.mjs";
 
 /**
  * Replace this with an object if you want to pass things to createContextInner
  */
 type CreateContextOptions = {
   session: Session | null;
+  // firebaseApp: app.App;
 };
 
 /** Use this helper for:
@@ -32,9 +35,17 @@ export const createContext = async ({
   res,
 }: trpcNext.CreateNextContextOptions) => {
   const session = await unstable_getServerSession(req, res, authOptions);
+  // const firebaseApp = initializeApp({
+  //   credential: credential.cert({
+  //     projectId: env.FIREBASE_PROJECT_ID,
+  //     privateKey: env.FIREBASE_PRIVATE_KEY,
+  //     clientEmail: env.FIREBASE_CLIENT_EMAIL,
+  //   }),
+  // });
 
   return await createContextInner({
     session,
+    // firebaseApp,
   });
 };
 

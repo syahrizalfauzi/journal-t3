@@ -51,7 +51,7 @@ export const imagePlugin: CellPlugin<ImageState> = {
             type="text"
             value={data.src}
             label="Image link"
-            placeholder="asdasd"
+            placeholder="https://picsum.photos/256"
             fullWidth
             onChange={(e) => onChange({ src: e.target.value })}
           />

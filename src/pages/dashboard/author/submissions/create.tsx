@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import type { NextPage } from "next/types";
 import { InputLabel } from "../../../../components/InputLabel";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
 import { z } from "zod";
-import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
+import {
+  showErrorToast,
+  toastSettleHandler,
+} from "../../../../utils/toastSettleHandler";
 import { manuscriptValidator } from "../../../../server/validators/manuscript";
 import { useRouter } from "next/router";
 import { DashboardAuthorLayout } from "../../../../components/layout/dashboard/DashboardAuthorLayout";
 import { FileInput } from "../../../../components/FileInput";
-import { SAMPLE_FILE_URL } from "../../../../constants/others";
+import { MAX_FILE_SIZE } from "../../../../constants/numbers";
+import { uploadFile } from "../../../../utils/firebaseStorage";
+import { FILE_ACCEPTS, FOLDER_NAMES } from "../../../../constants/others";
 
 type CreateManuscriptForm = Omit<
   z.infer<typeof manuscriptValidator>,
@@ -21,17 +26,47 @@ type CreateManuscriptForm = Omit<
 const DashboardAuthorSubmissionsCreatePage: NextPage = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<CreateManuscriptForm>();
-  const { mutate, isLoading } = trpc.manuscript.create.useMutation({
-    onError: (err) => toastSettleHandler(undefined, err),
-  });
+  const { mutate, isLoading: mutateLoading } =
+    trpc.manuscript.create.useMutation({
+      onError: (err) => toastSettleHandler(undefined, err),
+    });
+  const [isUploading, setIsUploading] = useState(false);
 
-  const onSubmit: SubmitHandler<CreateManuscriptForm> = (data) => {
-    console.log("TODO : Submission create, upload file");
+  const isLoading = mutateLoading || isUploading;
+
+  const onSubmit: SubmitHandler<CreateManuscriptForm> = async (data) => {
+    if (!data.coverFile[0] || !data.file[0]) return;
+
+    if (data.coverFile[0].size > MAX_FILE_SIZE) {
+      showErrorToast("Cover file size must be less than 10MB");
+      return;
+    }
+
+    if (data.file[0].size > MAX_FILE_SIZE) {
+      showErrorToast("Manuscript file size must be less than 10MB");
+      return;
+    }
+
+    setIsUploading(true);
+
+    const coverFileUpload = uploadFile(
+      data.coverFile[0],
+      FOLDER_NAMES.coverFiles
+    );
+    const fileUpload = uploadFile(data.file[0], FOLDER_NAMES.manuscripts);
+
+    const [coverFileUrl, fileUrl] = await Promise.all([
+      coverFileUpload,
+      fileUpload,
+    ]);
+
+    setIsUploading(false);
+
     mutate(
       {
         ...data,
-        coverFileUrl: SAMPLE_FILE_URL,
-        fileUrl: SAMPLE_FILE_URL,
+        coverFileUrl,
+        fileUrl,
       },
       {
         onSuccess: ({ id }) =>
@@ -91,6 +126,7 @@ const DashboardAuthorSubmissionsCreatePage: NextPage = () => {
             disabled={isLoading}
             required
             type="file"
+            accept={FILE_ACCEPTS}
           />
         </FileInput>
         <FileInput label="Upload Manuscript File">
@@ -99,6 +135,7 @@ const DashboardAuthorSubmissionsCreatePage: NextPage = () => {
             disabled={isLoading}
             required
             type="file"
+            accept={FILE_ACCEPTS}
           />
         </FileInput>
         <input

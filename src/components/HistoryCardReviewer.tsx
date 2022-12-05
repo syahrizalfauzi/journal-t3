@@ -10,6 +10,7 @@ import {
 import classNames from "classnames";
 import { useSession } from "next-auth/react";
 import { HISTORY_STATUS, REVIEW_DECISION } from "../constants/numbers";
+import { ellipsifyText } from "../utils/ellipsifyText";
 
 type Manuscript = inferProcedureOutput<
   AppRouter["manuscript"]["getForReviewer"]
@@ -88,7 +89,7 @@ export const HistoryCardReviewer = ({
               target="_blank"
               rel="noreferrer"
             >
-              {history.submission?.fileUrl}
+              {ellipsifyText(history.submission?.fileUrl)}
             </a>
           </td>
         </tr>

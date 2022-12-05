@@ -5,6 +5,7 @@ import { GetServerSideProps, NextPage } from "next";
 import { PageEditor } from "../components/editor/PageEditor";
 import { prisma } from "../server/db/client";
 import { PageProps } from "../types/PageProps";
+import { trpc } from "../utils/trpc";
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   const pageData = (

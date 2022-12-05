@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { DashboardAuthorLayout } from "../../../../components/layout/dashboard/DashboardAuthorLayout";
 import { useRouter } from "next/router";
@@ -7,9 +7,10 @@ import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
 import { ManuscriptDetailCardAuthor } from "../../../../components/ManuscriptDetailCardAuthor";
 import { HistoryCardAuthor } from "../../../../components/HistoryCardAuthor";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { SAMPLE_FILE_URL } from "../../../../constants/others";
 import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 import { NextPage } from "next/types";
+import { uploadFile } from "../../../../utils/firebaseStorage";
+import { FOLDER_NAMES } from "../../../../constants/others";
 
 const DashboardAuthorSubmissionsDetailPage: NextPage = () => {
   const { query } = useRouter();
@@ -20,6 +21,7 @@ const DashboardAuthorSubmissionsDetailPage: NextPage = () => {
     error: queryError,
     refetch,
   } = trpc.manuscript.getForAuthor.useQuery(query.id as string);
+  const [isUploading, setIsUploading] = useState(false);
 
   const updateOptionalFile = trpc.manuscript.updateOptionalFile.useMutation({
     onSettled: toastSettleHandler,
@@ -35,33 +37,46 @@ const DashboardAuthorSubmissionsDetailPage: NextPage = () => {
     queryLoading ||
     updateOptionalFile.isLoading ||
     revise.isLoading ||
-    finalize.isLoading;
+    finalize.isLoading ||
+    isUploading;
 
-  const handleUpdateOptionalFile = (optionalFile: File) => {
-    console.log("TODO : optional file upload", optionalFile);
+  const handleUpdateOptionalFile = async (optionalFile: File) => {
+    setIsUploading(true);
+    const optionalFileUrl = await uploadFile(
+      optionalFile,
+      FOLDER_NAMES.optionalFiles
+    );
+    setIsUploading(false);
     updateOptionalFile.mutate(
-      { id: query.id as string, optionalFileUrl: SAMPLE_FILE_URL },
+      { id: query.id as string, optionalFileUrl },
       { onSuccess: () => refetch() }
     );
   };
 
-  const handleRevise = (file: File) => {
-    console.log("TODO : revision file upload", file);
+  const handleRevise = async (file: File) => {
+    setIsUploading(true);
+    const fileUrl = await uploadFile(file, FOLDER_NAMES.manuscripts);
+    setIsUploading(false);
     revise.mutate(
       {
         manuscriptId: query.id as string,
-        fileUrl: SAMPLE_FILE_URL,
+        fileUrl,
       },
       { onSuccess: () => refetch() }
     );
   };
 
-  const handleFinalize = (file: File | undefined | null) => {
-    console.log("TODO : finalization file upload", file);
+  const handleFinalize = async (file: File | undefined | null) => {
+    let fileUrl: string | undefined = undefined;
+    if (file) {
+      setIsUploading(true);
+      fileUrl = await uploadFile(file, FOLDER_NAMES.manuscripts);
+      setIsUploading(false);
+    }
     finalize.mutate(
       {
         manuscriptId: query.id as string,
-        fileUrl: file ? SAMPLE_FILE_URL : undefined,
+        fileUrl,
       },
       { onSuccess: () => refetch() }
     );

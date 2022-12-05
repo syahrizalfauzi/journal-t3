@@ -5,12 +5,14 @@ import { SubmitHandler, useForm, useWatch } from "react-hook-form";
 import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
 import { FileInput } from "./FileInput";
+import { ellipsifyText } from "../utils/ellipsifyText";
+import { FILE_ACCEPTS } from "../constants/others";
 
 type Props = {
   manuscriptDetail: inferProcedureOutput<
     AppRouter["manuscript"]["getForAuthor"]
   >;
-  onUpdateOptionalFile: (optionalFile: File) => unknown;
+  onUpdateOptionalFile: (optionalFile: File) => Promise<unknown>;
   isLoading: boolean;
 };
 
@@ -23,13 +25,18 @@ export const ManuscriptDetailCardAuthor = ({
   isLoading,
   onUpdateOptionalFile,
 }: Props) => {
-  const { register, handleSubmit, control } = useForm<OptionalFileForm>();
+  const { register, handleSubmit, control, reset } =
+    useForm<OptionalFileForm>();
   const { optionalFile } = useWatch({
     control,
   });
 
-  const onSubmit: SubmitHandler<OptionalFileForm> = ({ optionalFile }) =>
-    onUpdateOptionalFile(optionalFile.item(0)!);
+  const onSubmit: SubmitHandler<OptionalFileForm> = async ({
+    optionalFile,
+  }) => {
+    await onUpdateOptionalFile(optionalFile.item(0)!);
+    reset();
+  };
 
   return (
     <form
@@ -69,7 +76,7 @@ export const ManuscriptDetailCardAuthor = ({
               target="_blank"
               rel="noreferrer"
             >
-              {manuscriptDetail.coverFileUrl}
+              {ellipsifyText(manuscriptDetail.coverFileUrl)}
             </a>
           </td>
         </tr>
@@ -83,7 +90,7 @@ export const ManuscriptDetailCardAuthor = ({
                 target="_blank"
                 rel="noreferrer"
               >
-                {manuscriptDetail.optionalFileUrl}
+                {ellipsifyText(manuscriptDetail.optionalFileUrl)}
               </a>
             </td>
           </tr>
@@ -97,6 +104,7 @@ export const ManuscriptDetailCardAuthor = ({
                   disabled={isLoading}
                   required
                   type="file"
+                  accept={FILE_ACCEPTS}
                 />
               </FileInput>
             </td>
