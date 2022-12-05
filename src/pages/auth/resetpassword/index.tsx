@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { NextPage } from "next/types";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ErrorTexts } from "../../../components/ErrorTexts";
 import { InputLabel } from "../../../components/InputLabel";
 import { AuthLayout } from "../../../components/layout/AuthLayout";
-import { toastSettleHandler } from "../../../utils/toastSettleHandler";
+import { SuccessTexts } from "../../../components/SuccessTexts";
 import { trpc } from "../../../utils/trpc";
 
 type ResetPasswordForm = {
@@ -12,9 +13,10 @@ type ResetPasswordForm = {
 
 const ResetPassword: NextPage = () => {
   const { register, handleSubmit } = useForm<ResetPasswordForm>();
-  const { mutate, isLoading } = trpc.auth.sendForgotPasswordEmail.useMutation({
-    onSettled: toastSettleHandler,
-  });
+  const { mutate, isLoading, data, error } =
+    trpc.auth.sendForgotPasswordEmail.useMutation({
+      // onSettled: toastSettleHandler,
+    });
 
   const onSubmit: SubmitHandler<ResetPasswordForm> = async ({ email }) =>
     mutate(email);
@@ -46,6 +48,8 @@ const ResetPassword: NextPage = () => {
             value="Send Email"
             className="btn"
           />
+          <ErrorTexts message={error?.message} />
+          <SuccessTexts message={data} />
           <Link href="/auth/login">
             <a className="btn btn-outline">Login</a>
           </Link>

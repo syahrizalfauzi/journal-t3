@@ -2,6 +2,7 @@ import { t } from "../trpc";
 import {
   changePasswordValidator,
   newUserValidator,
+  resetPasswordValidator,
 } from "../../validators/user";
 import passwordEncryptor from "../../utils/passwordEncryptor";
 import { TRPCError } from "@trpc/server";
@@ -10,7 +11,7 @@ import { compareSync } from "bcrypt";
 import mutationError from "../../utils/mutationError";
 import { z } from "zod";
 import { sendEmail } from "../../utils/sendEmail";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 import { env } from "../../../env/server.mjs";
 import { sender } from "../../../constants/mailjet";
 import { getBaseUrl } from "../../../utils/trpc";
@@ -86,9 +87,11 @@ export const authRouter = t.router({
                 From: sender,
                 To: [{ Email: input.profile.email }],
                 Subject: "Verify Account",
-                HTMLPart: `<h3>Verify Account</h3><br />
-                <p>Click this link to verify your account</p>
-                <a href="${getBaseUrl()}/auth/verify/${verificationToken}">Verify</a>`,
+                HTMLPart: `<h3>Verify Account</h3>
+              <p>Click this link to verify your account with the username of ${
+                user.username
+              }</p>
+              <a href="${getBaseUrl()}/auth/verify/${verificationToken}">Verify</a>`,
               },
             ],
           });
@@ -106,6 +109,7 @@ export const authRouter = t.router({
         throw mutationError(e);
       }
     }),
+
   user: t.procedure.use(authGuard()).query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.session.user.id },
@@ -163,16 +167,83 @@ export const authRouter = t.router({
         throw mutationError(e, notFoundMessage);
       }
     }),
+  sendVerificationEmail: t.procedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          username: input,
+        },
+        select: {
+          id: true,
+          username: true,
+          profile: { select: { email: true } },
+        },
+      });
+
+      if (!user || !user.profile)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      const verificationToken = sign(user.id, env.VERIFICATION_TOKEN_SECRET);
+
+      try {
+        await sendEmail({
+          Messages: [
+            {
+              From: sender,
+              To: [{ Email: user.profile.email }],
+              Subject: "Verify Account",
+              HTMLPart: `<h3>Verify Account</h3>
+              <p>Click this link to verify your account with the username of ${
+                user.username
+              }</p>
+              <a href="${getBaseUrl()}/auth/verify/${verificationToken}">Verify</a>`,
+            },
+          ],
+        });
+
+        return `Verification email sent to ${input}`;
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to send email, please try again later",
+        });
+      }
+    }),
+  verify: t.procedure.input(z.string()).mutation(async ({ input, ctx }) => {
+    const userId = verify(input, env.VERIFICATION_TOKEN_SECRET) as string;
+
+    if (!userId)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Invalid token",
+      });
+
+    try {
+      await ctx.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          isActivated: true,
+        },
+      });
+
+      return "Account verified successfully, you may now log in";
+    } catch (e) {
+      throw mutationError(e, notFoundMessage);
+    }
+  }),
   sendForgotPasswordEmail: t.procedure
     .input(z.string().email())
     .mutation(async ({ ctx, input }) => {
       const profile = await ctx.prisma.profile.findUnique({
         where: { email: input },
-        select: { user: { select: { id: true } } },
+        select: { user: { select: { id: true, username: true } } },
       });
 
       if (!profile)
-        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
 
       const passwordToken = sign(profile.user.id, env.PASSWORD_TOKEN_SECRET);
 
@@ -194,6 +265,68 @@ export const authRouter = t.router({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to send email, please try again later",
         });
+      }
+    }),
+  checkForgotPasswordToken: t.procedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      try {
+        const userId = verify(input, env.PASSWORD_TOKEN_SECRET) as string;
+
+        if (!userId)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid token",
+          });
+
+        const user = await ctx.prisma.user.findUnique({
+          where: {
+            id: userId,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (!user)
+          throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+        return "Token is valid";
+      } catch (e) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid token",
+        });
+      }
+    }),
+  resetPassword: t.procedure
+    .input(resetPasswordValidator)
+    .mutation(async ({ ctx, input }) => {
+      const userId = verify(input.token, env.PASSWORD_TOKEN_SECRET) as string;
+
+      if (!userId)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid token",
+        });
+
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      });
+
+      if (!user)
+        throw new TRPCError({ code: "NOT_FOUND", message: notFoundMessage });
+
+      try {
+        await ctx.prisma.user.update({
+          where: { id: user.id },
+          data: { password: passwordEncryptor(input.password) },
+        });
+
+        return "Password reset successfully";
+      } catch (e) {
+        throw mutationError(e, notFoundMessage);
       }
     }),
 });
