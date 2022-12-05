@@ -12,6 +12,10 @@ import { HISTORY_STATUS, REVIEW_DECISION } from "../../../constants/numbers";
 import { TRPCError } from "@trpc/server";
 import { CHIEF_HISTORY_SELECTION } from "../../../constants/historySelections";
 import { authGuard } from "../middlewares/authGuard";
+import { sendEmail } from "../../utils/sendEmail";
+import { sender } from "../../../constants/mailjet";
+import { getRoleNumbers } from "../../../utils/role";
+import { getBaseUrl } from "../../../utils/trpc";
 
 //Kalo error, flip input & usenya
 
@@ -41,15 +45,44 @@ export const historyRouter = t.router({
         select: {
           ...CHIEF_HISTORY_SELECTION,
           id: true,
-          manuscript: { select: { title: true } },
-          // author: { select: { profile: { select: { email: true } } } },
+          manuscript: {
+            select: {
+              title: true,
+              author: {
+                select: { profile: { select: { email: true, name: true } } },
+              },
+            },
+          },
         },
       });
 
-      await ctx.prisma.latestHistory.update({
+      const latestHistoryUpdate = ctx.prisma.latestHistory.update({
         where: { manuscriptId: input.manuscriptId },
         data: { history: { connect: { id } } },
       });
+
+      const authorEmailSend = sendEmail({
+        Messages: [
+          {
+            From: sender,
+            To: [{ Email: manuscript.author.profile!.email }],
+            Subject: "Manuscript Rejected",
+            HTMLPart: `<h3>Dear ${manuscript.author.profile!.name},</h3>
+              <p>Your manuscript titled <b>${
+                manuscript.title
+              }</b> has been rejected by the chief editor.</p>
+              <p>Reason: ${input.reason}</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/author/submissions/${
+              input.manuscriptId
+            }">Open</a></p>
+              <p>Please login to your account to see the details.</p>
+              <p>Thank you.</p>`,
+          },
+        ],
+      });
+
+      await Promise.all([latestHistoryUpdate, authorEmailSend]);
 
       return `Manuscript is successfully rejected (${manuscript.title})`;
     }),
@@ -130,16 +163,45 @@ export const historyRouter = t.router({
         select: { manuscript: { select: { id: true, title: true } } },
       });
 
-      // const chiefEmailFetch = ctx.prisma.user.findMany({
-      //   where: {
-      //     OR: getRoleNumbers("chief").map((e) => ({
-      //       role: e,
-      //     })),
-      //   },
-      //   select: { profile: { select: { email: true } } },
-      // });
+      const chiefEmailFetch = ctx.prisma.user.findMany({
+        where: {
+          OR: getRoleNumbers("chief").map((e) => ({
+            role: e,
+          })),
+        },
+        select: { profile: { select: { email: true } } },
+      });
 
-      await ctx.prisma.$transaction([latestHistoryUpdate]);
+      const [chiefEmails, latestHistory] = await ctx.prisma.$transaction([
+        chiefEmailFetch,
+        latestHistoryUpdate,
+      ]);
+
+      try {
+        await sendEmail({
+          Messages: [
+            {
+              From: sender,
+              To: [sender],
+              Bcc: chiefEmails
+                .filter((e) => !!e.profile)
+                .map((e) => ({ Email: e.profile!.email })),
+              Subject: "Manuscript Revision",
+              HTMLPart: `<h3>Dear Chief Editor,</h3>
+              <p>Author has revised the manuscript titled <b>${
+                latestHistory.manuscript.title
+              }</b>.</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/chief/submissions/${
+                latestHistory.manuscript.id
+              }">Open</a></p>
+              <p>Thank you.</p>`,
+            },
+          ],
+        });
+      } catch (e) {
+        console.log(e);
+      }
 
       return "Revision successfully submitted";
     }),
@@ -171,10 +233,43 @@ export const historyRouter = t.router({
         select: { id: true },
       });
 
-      await ctx.prisma.latestHistory.update({
+      const { manuscript } = await ctx.prisma.latestHistory.update({
         where: { manuscriptId: input.manuscriptId },
         data: { history: { connect: { id } } },
+        select: {
+          manuscript: {
+            select: {
+              id: true,
+              title: true,
+              author: { select: { profile: { select: { email: true } } } },
+            },
+          },
+        },
       });
+
+      try {
+        if (manuscript.author.profile)
+          await sendEmail({
+            Messages: [
+              {
+                From: sender,
+                To: [{ Email: manuscript.author.profile.email }],
+                Subject: "Manuscript Proofread",
+                HTMLPart: `<h3>Dear Author,</h3>
+              <p>Chief Editor has proofread the manuscript titled <b>${
+                manuscript.title
+              }</b>.</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/author/submissions/${
+                  manuscript.id
+                }">Open</a></p>
+              <p>Thank you.</p>`,
+              },
+            ],
+          });
+      } catch (e) {
+        console.log(e);
+      }
 
       return "Proofread article successfully submitted";
     }),
@@ -205,19 +300,46 @@ export const historyRouter = t.router({
       const latestHistoryUpdate = ctx.prisma.latestHistory.update({
         where: { manuscriptId: input.manuscriptId },
         data: { history: { connect: { id: history.id } } },
+        select: { manuscript: { select: { id: true, title: true } } },
       });
 
-      // const chiefEmailFetch = ctx.prisma.user.findMany({
-      //   where: {
-      //     OR: getRoleNumbers("chief").map((e) => ({
-      //       role: e,
-      //     })),
-      //   },
-      //   select: { profile: { select: { email: true } } },
-      // });
+      const chiefEmailFetch = ctx.prisma.user.findMany({
+        where: {
+          OR: getRoleNumbers("chief").map((e) => ({
+            role: e,
+          })),
+        },
+        select: { profile: { select: { email: true } } },
+      });
 
-      await ctx.prisma.$transaction([latestHistoryUpdate]);
-      // chiefEmailFetch,
+      const [chiefEmails, latestHistory] = await ctx.prisma.$transaction([
+        chiefEmailFetch,
+        latestHistoryUpdate,
+      ]);
+
+      try {
+        await sendEmail({
+          Messages: [
+            {
+              From: sender,
+              To: [sender],
+              Bcc: chiefEmails.map((e) => ({ Email: e.profile!.email })),
+              Subject: "Manuscript Finalized",
+              HTMLPart: `<h3>Dear Chief Editor,</h3>
+              <p>Author has finalized the manuscript titled <b>${
+                latestHistory.manuscript.title
+              }</b>.</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/chief/submissions/${
+                latestHistory.manuscript.id
+              }">Open</a></p>
+              <p>Thank you.</p>`,
+            },
+          ],
+        });
+      } catch (e) {
+        console.log(e);
+      }
 
       return input.fileUrl
         ? "Revised article successfully submitted"
@@ -257,23 +379,35 @@ export const historyRouter = t.router({
           id: true,
           title: true,
           edition: { select: { name: true, doi: true } },
+          author: { select: { profile: { select: { email: true } } } },
         },
       });
 
-      // const chiefEmailFetch = ctx.prisma.user.findMany({
-      //   where: {
-      //     OR: getRoleNumbers("chief").map((e) => ({
-      //       role: e,
-      //     })),
-      //   },
-      //   select: { profile: { select: { email: true } } },
-      // });
-
-      const [{ edition, title }] = await ctx.prisma.$transaction([
+      const [{ edition, title, id, author }] = await ctx.prisma.$transaction([
         manuscriptUpdate,
         latestHistoryUpdate,
       ]);
-      // chiefEmailFetch,
+
+      try {
+        if (author.profile)
+          await sendEmail({
+            Messages: [
+              {
+                From: sender,
+                To: [{ Email: author.profile.email }],
+                Subject: "Manuscript Published",
+                HTMLPart: `<h3>Dear Author,</h3>
+              <p>Your manuscript titled <b>${title}</b> has been published.</p>
+              <p>Your paper will be available to public once the current journal edition is released </p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/author/submissions/${id}">Open</a></p>
+              <p>Thank you.</p>`,
+              },
+            ],
+          });
+      } catch (e) {
+        console.log(e);
+      }
 
       return `Article ${title} successfully published in ${
         edition!.name

@@ -13,6 +13,7 @@ export const serverSchema = z.object({
     MAILER_API_KEY: z.string(),
     MAILER_API_SECRET: z.string(),
     PASSWORD_TOKEN_SECRET: z.string(),
+    VERIFICATION_TOKEN_SECRET: z.string(),
     // FIREBASE_PROJECT_ID: z.string(),
     // FIREBASE_PRIVATE_KEY: z.string(),
     // FIREBASE_CLIENT_EMAIL: z.string(),

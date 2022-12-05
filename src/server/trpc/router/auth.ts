@@ -60,6 +60,7 @@ export const authRouter = t.router({
       const expertise = input.profile.expertise.replace(/\s/g, "").split(",");
       const keywords = input.profile.keywords?.replace(/\s/g, "").split(",");
       //For some reason, zod refine is not running
+      let errorEmail = false;
       try {
         const user = await ctx.prisma.user.create({
           data: {
@@ -72,11 +73,36 @@ export const authRouter = t.router({
           select: {
             id: true,
             username: true,
+            profile: { select: { email: true } },
           },
         });
 
-        return `User '${user.username}' successfully created`;
+        const verificationToken = sign(user.id, env.VERIFICATION_TOKEN_SECRET);
+
+        try {
+          await sendEmail({
+            Messages: [
+              {
+                From: sender,
+                To: [{ Email: input.profile.email }],
+                Subject: "Verify Account",
+                HTMLPart: `<h3>Verify Account</h3><br />
+                <p>Click this link to verify your account</p>
+                <a href="${getBaseUrl()}/auth/verify/${verificationToken}">Verify</a>`,
+              },
+            ],
+          });
+
+          return `User '${user.username}' successfully created, please check your email for verification`;
+        } catch (e) {
+          errorEmail = true;
+        }
       } catch (e) {
+        if (errorEmail)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to send email, please try again later",
+          });
         throw mutationError(e);
       }
     }),

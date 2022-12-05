@@ -16,6 +16,10 @@ import { Prisma } from "@prisma/client";
 import { paginationMetadata, getPaginationQuery } from "../../utils/pagination";
 import { getOrderQuery } from "../../utils/sortOrder";
 import { TRPCError } from "@trpc/server";
+import { sendEmail } from "../../utils/sendEmail";
+import { sender } from "../../../constants/mailjet";
+import { getBaseUrl } from "../../../utils/trpc";
+import { getRoleNumbers } from "../../../utils/role";
 
 export const invitationRouter = t.router({
   create: t.procedure
@@ -23,7 +27,7 @@ export const invitationRouter = t.router({
     .input(createInvitationValidator)
     .mutation(async ({ ctx, input }) => {
       try {
-        const { user } = await ctx.prisma.invitation.create({
+        const { user, team } = await ctx.prisma.invitation.create({
           data: {
             user: { connect: { id: input.reviewerId } },
             status: INVITATION_STATUS.unanswered,
@@ -35,18 +39,49 @@ export const invitationRouter = t.router({
           },
           select: {
             user: {
-              select: { profile: { select: { name: true } } },
+              select: { profile: { select: { name: true, email: true } } },
             },
-            // user: { select: { profile: { select: { email: true } } } },
-            // team: {
-            //   select: {
-            //     manuscript: { select: { title: true, abstract: true } },
-            //   },
-            // },
+            team: {
+              select: {
+                manuscript: { select: { title: true, abstract: true } },
+              },
+            },
           },
         });
 
         // const invitations = await ctx.prisma.$transaction(invitationsCreate);
+
+        try {
+          if (user.profile) {
+            await sendEmail({
+              Messages: [
+                {
+                  From: sender,
+                  To: [
+                    {
+                      Email: user.profile.email,
+                      Name: user.profile.name,
+                    },
+                  ],
+                  Subject: `Invitation
+                    to review manuscript ${team.manuscript.title}`,
+                  HTMLPart: `
+                    <h3>Dear ${user.profile.name},</h3>
+                    <p>You have been invited to review manuscript ${
+                      team.manuscript.title
+                    }.</p>
+                    <p>Abstract: ${team.manuscript.abstract}</p>
+                    <p>Click the link below to open your invitations</p>
+                    <a href="${getBaseUrl()}/dashboard/reviewer/invitations">Open</a>
+                    <p>Thank you.</p>
+                  `,
+                },
+              ],
+            });
+          }
+        } catch (e) {
+          console.log(e);
+        }
 
         return `Invitation sent to ${user.profile!.name}`;
 
@@ -282,19 +317,45 @@ export const invitationRouter = t.router({
         select: { manuscript: { select: { id: true, title: true } } },
       });
 
-      // const chiefEmailFetch = ctx.prisma.user.findMany({
-      //   where: {
-      //     OR: getRoleNumbers("chief").map((e) => ({
-      //       role: e,
-      //     })),
-      //   },
-      //   select: { profile: { select: { email: true } } },
-      // });
+      const chiefEmailFetch = ctx.prisma.user.findMany({
+        where: {
+          OR: getRoleNumbers("chief").map((e) => ({
+            role: e,
+          })),
+        },
+        select: { profile: { select: { email: true } } },
+      });
 
-      await ctx.prisma.$transaction([
+      const [chiefEmails] = await ctx.prisma.$transaction([
+        chiefEmailFetch,
         latestHistoryUpdate,
-        // chiefEmailFetch,
       ]);
+
+      try {
+        await sendEmail({
+          Messages: [
+            {
+              From: sender,
+              To: [sender],
+              Bcc: chiefEmails
+                .filter((e) => !!e.profile)
+                .map((e) => ({ Email: e.profile!.email })),
+              Subject: "Review need action",
+              HTMLPart: `<h3>Dear Chief Editor,</h3>
+              <p>Review team for manuscript '${
+                teamUpdate.manuscript.title
+              }' is now full. Please set a due date for the review.</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/chief/submissions/${
+                teamUpdate.manuscript.id
+              }">Open</a></p>
+              <p>Thank you.</p>`,
+            },
+          ],
+        });
+      } catch (e) {
+        console.log(e);
+      }
 
       return {
         message: `Accepted invitation to '${teamUpdate.manuscript.title}'`,
