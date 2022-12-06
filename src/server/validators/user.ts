@@ -58,7 +58,6 @@ export const createUserValidator = z.object({
       .string()
       .email()
       .refine(async (email) => {
-        console.log("profile email validator", email);
         const profileExists =
           (await prisma.profile.count({
             where: {
@@ -79,5 +78,9 @@ export const updateUserValidator = z
 export const newUserValidator = createUserValidator.merge(userValidator);
 export const changePasswordValidator = z.object({
   oldPassword: z.string(),
-  newPassword: z.string().min(6, "New Password anu"),
+  newPassword: z.string().min(6),
+});
+export const resetPasswordValidator = z.object({
+  password: z.string().min(6),
+  token: z.string(),
 });

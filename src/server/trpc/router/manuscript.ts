@@ -21,6 +21,10 @@ import {
 } from "../../../constants/historySelections";
 import { TRPCError } from "@trpc/server";
 import mutationError from "../../utils/mutationError";
+import { getRoleNumbers } from "../../../utils/role";
+import { sendEmail } from "../../utils/sendEmail";
+import { sender } from "../../../constants/mailjet";
+import { getBaseUrl } from "../../../utils/trpc";
 
 const notFoundMessage = "Manuscript not found";
 
@@ -64,26 +68,47 @@ export const manuscriptRouter = t.router({
         },
       });
 
-      // const chiefEmailFetch = ctx.prisma.user.findMany({
-      //   where: {
-      //     OR: getRoleNumbers("chief").map((e) => ({
-      //       role: e,
-      //     })),
-      //   },
-      //   select: { profile: { select: { email: true } } },
-      // });
+      const chiefEmailFetch = ctx.prisma.user.findMany({
+        where: {
+          OR: getRoleNumbers("chief").map((e) => ({
+            role: e,
+          })),
+        },
+        select: { profile: { select: { email: true } } },
+      });
 
-      const [manuscript] = await ctx.prisma.$transaction([
+      const [manuscript, chiefEmails] = await ctx.prisma.$transaction([
         manuscriptCreate,
-        // chiefEmailFetch,
+        chiefEmailFetch,
       ]);
 
-      await ctx.prisma.latestHistory.create({
+      const latestHistoryCreate = ctx.prisma.latestHistory.create({
         data: {
           history: { connect: { id: manuscript.history[0]?.id } },
           manuscript: { connect: { id: manuscript.id } },
         },
       });
+      const chiefEmailSends = sendEmail({
+        Messages: [
+          {
+            From: sender,
+            To: [sender],
+            Bcc: chiefEmails
+              .filter((e) => !!e.profile)
+              .map((e) => ({ Email: e.profile!.email })),
+            Subject: "New manuscript submitted",
+            HTMLPart: `<h3>Dear Chief Editor,</h3>
+              <p>A new manuscript has been submitted. Please check the manuscript and do an initial review.</p>
+              <p>Click the link below to open the details</p>
+              <a href="${getBaseUrl()}/dashboard/chief/submissions/${
+              manuscript.id
+            }">Open</a>,
+              <p>Thank you.</p>`,
+          },
+        ],
+      }).catch((e) => console.log(e));
+
+      await Promise.all([latestHistoryCreate, chiefEmailSends]);
 
       return manuscript;
     }),
@@ -439,18 +464,18 @@ export const manuscriptRouter = t.router({
         throw mutationError(e, notFoundMessage);
       }
     }),
-  deleteOptionalFile: t.procedure
-    .use(authGuard(["chief"]))
-    .input(z.string())
-    .mutation(async ({ ctx, input }) => {
-      try {
-        const manuscript = await ctx.prisma.manuscript.delete({
-          where: { id: input },
-          select: { title: true },
-        });
-        return `Deleted manuscript '${manuscript.title}'`;
-      } catch (e) {
-        throw mutationError(e, notFoundMessage);
-      }
-    }),
+  // delete: t.procedure
+  //   .use(authGuard(["chief"]))
+  //   .input(z.string())
+  //   .mutation(async ({ ctx, input }) => {
+  //     try {
+  //       const manuscript = await ctx.prisma.manuscript.delete({
+  //         where: { id: input },
+  //         select: { title: true },
+  //       });
+  //       return `Deleted manuscript '${manuscript.title}'`;
+  //     } catch (e) {
+  //       throw mutationError(e, notFoundMessage);
+  //     }
+  //   }),
 });

@@ -1,4 +1,6 @@
+import { TRPCClientError } from "@trpc/client";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { NextPage } from "next/types";
 import { useState } from "react";
@@ -6,6 +8,9 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { ErrorTexts } from "../../components/ErrorTexts";
 import { InputLabel } from "../../components/InputLabel";
 import { AuthLayout } from "../../components/layout/AuthLayout";
+import { SuccessTexts } from "../../components/SuccessTexts";
+import { AppRouter } from "../../server/trpc/router";
+import { trpc } from "../../utils/trpc";
 
 type LoginForm = {
   username: string;
@@ -13,16 +18,20 @@ type LoginForm = {
 };
 
 const LoginPage: NextPage = () => {
-  const { register, handleSubmit } = useForm<LoginForm>();
+  const { register, handleSubmit, getValues } = useForm<LoginForm>();
   const [isLoading, setIsLoading] = useState(false);
   const [isAvailableSendEmail, setIsAvailableSendEmail] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
+  const { mutateAsync } = trpc.auth.sendVerificationEmail.useMutation();
 
   const onSubmit: SubmitHandler<LoginForm> = async (data) => {
     setIsLoading(true);
+    setError(undefined);
     const result = await signIn("credentials", {
       ...data,
-      callbackUrl: "/",
+      // callbackUrl: "/",
+      redirect: false,
     });
     setIsLoading(false);
 
@@ -30,12 +39,29 @@ const LoginPage: NextPage = () => {
     setIsAvailableSendEmail(result?.error === "User is not activated");
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
+    setIsLoading(true);
+    setError(undefined);
+    setSuccess(undefined);
+
+    try {
+      const result = await mutateAsync(getValues("username"));
+      setSuccess(result);
+    } catch (e: unknown) {
+      const error = e as TRPCClientError<
+        AppRouter["auth"]["sendVerificationEmail"]
+      >;
+      setError(error.message);
+    }
+
     setIsLoading(false);
   };
 
   return (
     <AuthLayout>
+      <Head>
+        <title>Log In</title>
+      </Head>
       <div className="mx-auto grid h-screen max-w-[48rem] items-center">
         <form
           className="card-body shadow-2xl"
@@ -68,6 +94,7 @@ const LoginPage: NextPage = () => {
             className="btn"
           />
           <ErrorTexts message={error} />
+          <SuccessTexts message={success} />
           {isAvailableSendEmail && (
             <>
               <p>
@@ -86,6 +113,9 @@ const LoginPage: NextPage = () => {
           <div className="divider divider-vertical">OR</div>
           <Link href="/auth/register">
             <a className="btn btn-outline">Register</a>
+          </Link>
+          <Link href="/auth/resetpassword">
+            <a className="btn btn-outline">Reset Password</a>
           </Link>
         </form>
       </div>

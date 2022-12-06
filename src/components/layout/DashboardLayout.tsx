@@ -5,6 +5,7 @@ import { ActiveLink } from "../ActiveLink";
 import { AuthGuard } from "../AuthGuard";
 import { RootLayout } from "./RootLayout";
 import { ROLE_MAP } from "../../constants/role";
+import Head from "next/head";
 
 export const DashboardLayout = ({ children }: LayoutProps) => {
   const handleLogOut = () => signOut({ callbackUrl: "/auth/login" });
@@ -14,6 +15,9 @@ export const DashboardLayout = ({ children }: LayoutProps) => {
 
   return (
     <AuthGuard allowedRole="loggedIn">
+      <Head>
+        <title>Dashboard</title>
+      </Head>
       <RootLayout>
         <main className="container my-8 flex flex-1 flex-row items-stretch">
           <nav className="mr-4 min-w-[12rem] border-r border-gray-400 pr-4">

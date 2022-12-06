@@ -22,3 +22,19 @@ export const toastSettleHandler = (
     });
   }
 };
+
+export const showErrorToast = (message: string) => {
+  toast(message, {
+    type: "error",
+    position: "bottom-right",
+    autoClose: false,
+  });
+};
+
+export const showSuccessToast = (message: string) => {
+  toast(message, {
+    type: "success",
+    position: "bottom-right",
+    autoClose: 3000,
+  });
+};

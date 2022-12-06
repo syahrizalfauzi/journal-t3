@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { ASSESSMENT_DECISION } from "../constants/numbers";
-import { SAMPLE_FILE_URL } from "../constants/others";
+import { FILE_ACCEPTS, FOLDER_NAMES } from "../constants/others";
 import { questionListQuery } from "../server/queries";
 import { AppRouter } from "../server/trpc/router";
 import { createAssessmentValidator } from "../server/validators/assessment";
@@ -12,11 +12,13 @@ import { Sorts } from "../types/SortOrder";
 import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
 import { toastSettleHandler } from "../utils/toastSettleHandler";
 import { trpc } from "../utils/trpc";
+import { deleteFile, uploadFile } from "../utils/firebaseStorage";
 import { useQueryOptions } from "../utils/useQueryOptions";
 import { FileInput } from "./FileInput";
 import { InputLabel } from "./InputLabel";
 import ListLayout from "./layout/dashboard/ListLayout";
 import { SelectOptions } from "./SelectOptions";
+import { ellipsifyText } from "../utils/ellipsifyText";
 
 type Props = {
   review: NonNullable<
@@ -71,7 +73,10 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
 
   const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswer>({});
 
-  const isLoading = createAssessment.isLoading || selfAssessmentQuery.isLoading;
+  const [isUploading, setIsUploading] = useState(false);
+
+  const isLoading =
+    createAssessment.isLoading || selfAssessmentQuery.isLoading || isUploading;
 
   const handleReviewAnswerChange = (questionId: string, value: number) =>
     setReviewAnswers((prevState) => {
@@ -82,7 +87,33 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
     });
 
   const handleSubmitCreate = (isDone: boolean) => {
-    handleSubmit(({ file, chiefFile, decision, ...data }) => {
+    handleSubmit(async ({ file, chiefFile, decision, ...data }) => {
+      const defineFileUrl = async (
+        fileList: FileList,
+        existingFileUrl: string | null | undefined
+      ) => {
+        const file = fileList[0];
+        if (!file) return undefined;
+
+        const upload = uploadFile(file, FOLDER_NAMES.assessmentFiles);
+        let deletion: Promise<void> | undefined = undefined;
+
+        if (existingFileUrl) {
+          deletion = deleteFile(existingFileUrl);
+        }
+
+        const [url] = await Promise.all([upload, deletion]);
+
+        return url;
+      };
+
+      setIsUploading(true);
+      const [fileUrl, chiefFileUrl] = await Promise.all([
+        defineFileUrl(file, selfAssessmentFiles.fileUrl),
+        defineFileUrl(chiefFile, selfAssessmentFiles.chiefFileUrl),
+      ]);
+      setIsUploading(false);
+
       if (!selfAssessmentQuery.data)
         createAssessment.mutate(
           {
@@ -96,13 +127,16 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
             ),
             isDone,
             reviewId: review.id,
-            fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
-            chiefFileUrl: chiefFile.item(0) ? SAMPLE_FILE_URL : undefined,
+            fileUrl,
+            chiefFileUrl,
+            // fileUrl: file.item(0) ? SAMPLE_FILE_URL : undefined,
+            // chiefFileUrl: chiefFile.item(0) ? SAMPLE_FILE_URL : undefined,
           },
           {
             onSuccess: ({ id }) => {
               selfAssessmentQuery.refetch();
               onSubmit();
+              reset();
               if (isDone) router.push(`/assessment/reviewer/${id}`);
             },
           }
@@ -119,18 +153,21 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
               })
             ),
             isDone,
-            fileUrl: file.item(0)
-              ? SAMPLE_FILE_URL
-              : selfAssessmentFiles.fileUrl,
-            chiefFileUrl: chiefFile.item(0)
-              ? SAMPLE_FILE_URL
-              : selfAssessmentFiles.chiefFileUrl,
+            fileUrl: fileUrl ?? selfAssessmentFiles.fileUrl,
+            chiefFileUrl: chiefFileUrl ?? selfAssessmentFiles.chiefFileUrl,
+            // fileUrl: file.item(0)
+            //   ? SAMPLE_FILE_URL
+            //   : selfAssessmentFiles.fileUrl,
+            // chiefFileUrl: chiefFile.item(0)
+            //   ? SAMPLE_FILE_URL
+            //   : selfAssessmentFiles.chiefFileUrl,
             id: selfAssessmentQuery.data.id,
           },
           {
             onSuccess: ({ id }) => {
               selfAssessmentQuery.refetch();
               onSubmit();
+              reset();
               if (isDone) router.push(`/assessment/reviewer/${id}`);
             },
           }
@@ -138,22 +175,34 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
     })();
   };
 
-  const handleDeleteFileUrl = () => {
-    if (!confirm("Are you sure you want to delete this file?")) {
+  const handleDeleteFileUrl = async () => {
+    if (
+      !confirm("Are you sure you want to delete this file?") ||
+      !selfAssessmentFiles.fileUrl
+    ) {
       return;
     }
 
+    setIsUploading(true);
+    await deleteFile(selfAssessmentFiles.fileUrl);
+    setIsUploading(false);
     setSelfAssessmentFiles((prevState) => ({
       ...prevState,
       fileUrl: null,
     }));
   };
 
-  const handleDeleteChiefFileUrl = () => {
-    if (!confirm("Are you sure you want to delete this file?")) {
+  const handleDeleteChiefFileUrl = async () => {
+    if (
+      !confirm("Are you sure you want to delete this file?") ||
+      !selfAssessmentFiles.chiefFileUrl
+    ) {
       return;
     }
 
+    setIsUploading(true);
+    await deleteFile(selfAssessmentFiles.chiefFileUrl);
+    setIsUploading(false);
     setSelfAssessmentFiles((prevState) => ({
       ...prevState,
       chiefFileUrl: null,
@@ -266,11 +315,16 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
                   className="link overflow-clip"
                   href={selfAssessmentFiles.fileUrl}
                 >
-                  {selfAssessmentFiles.fileUrl}
+                  {ellipsifyText(selfAssessmentFiles.fileUrl)}
                 </a>
               </div>
             )}
-            <input {...register("file")} disabled={isLoading} type="file" />
+            <input
+              {...register("file")}
+              disabled={isLoading}
+              type="file"
+              accept={FILE_ACCEPTS}
+            />
           </FileInput>
           <FileInput label="Optional File (to chief editor)">
             {!!selfAssessmentFiles.chiefFileUrl && (
@@ -285,7 +339,7 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
                   className="link overflow-clip"
                   href={selfAssessmentFiles.chiefFileUrl}
                 >
-                  {selfAssessmentFiles.chiefFileUrl}
+                  {ellipsifyText(selfAssessmentFiles.chiefFileUrl)}
                 </a>
               </div>
             )}
@@ -293,6 +347,7 @@ export const AssessmentModal = ({ review, onSubmit }: Props) => {
               {...register("chiefFile")}
               disabled={isLoading}
               type="file"
+              accept={FILE_ACCEPTS}
             />
           </FileInput>
           <select

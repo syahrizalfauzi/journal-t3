@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { DetailLayout } from "../../../../components/layout/dashboard/DetailLayout";
 import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
 import { ManuscriptSteps } from "../../../../components/ManuscriptSteps";
 import { toastSettleHandler } from "../../../../utils/toastSettleHandler";
-import { SAMPLE_FILE_URL } from "../../../../constants/others";
 import { DashboardChiefLayout } from "../../../../components/layout/dashboard/DashboardChiefLayout";
 import { ManuscriptDetailCardChief } from "../../../../components/ManuscriptDetailCardChief";
 import { HistoryCardChief } from "../../../../components/HistoryCardChief";
 import { REVIEW_DECISION } from "../../../../constants/numbers";
 import { ensureRouterQuery } from "../../../../components/hoc/ensureRouterQuery";
 import { NextPage } from "next/types";
+import { uploadFile } from "../../../../utils/firebaseStorage";
+import { FOLDER_NAMES } from "../../../../constants/others";
 
 const DashboardChiefSubmissionsDetailPage: NextPage = () => {
   const { query } = useRouter();
@@ -21,6 +22,7 @@ const DashboardChiefSubmissionsDetailPage: NextPage = () => {
     error: queryError,
     refetch,
   } = trpc.manuscript.getForChief.useQuery(query.id as string);
+  const [isUploading, setIsUploading] = useState(false);
 
   const reject = trpc.history.reject.useMutation({
     onSettled: toastSettleHandler,
@@ -46,7 +48,8 @@ const DashboardChiefSubmissionsDetailPage: NextPage = () => {
     reject.isLoading ||
     accept.isLoading ||
     updateDueDate.isLoading ||
-    updateDecision.isLoading;
+    updateDecision.isLoading ||
+    isUploading;
 
   const handleReject = (reason: string) => {
     reject.mutate(
@@ -57,12 +60,14 @@ const DashboardChiefSubmissionsDetailPage: NextPage = () => {
       { onSuccess: () => refetch() }
     );
   };
-  const handleAccept = (file: File, isBlind: boolean) => {
-    console.log("TODO : onAccept file upload", file);
+  const handleAccept = async (file: File, isBlind: boolean) => {
+    setIsUploading(true);
+    const fileUrl = await uploadFile(file, FOLDER_NAMES.manuscripts);
+    setIsUploading(false);
     accept.mutate(
       {
         manuscriptId: query.id as string,
-        fileUrl: SAMPLE_FILE_URL,
+        fileUrl,
         isBlind,
       },
       { onSuccess: () => refetch() }
@@ -97,8 +102,11 @@ const DashboardChiefSubmissionsDetailPage: NextPage = () => {
       { onSuccess: () => refetch() }
     );
   };
-  const handleReviewAccept = (id: string, proofreadFile: File) => {
-    console.log("TODO : onReviewAccept file upload", proofreadFile);
+  const handleReviewAccept = async (id: string, proofreadFile: File) => {
+    setIsUploading(true);
+    const fileUrl = await uploadFile(proofreadFile, FOLDER_NAMES.manuscripts);
+    setIsUploading(false);
+
     updateDecision.mutate(
       {
         id,
@@ -108,7 +116,7 @@ const DashboardChiefSubmissionsDetailPage: NextPage = () => {
         onSuccess: () => {
           proofread.mutate(
             {
-              fileUrl: SAMPLE_FILE_URL,
+              fileUrl,
               manuscriptId: query.id as string,
             },
             { onSuccess: () => refetch() }

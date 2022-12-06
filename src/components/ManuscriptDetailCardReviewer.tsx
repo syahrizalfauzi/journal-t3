@@ -3,6 +3,7 @@ import { inferProcedureOutput } from "@trpc/server";
 import { AppRouter } from "../server/trpc/router";
 import { KeywordBadges } from "./KeywordBadges";
 import { parseDate } from "../utils/parseDate";
+import { ellipsifyText } from "../utils/ellipsifyText";
 
 type ManuscriptDetailCardReviewerProps = {
   manuscriptDetail: inferProcedureOutput<
@@ -64,7 +65,7 @@ export const ManuscriptDetailCardReviewer = ({
               target="_blank"
               rel="noreferrer"
             >
-              {manuscriptDetail.coverFileUrl}
+              {ellipsifyText(manuscriptDetail.coverFileUrl)}
             </a>
           </td>
         </tr>
@@ -78,7 +79,7 @@ export const ManuscriptDetailCardReviewer = ({
                 target="_blank"
                 rel="noreferrer"
               >
-                {manuscriptDetail.optionalFileUrl}
+                {ellipsifyText(manuscriptDetail.optionalFileUrl)}
               </a>
             </td>
           </tr>

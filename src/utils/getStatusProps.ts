@@ -207,7 +207,7 @@ const getStatusProps = (
         color: "info",
         message: {
           author:
-            "Congratulations! your paper has been published to a journal, please click the link above to see your published paper.",
+            "Congratulations! your paper has been published to an edition, it will be available to public once the current edition is released.",
           reviewer: "",
           chief: "The article has been published to the journal",
           unknown: "",

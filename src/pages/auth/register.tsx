@@ -1,4 +1,5 @@
 import moment from "moment";
+import Head from "next/head";
 import Link from "next/link";
 import { NextPage } from "next/types";
 import React from "react";
@@ -44,6 +45,9 @@ const RegisterPage: NextPage = () => {
 
   return (
     <AuthLayout>
+      <Head>
+        <title>Register</title>
+      </Head>
       <div className="mx-auto grid h-screen max-w-[64rem] items-center">
         <form
           className="card-body shadow-2xl"

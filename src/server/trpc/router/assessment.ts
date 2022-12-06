@@ -12,6 +12,10 @@ import {
 } from "../../../constants/numbers";
 import mutationError from "../../utils/mutationError";
 import { z } from "zod";
+import { getRoleNumbers } from "../../../utils/role";
+import { sendEmail } from "../../utils/sendEmail";
+import { sender } from "../../../constants/mailjet";
+import { getBaseUrl } from "../../../utils/trpc";
 
 const notFoundMessage = "Assessment not found";
 
@@ -51,7 +55,7 @@ export const assessmentRouter = t.router({
               ),
             },
             user: { connect: { id: ctx.session.user.id } },
-            reviewId: undefined, //used on connect
+            reviewId: undefined, //used on connect, idk why I did this
             review: { connect: { id: input.reviewId } },
           },
           select: {
@@ -77,7 +81,7 @@ export const assessmentRouter = t.router({
 
         const settingsGet = ctx.prisma.settings.findFirst();
 
-        const [assesment, settings] = await ctx.prisma.$transaction([
+        const [assessment, settings] = await ctx.prisma.$transaction([
           assesmentCreate,
           settingsGet,
         ]);
@@ -86,10 +90,10 @@ export const assessmentRouter = t.router({
           settings?.reviewersCount ?? DEFAULT_REVIEWERS_COUNT;
 
         //TRIGGER ZONE
-        //If the reviewers are done reviewing, change history status to reviewed
-        if (assesment.review.assesment.length >= reviewersCount) {
+        //If all of the reviewers are done reviewing, change history status to reviewed
+        if (assessment.review.assesment.length >= reviewersCount) {
           const historyUpdate = ctx.prisma.history.update({
-            where: { id: assesment.review.history.id },
+            where: { id: assessment.review.history.id },
             data: { status: HISTORY_STATUS.reviewed },
             select: {
               updatedAt: true,
@@ -110,21 +114,50 @@ export const assessmentRouter = t.router({
             },
           });
 
-          // const chiefEmailFetch = ctx.prisma.user.findMany({
-          //   where: {
-          //     OR: getRoleNumbers("chief").map((e) => ({
-          //       role: e,
-          //     })),
-          //   },
-          //   select: { profile: { select: { email: true } } },
-          // });
+          const chiefEmailFetch = ctx.prisma.user.findMany({
+            where: {
+              OR: getRoleNumbers("chief").map((e) => ({
+                role: e,
+              })),
+            },
+            select: { profile: { select: { email: true } } },
+          });
 
-          await ctx.prisma.$transaction([historyUpdate]);
-          // chiefEmailFetch,
+          const [chiefEmails, { manuscript }] = await ctx.prisma.$transaction([
+            chiefEmailFetch,
+            historyUpdate,
+          ]);
+
+          try {
+            await sendEmail({
+              Messages: [
+                {
+                  From: sender,
+                  To: [sender],
+                  Bcc: chiefEmails
+                    .filter((e) => !!e.profile)
+                    .map((e) => ({ Email: e.profile!.email })),
+                  Subject: `Review for ${assessment.review.history.manuscript.title} is done`,
+                  HTMLPart: `<h3>Dear Chief Editor,</h3>
+                  <p>All of the reviewers has submitted their assesment on the submission titled <b>${
+                    manuscript.title
+                  }</b>  </p>
+             <p>Please give a decision on the review by clicking the detail below</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/chief/submissions/${
+                    manuscript.id
+                  }">Open</a></p>
+              <p>Thank you.</p>`,
+                },
+              ],
+            });
+          } catch (e) {
+            console.log(e);
+          }
         }
 
         return {
-          id: assesment.id,
+          id: assessment.id,
           message: input.isDone
             ? "Assessment successfully submitted"
             : "Assessment draft saved",
@@ -383,16 +416,46 @@ export const assessmentRouter = t.router({
             },
           });
 
-          // const chiefEmailFetch = ctx.prisma.user.findMany({
-          //   where: {
-          //     OR: getRoleNumbers("chief").map((e) => ({
-          //       role: e,
-          //     })),
-          //   },
-          //   select: { profile: { select: { email: true } } },
-          // });
+          const chiefEmailFetch = ctx.prisma.user.findMany({
+            where: {
+              OR: getRoleNumbers("chief").map((e) => ({
+                role: e,
+              })),
+            },
+            select: { profile: { select: { email: true } } },
+          });
 
-          await ctx.prisma.$transaction([historyUpdate]);
+          const [chiefEmails, { manuscript }] = await ctx.prisma.$transaction([
+            chiefEmailFetch,
+            historyUpdate,
+          ]);
+
+          try {
+            await sendEmail({
+              Messages: [
+                {
+                  From: sender,
+                  To: [sender],
+                  Bcc: chiefEmails
+                    .filter((e) => !!e.profile)
+                    .map((e) => ({ Email: e.profile!.email })),
+                  Subject: `Review for ${assessment.review.history.manuscript.title} is done`,
+                  HTMLPart: `<h3>Dear Chief Editor,</h3>
+                  <p>All of the reviewers has submitted their assesment on the submission titled <b>${
+                    manuscript.title
+                  }</b>  </p>
+             <p>Please give a decision on the review by clicking the detail below</p>
+              <p>Click the link below to open the details </p>
+              <p><a href="${getBaseUrl()}/dashboard/chief/submissions/${
+                    manuscript.id
+                  }">Open</a></p>
+              <p>Thank you.</p>`,
+                },
+              ],
+            });
+          } catch (e) {
+            console.log(e);
+          }
 
           // await sendEmail({
           //   bcc: chiefEmails

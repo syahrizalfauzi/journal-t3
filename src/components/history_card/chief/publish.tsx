@@ -32,7 +32,10 @@ export const HistoryCardChiefPublish = ({ isLoading, onPublish }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <HistoryCardAction isLoading={isLoading}>
+      <HistoryCardAction
+        isLoading={isLoading}
+        withSubmit={(data?.length ?? 0) > 0}
+      >
         <table className="border-separate border-spacing-y-2 border-spacing-x-4 text-left">
           <tbody>
             <tr>

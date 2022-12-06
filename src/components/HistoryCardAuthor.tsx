@@ -19,6 +19,8 @@ import {
   REVIEW_DECISION,
 } from "../constants/numbers";
 import { capitalizeCamelCase } from "../utils/capitalizeCamelCase";
+import { ellipsifyText } from "../utils/ellipsifyText";
+import { FILE_ACCEPTS } from "../constants/others";
 
 type Props = {
   history: NonNullable<
@@ -27,8 +29,8 @@ type Props = {
     >["latestHistory"]
   >["history"];
   isLoading: boolean;
-  onRevise: (file: File) => unknown;
-  onFinalize: (file: File | undefined | null) => unknown;
+  onRevise: (file: File) => Promise<unknown>;
+  onFinalize: (file: File | undefined | null) => Promise<unknown>;
 };
 
 type ReviseForm = {
@@ -87,7 +89,7 @@ export const HistoryCardAuthor = ({
               target="_blank"
               rel="noreferrer"
             >
-              {history.submission?.fileUrl}
+              {ellipsifyText(history.submission?.fileUrl)}
             </a>
           </td>
         </tr>
@@ -163,6 +165,7 @@ export const HistoryCardAuthor = ({
                         required
                         disabled={isLoading}
                         type="file"
+                        accept={FILE_ACCEPTS}
                       />
                     </FileInput>
                   </td>
@@ -208,6 +211,7 @@ export const HistoryCardAuthor = ({
                         required
                         disabled={isLoading}
                         type="file"
+                        accept={FILE_ACCEPTS}
                       />
                     </FileInput>
                   </td>
