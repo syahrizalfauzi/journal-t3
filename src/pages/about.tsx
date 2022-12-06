@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from "next";
+import Head from "next/head";
 import React from "react";
 import { PageEditor } from "../components/editor/PageEditor";
 import { RootLayout } from "../components/layout/RootLayout";
@@ -24,6 +25,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const AboutPage: NextPage<PageProps> = ({ pageData }) => {
   return (
     <RootLayout>
+      <Head>
+        <title>About</title>
+      </Head>
       <PageEditor readOnly value={JSON.parse(pageData)} />
     </RootLayout>
   );

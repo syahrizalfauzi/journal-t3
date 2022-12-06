@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { NextPage } from "next/types";
 import React from "react";
@@ -25,6 +26,9 @@ const ArchivePage: NextPage = () => {
 
   return (
     <RootLayout>
+      <Head>
+        <title>Archive</title>
+      </Head>
       <div className="container py-12">
         <h1 className="mb-4 text-3xl font-bold">Journal Edition List</h1>
         <ListLayout

@@ -1,5 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { NextPage } from "next/types";
 import { useState } from "react";
@@ -58,6 +59,9 @@ const LoginPage: NextPage = () => {
 
   return (
     <AuthLayout>
+      <Head>
+        <title>Log In</title>
+      </Head>
       <div className="mx-auto grid h-screen max-w-[48rem] items-center">
         <form
           className="card-body shadow-2xl"

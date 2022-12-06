@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
@@ -32,6 +33,9 @@ const ResetPasswordPage: NextPage = () => {
 
   return (
     <AuthLayout>
+      <Head>
+        <title>Reset Password</title>
+      </Head>
       <div className="mx-auto grid h-screen max-w-[48rem] items-center">
         {tokenIsLoading ? (
           <div className="text-center">Loading...</div>

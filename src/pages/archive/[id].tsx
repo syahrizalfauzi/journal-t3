@@ -7,6 +7,7 @@ import { ensureRouterQuery } from "../../components/hoc/ensureRouterQuery";
 import { KeywordBadges } from "../../components/KeywordBadges";
 import { parseDateDay } from "../../utils/parseDate";
 import { trpc } from "../../utils/trpc";
+import Head from "next/head";
 
 const ArchiveDetailPage: NextPage = () => {
   const { query } = useRouter();
@@ -19,6 +20,9 @@ const ArchiveDetailPage: NextPage = () => {
 
   return (
     <RootLayout>
+      <Head>
+        <title>Archive</title>
+      </Head>
       <div className="container py-12">
         <DetailLayout
           isLoading={queryLoading}

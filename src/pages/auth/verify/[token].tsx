@@ -3,6 +3,7 @@ import { trpc } from "../../../utils/trpc";
 import { ensureRouterQuery } from "../../../components/hoc/ensureRouterQuery";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Head from "next/head";
 
 const VerifyAccountPage = () => {
   const token = useRouter().query.token as string;
@@ -15,6 +16,9 @@ const VerifyAccountPage = () => {
 
   return (
     <div className="container grid h-screen items-center justify-center">
+      <Head>
+        <title>Verify Account</title>
+      </Head>
       <div className="flex flex-col gap-4 text-center">
         <h1 className="text-6xl font-bold">
           {isLoading

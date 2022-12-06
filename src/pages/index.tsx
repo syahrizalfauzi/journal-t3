@@ -5,7 +5,7 @@ import { GetServerSideProps, NextPage } from "next";
 import { PageEditor } from "../components/editor/PageEditor";
 import { prisma } from "../server/db/client";
 import { PageProps } from "../types/PageProps";
-import { trpc } from "../utils/trpc";
+import Head from "next/head";
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   const pageData = (
@@ -26,6 +26,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const Home: NextPage<PageProps> = ({ pageData }) => {
   return (
     <RootLayout>
+      <Head>
+        <title>Home</title>
+      </Head>
       <PageEditor readOnly value={JSON.parse(pageData)} />
     </RootLayout>
   );

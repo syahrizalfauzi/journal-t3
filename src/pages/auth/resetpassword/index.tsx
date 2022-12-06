@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Link from "next/link";
 import { NextPage } from "next/types";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -23,6 +24,9 @@ const ResetPassword: NextPage = () => {
 
   return (
     <AuthLayout>
+      <Head>
+        <title>Reset Password</title>
+      </Head>
       <div className="mx-auto grid h-screen max-w-[48rem] items-center">
         <form
           className="card-body shadow-2xl"

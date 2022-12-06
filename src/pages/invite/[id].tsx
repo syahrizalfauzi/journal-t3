@@ -1,4 +1,5 @@
 import { inferProcedureOutput } from "@trpc/server";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import React, { useEffect, useState } from "react";
@@ -89,6 +90,9 @@ const InvitePage: NextPage = () => {
 
   return (
     <AuthGuard allowedRole="chief" redirectTo="/dashboard">
+      <Head>
+        <title>Invite Reviewers</title>
+      </Head>
       <div className="container my-4 flex flex-col items-stretch gap-4">
         <p className="text-xl font-medium">Invite Reviewers</p>
         <ListLayout
