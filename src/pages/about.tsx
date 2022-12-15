@@ -7,6 +7,19 @@ import { prisma } from "../server/db/client";
 import { PageProps } from "../types/PageProps";
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  const settings = await prisma.settings.findUnique({
+    where: { id: "settings" },
+  });
+
+  if (settings?.maintenanceMode) {
+    return {
+      redirect: {
+        destination: "/maintenance",
+        permanent: false,
+      },
+    };
+  }
+
   const pageData = (
     await prisma.page.findUnique({
       where: { url: "about" },

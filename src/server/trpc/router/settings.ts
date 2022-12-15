@@ -8,7 +8,7 @@ import {
 import { settingsValidator } from "../../validators/settings";
 
 export const settingsRouter = t.router({
-  get: t.procedure.use(authGuard(["chief", "admin"])).query(async ({ ctx }) => {
+  get: t.procedure.query(async ({ ctx }) => {
     const settings = await ctx.prisma.settings.findFirst({});
 
     return (
@@ -29,11 +29,13 @@ export const settingsRouter = t.router({
         update: {
           maxArticlesPerLatestEdition: input.maxArticlesPerLatestEdition,
           reviewersCount: input.reviewersCount,
+          maintenanceMode: input.maintenanceMode,
         },
         create: {
           id: "settings",
           maxArticlesPerLatestEdition: input.maxArticlesPerLatestEdition,
           reviewersCount: input.reviewersCount,
+          maintenanceMode: input.maintenanceMode,
         },
       });
 

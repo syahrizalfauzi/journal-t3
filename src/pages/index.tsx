@@ -8,6 +8,19 @@ import { PageProps } from "../types/PageProps";
 import Head from "next/head";
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
+  const settings = await prisma.settings.findUnique({
+    where: { id: "settings" },
+  });
+
+  if (settings?.maintenanceMode) {
+    return {
+      redirect: {
+        destination: "/maintenance",
+        permanent: false,
+      },
+    };
+  }
+
   const pageData = (
     await prisma.page.findUnique({
       where: { url: "" },
