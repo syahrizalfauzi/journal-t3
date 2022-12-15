@@ -9,6 +9,7 @@ async function main() {
       id: "settings",
       maxArticlesPerLatestEdition: 5,
       reviewersCount: 2,
+      maintenanceMode: false,
     },
   });
 

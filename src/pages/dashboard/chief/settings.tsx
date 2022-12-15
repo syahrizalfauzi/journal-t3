@@ -2,6 +2,7 @@ import { NextPage } from "next/types";
 import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
+import { Checkboxes } from "../../../components/Checkboxes";
 import { InputLabel } from "../../../components/InputLabel";
 import { DashboardChiefLayout } from "../../../components/layout/dashboard/DashboardChiefLayout";
 import { DetailLayout } from "../../../components/layout/dashboard/DetailLayout";
@@ -13,7 +14,7 @@ type EditSettingsForm = z.infer<typeof settingsValidator>;
 
 const DashboardChiefEditionsEditPage: NextPage = () => {
   const {
-    data: edition,
+    data: settings,
     isLoading: queryLoading,
     error: queryError,
   } = trpc.settings.get.useQuery();
@@ -28,24 +29,26 @@ const DashboardChiefEditionsEditPage: NextPage = () => {
   const onSubmit: SubmitHandler<EditSettingsForm> = ({
     maxArticlesPerLatestEdition,
     reviewersCount,
+    maintenanceMode,
   }) => {
     mutationUpdate({
       maxArticlesPerLatestEdition: Number(maxArticlesPerLatestEdition),
       reviewersCount: Number(reviewersCount),
+      maintenanceMode,
     });
   };
 
   useEffect(() => {
-    if (!edition) return;
+    if (!settings) return;
 
-    reset(edition);
-  }, [edition, reset]);
+    reset(settings);
+  }, [settings, reset]);
 
   return (
     <DashboardChiefLayout>
       <DetailLayout
         isLoading={queryLoading}
-        data={edition}
+        data={settings}
         errorMessage={queryError?.message}
         render={() => (
           <>
@@ -74,6 +77,18 @@ const DashboardChiefEditionsEditPage: NextPage = () => {
                   className="input input-bordered w-full"
                 />
               </InputLabel>
+              <Checkboxes
+                checkboxData={[
+                  {
+                    id: "maintenanceMode",
+                    label: "Maintenance Mode",
+                    // checked: settings?.maintenanceMode,
+                    rest: register("maintenanceMode"),
+                  },
+                ]}
+              >
+                {/* <span className="label-text">Role</span> */}
+              </Checkboxes>
               <input
                 disabled={mutationLoading}
                 type="submit"

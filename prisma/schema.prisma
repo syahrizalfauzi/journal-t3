@@ -177,7 +177,8 @@ model Page {
 }
 
 model Settings {
-  id                          String @id @default("settings")
-  reviewersCount              Int    @default(4)
-  maxArticlesPerLatestEdition Int    @default(5)
+  id                          String  @id @default("settings")
+  reviewersCount              Int     @default(4)
+  maxArticlesPerLatestEdition Int     @default(5)
+  maintenanceMode             Boolean @default(false)
 }
